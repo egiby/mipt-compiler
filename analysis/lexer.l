@@ -3,18 +3,29 @@
 %option yylineno
 
 %{
+#include "parser.tab.h"
+
 #include <cstdio>
+#include <exception>
 
 
-int line_number = 0;
-int column_number = 0;
+class UnexpectedSymbolException: public std::exception {
+public:
+    const char* what() const noexcept {
+        return "Bad symbol";
+    }
+};
+
+
+static int line_number = 0;
+static int column_number = 0;
 
 struct Location {
 	int first_line;
 	int first_column;
 	int last_line;
 	int last_column;
-} typedef Location;
+};
 
 static Location yylloc;
 
@@ -40,30 +51,33 @@ void updateLocation(const yyFlexLexer* lexer) {
 	yylloc.last_column = column_number;
 }
 
-void processToken(const yyFlexLexer* lexer, const char* token) {
-	printf("%s\n", token);
+void processToken(const yyFlexLexer* lexer, const char* tokenName) {
+	printf("%s\n", tokenName);
 	
 	updateLocation(lexer);
 	printf("start: %d %d\n", yylloc.first_line, yylloc.first_column);
 	printf("end: %d %d\n", yylloc.last_line, yylloc.last_column);
-} 
+}
 
 %} 
 
 IDENTIFIER [_a-zA-Z][_a-zA-Z0-9]*
-UNSIGNED_INTEGER [0-9]+
+UNSIGNED_INTEGER ([1-9][0-9]*)|0
 WHITE_SPACE [ \t]*
 LINE_COMMENT "//".*\n
-COMMENT "/*".*"*/"
 EOL \n
 
 %%
-{COMMENT} {
-	processToken(this, "COMMENT");
+{WHITE_SPACE} {
+	updateLocation(this);
+}
+{EOL} {
+	updateLocation(this);
 }
 {LINE_COMMENT} {
 	processToken(this, "LINE_COMMENT");
 }
+
 class {
     processToken(this, "CLASS");
 }
@@ -76,6 +90,7 @@ public{WHITE_SPACE}static{WHITE_SPACE}void{WHITE_SPACE}main {
 "String[]" {
 	processToken(this, "STRING_ARRAY");
 }
+
 if {
 	processToken(this, "IF");
 }
@@ -85,6 +100,7 @@ else {
 while {
 	processToken(this, "WHILE");
 }
+
 "int[]" {
     processToken(this, "INT_ARRAY");
 }
@@ -109,6 +125,7 @@ this {
 new {
 	processToken(this, "NEW");
 }
+
 "+" {
 	processToken(this, "PLUS");
 }
@@ -118,9 +135,11 @@ new {
 "-" {
 	processToken(this, "MINUS");
 }
+
 "=" {
 	processToken(this, "EQUAL");
 }
+
 "&&" {
 	processToken(this, "AND");
 }
@@ -130,51 +149,53 @@ new {
 "!" {
 	processToken(this, "NEGATION");
 }
+
 "<" {
 	processToken(this, "LESS");
 }
+
 "." {
 	processToken(this, "DOT");
 }
 "," {
 	processToken(this, "COMMA");
 }
+
 ";" {
 	processToken(this, ";");
 }
+
 "{" {
     processToken(this, "{");
 }
 "}" {
     processToken(this, "}");
 }
+
 "(" {
 	processToken(this, "(");
 }
 ")" {
 	processToken(this, ")");
 }
+
 "[" {
 	processToken(this, "[");
 }
 "]" {
 	processToken(this, "]");
 }
+
 {UNSIGNED_INTEGER} {
 	processToken(this, "UNSIGNED_INTEGER");
 }
 {IDENTIFIER} {
 	processToken(this, "IDENTIFIER");
 }
-{WHITE_SPACE} {
-	updateLocation(this);
-}
-{EOL} {
-	updateLocation(this);
-}
 . {
 	updateLocation(this);
 	printf("Trash!!!!!!!!!!!!!!!!!!!!!!!!!!!: %s\n", yytext);
+	throw UnexpectedSymbolException();
 }
 %%
 

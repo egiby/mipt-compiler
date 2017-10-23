@@ -5,16 +5,14 @@ cmake_minimum_required(VERSION 3.1)
 find_package(FLEX REQUIRED)
 find_package(BISON REQUIRED)
 
-BISON_TARGET(parser
-        analysis/parser.yy
-        ${CMAKE_CURRENT_BINARY_DIR}/mc_parser.tab.cc)
+#bison_target(parser
+#        analysis/parser.y
+#        ${CMAKE_CURRENT_BINARY_DIR}/parser.tab.cc)
 
-FLEX_TARGET(lexer
+flex_target(lexer
         analysis/lexer.l
-        ${CMAKE_CURRENT_BINARY_DIR}/lex.yy.cc
-        )
+        ${CMAKE_CURRENT_BINARY_DIR}/lexer.yy.cc)
 
-ADD_FLEX_BISON_DEPENDENCY(lexer parser)
+#add_flex_bison_dependency(lexer parser)
 
-add_executable(lexer ${CMAKE_CURRENT_BINARY_DIR}/clion_lex.yy.cc)
-
+add_executable(lexer ${FLEX_lexer_OUTPUTS})
