@@ -1,13 +1,10 @@
-%option noyywrap
-%option c++
-%option yylineno
-
 %{
-#include "parser.tab.h"
-
 #include <cstdio>
 #include <exception>
 
+#include "analysis/Scanner.h"
+#undef YY_DECL
+#define YY_DECL int Scanner::yylex(yy::parser::semantic_type* const lval)
 
 class UnexpectedSymbolException: public std::exception {
 public:
@@ -30,11 +27,11 @@ struct Location {
 static Location yylloc;
 
 void updateLocation(const yyFlexLexer* lexer) {
-	// Начало токена
+	// start
 	yylloc.first_line = line_number;
 	yylloc.first_column = column_number;
 
-	// Новое смещение
+	// new offset
 	auto yyleng = lexer->YYLeng();
 	auto yytext = lexer->YYText();
 	for( int i = 0; i < yyleng; i++ ) {
@@ -46,7 +43,7 @@ void updateLocation(const yyFlexLexer* lexer) {
 		}
 	}
 
-	// Конец токена
+	// end
 	yylloc.last_line = line_number;
 	yylloc.last_column = column_number;
 }
@@ -61,6 +58,13 @@ void processToken(const yyFlexLexer* lexer, const char* tokenName) {
 
 %} 
 
+%option noyywrap
+%option yylineno
+%option c++
+
+%option yyclass="Scanner"
+%option nodefault
+
 IDENTIFIER [_a-zA-Z][_a-zA-Z0-9]*
 UNSIGNED_INTEGER ([1-9][0-9]*)|0
 WHITE_SPACE [ \t]*
@@ -68,6 +72,10 @@ LINE_COMMENT "//".*\n
 EOL \n
 
 %%
+%{
+	yylval = lval;
+%}
+
 {WHITE_SPACE} {
 	updateLocation(this);
 }
@@ -200,8 +208,8 @@ new {
 %%
 
 
-int main() {
-	yyFlexLexer lexer;
+/*int main() {
+	Scanner lexer(&std::cin);
 	lexer.yylex();
 	return 0;
-}
+}*/

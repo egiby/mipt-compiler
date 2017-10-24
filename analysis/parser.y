@@ -1,12 +1,31 @@
 %skeleton "lalr1.cc"
 
 %{
+    #include <iostream>
+    using std::cerr;
+    using std::endl;
 
+    void yyerror(char *s);
 %}
 
 %debug
 %defines
+%require "3.0"
 
+%define api.value.type variant
+
+%code requires {
+    class Scanner;
+}
+
+%parse-param { Scanner &scanner }
+
+%code {
+    #include "analysis/Scanner.h"
+
+    #undef yylex
+    #define yylex scanner.yylex
+}
 
 %token T_CLASS
 %token T_MAIN
@@ -53,14 +72,20 @@
 %token T_RBRACKET
 %token T_LBRACKET
 
-%token T_ID
+%token <std::string> T_ID
 %token <int> T_INT_LITERAL
 
 %%
-start :
+start : 
 ;
 %%
 
-int main(void) {
-    yyparse();
+void yy::parser::error(const std::string &err_message) {
+    cerr << "just ignore it" << endl;
+}
+
+int main() {
+    Scanner scanner(&std::cin);
+    yy::parser parser(scanner);
+    parser.parse();
 }
