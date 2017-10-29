@@ -1,61 +1,15 @@
 %{
-#include <cstdio>
-#include <exception>
+#include <iostream>
+#include <cstdlib>
 
 #include "analysis/Scanner.h"
 #undef YY_DECL
-#define YY_DECL int Scanner::yylex(yy::parser::semantic_type* const lval)
+#define YY_DECL int Scanner::yylex(yy::parser::semantic_type* const lval, yy::parser::location_type *yylloc)
 
-class UnexpectedSymbolException: public std::exception {
-public:
-    const char* what() const noexcept {
-        return "Bad symbol";
-    }
-};
+#define YY_USER_ACTION yylloc->step(); yylloc->columns(yyleng);
 
-
-static int line_number = 0;
-static int column_number = 0;
-
-struct Location {
-	int first_line;
-	int first_column;
-	int last_line;
-	int last_column;
-};
-
-static Location yylloc;
-
-void updateLocation(const yyFlexLexer* lexer) {
-	// start
-	yylloc.first_line = line_number;
-	yylloc.first_column = column_number;
-
-	// new offset
-	auto yyleng = lexer->YYLeng();
-	auto yytext = lexer->YYText();
-	for( int i = 0; i < yyleng; i++ ) {
-		if( yytext[i] == '\n' ) {
-			line_number++;
-			column_number = 0;
-		} else {
-			column_number++;
-		}
-	}
-
-	// end
-	yylloc.last_line = line_number;
-	yylloc.last_column = column_number;
-}
-
-void processToken(const yyFlexLexer* lexer, const char* tokenName) {
-	printf("%s\n", tokenName);
-	
-	updateLocation(lexer);
-	printf("start: %d %d\n", yylloc.first_line, yylloc.first_column);
-	printf("end: %d %d\n", yylloc.last_line, yylloc.last_column);
-}
-
+using std::cerr;
+using token = yy::parser::token;
 %} 
 
 %option noyywrap
@@ -77,133 +31,132 @@ EOL \n
 %}
 
 {WHITE_SPACE} {
-	updateLocation(this);
 }
 {EOL} {
-	updateLocation(this);
+	yylloc->lines();
 }
 {LINE_COMMENT} {
-	processToken(this, "LINE_COMMENT");
 }
 
 class {
-    processToken(this, "CLASS");
+	return token::T_CLASS;
 }
 public{WHITE_SPACE}static{WHITE_SPACE}void{WHITE_SPACE}main {
-    processToken(this, "MAIN");
+	return token::T_MAIN;
 }
 "System.out.println" {
-	processToken(this, "PRINT");
+	return token::T_PRINT;
 }
 "String[]" {
-	processToken(this, "STRING_ARRAY");
+	return token::T_STRING_ARRAY;
 }
 
 if {
-	processToken(this, "IF");
+	return token::T_IF;
 }
 else {
-	processToken(this, "ELSE");
+	return token::T_ELSE;
 }
 while {
-	processToken(this, "WHILE");
+	return token::T_WHILE;
 }
 
 "int[]" {
-    processToken(this, "INT_ARRAY");
+	return token::T_INT_ARRAY;
 }
 extends {
-	processToken(this, "EXTENDS");
+	return token::T_EXTENDS;
 }
 int {
-    processToken(this, "INT");
+	return token::T_INT;
 }
 boolean {
-    processToken(this, "BOOL");
+	return token::T_BOOL;
 }
 true {
-	processToken(this, "TRUE");
+	return token::T_TRUE;
 }
 false {
-	processToken(this, "FALSE");
+	return token::T_FALSE;
 }
 this {
-	processToken(this, "THIS");
+	return token::T_THIS;
 }
 new {
-	processToken(this, "NEW");
+	return token::T_NEW;
 }
 
 "+" {
-	processToken(this, "PLUS");
-}
-"*" {
-	processToken(this, "MULTIPLY");
+	return token::T_PLUS;
 }
 "-" {
-	processToken(this, "MINUS");
+	return token::T_MINUS;
+}
+"*" {
+	return token::T_MULTIPLY;
 }
 
 "=" {
-	processToken(this, "EQUAL");
+	return token::T_ASSIGN;
 }
 
 "&&" {
-	processToken(this, "AND");
+	return token::T_AND;
 }
 "||" {
-	processToken(this, "OR");
+	return token::T_OR;
 }
 "!" {
-	processToken(this, "NEGATION");
+	return token::T_NOT;
 }
 
 "<" {
-	processToken(this, "LESS");
+	return token::T_LESS;
 }
 
 "." {
-	processToken(this, "DOT");
+	return token::T_DOT;
 }
 "," {
-	processToken(this, "COMMA");
+	return token::T_COMMA;
 }
 
 ";" {
-	processToken(this, ";");
+	return token::T_SEMICOLON;
 }
 
-"{" {
-    processToken(this, "{");
-}
 "}" {
-    processToken(this, "}");
+	return token::T_RBRACE;
+}
+"{" {
+	return token::T_LBRACE;
 }
 
-"(" {
-	processToken(this, "(");
-}
 ")" {
-	processToken(this, ")");
+	return token::T_RPAREN;
+}
+"(" {
+	return token::T_LPAREN;
 }
 
-"[" {
-	processToken(this, "[");
-}
 "]" {
-	processToken(this, "]");
+	return token::T_RBRACKET;
+}
+"[" {
+	return token::T_LBRACKET;
 }
 
 {UNSIGNED_INTEGER} {
-	processToken(this, "UNSIGNED_INTEGER");
+	int value = std::atoi(yytext);
+	yylval->build<int>(value);
+	return token::T_INT_LITERAL;
 }
 {IDENTIFIER} {
-	processToken(this, "IDENTIFIER");
+	yylval->build<std::string>(yytext);
+	return token::T_ID;
 }
 . {
-	updateLocation(this);
-	printf("Trash!!!!!!!!!!!!!!!!!!!!!!!!!!!: %s\n", yytext);
-	throw UnexpectedSymbolException();
+	cerr << "Trash!!\n";
 }
 %%
 

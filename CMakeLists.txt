@@ -15,16 +15,7 @@ flex_target(lexer
 
 add_flex_bison_dependency(lexer parser)
 
-add_executable(lexer ${FLEX_lexer_OUTPUTS})
 add_executable(parser ${CMAKE_CURRENT_BINARY_DIR}/lexer.yy.cc
         ${BISON_parser_OUTPUTS})
 
-target_include_directories(lexer
-        PRIVATE
-        .
-        ${CMAKE_CURRENT_BINARY_DIR})
-
-target_include_directories(parser
-        PRIVATE
-        .
-        ${CMAKE_CURRENT_BINARY_DIR})
+include_directories(. ${CMAKE_CURRENT_BINARY_DIR})

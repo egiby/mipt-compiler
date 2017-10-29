@@ -4,13 +4,13 @@
     #include <iostream>
     using std::cerr;
     using std::endl;
-
-    void yyerror(char *s);
 %}
 
 %debug
 %defines
 %require "3.0"
+
+%locations
 
 %define api.value.type variant
 
@@ -80,7 +80,7 @@ start :
 ;
 %%
 
-void yy::parser::error(const std::string &err_message) {
+void yy::parser::error(const yy::parser::location_type& l, const std::string &err_message) {
     cerr << "just ignore it" << endl;
 }
 
