@@ -2,7 +2,7 @@
 #include <iostream>
 #include <cstdlib>
 
-#include "analysis/Scanner.h"
+#include "ast/Scanner.h"
 #undef YY_DECL
 #define YY_DECL int Scanner::yylex(yy::parser::semantic_type* const lval, yy::parser::location_type *yylloc)
 
@@ -23,7 +23,7 @@ IDENTIFIER [_a-zA-Z][_a-zA-Z0-9]*
 UNSIGNED_INTEGER ([1-9][0-9]*)|0
 WHITE_SPACE [ \t]*
 LINE_COMMENT "//".*\n
-EOL \n
+EOL (\n)|(\r\n)
 
 %%
 %{
@@ -154,6 +154,9 @@ new {
 {IDENTIFIER} {
 	yylval->build<std::string>(yytext);
 	return token::T_ID;
+}
+<<EOF>> {
+	return token::T_EOF;
 }
 . {
 	cerr << "Trash!!\n";

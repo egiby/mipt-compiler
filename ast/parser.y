@@ -21,7 +21,7 @@
 %parse-param { Scanner &scanner }
 
 %code {
-    #include "analysis/Scanner.h"
+    #include "ast/Scanner.h"
 
     #undef yylex
     #define yylex scanner.yylex
@@ -75,13 +75,15 @@
 %token <std::string> T_ID
 %token <int> T_INT_LITERAL
 
+%token T_EOF
+
 %%
-start : 
+start :
 ;
 %%
 
 void yy::parser::error(const yy::parser::location_type& l, const std::string &err_message) {
-    cerr << "just ignore it" << endl;
+    cerr << l << ' ' << err_message << endl;
 }
 
 int main() {

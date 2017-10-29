@@ -6,11 +6,11 @@ find_package(FLEX REQUIRED)
 find_package(BISON REQUIRED)
 
 bison_target(parser
-        analysis/parser.y
+        ast/parser.y
         ${CMAKE_CURRENT_BINARY_DIR}/parser.tab.cc)
 
 flex_target(lexer
-        analysis/lexer.l
+        ast/lexer.l
         ${CMAKE_CURRENT_BINARY_DIR}/lexer.yy.cc)
 
 add_flex_bison_dependency(lexer parser)
