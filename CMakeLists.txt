@@ -15,7 +15,18 @@ flex_target(lexer
 
 add_flex_bison_dependency(lexer parser)
 
-add_executable(parser ${CMAKE_CURRENT_BINARY_DIR}/lexer.yy.cc
-        ${BISON_parser_OUTPUTS})
+set(SyntaxTreeSrc
+        ast/tree/Program.cpp
+        ast/tree/Class.cpp
+        ast/tree/VarDeclaration.cpp
+        ast/tree/MethodDeclaration.cpp
+        ast/tree/Statement.cpp
+        ast/tree/Expression.cpp)
+
+add_executable(parser
+        ${CMAKE_CURRENT_BINARY_DIR}/lexer.yy.cc
+        ${BISON_parser_OUTPUTS}
+        ${SyntaxTreeSrc}
+        )
 
 include_directories(. ${CMAKE_CURRENT_BINARY_DIR})
