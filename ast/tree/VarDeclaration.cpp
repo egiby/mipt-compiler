@@ -1,9 +1,9 @@
 #include "VarDeclaration.h"
 
-#include "IVisitor.h"
+#include "visitors/IVisitor.h"
 
 namespace NSyntaxTree {
-    void VarDeclaration::Accept(const IVisitor *visitor) {
+    void VarDeclaration::Accept(IVisitor *visitor) const {
         visitor->Visit(this);
     }
 }

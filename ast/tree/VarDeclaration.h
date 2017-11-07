@@ -11,7 +11,11 @@ namespace NSyntaxTree {
     struct VarDeclaration : public INode {
         Type type;
         string id;
-    protected:
-        void Accept(const IVisitor *visitor) override;
+
+        inline VarDeclaration(Type type, const string& id)
+            : type(type), id(id) {
+        }
+
+        void Accept(IVisitor *visitor) const override;
     };
 }

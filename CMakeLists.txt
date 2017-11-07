@@ -1,4 +1,4 @@
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-deprecated-register")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-deprecated-register")
 
 cmake_minimum_required(VERSION 3.1)
 
@@ -21,7 +21,7 @@ set(SyntaxTreeSrc
         ast/tree/VarDeclaration.cpp
         ast/tree/MethodDeclaration.cpp
         ast/tree/Statement.cpp
-        ast/tree/Expression.cpp)
+        ast/tree/Expression.cpp ast/tree/visitors/PrettyPrinterVisitor.cpp)
 
 add_executable(parser
         ${CMAKE_CURRENT_BINARY_DIR}/lexer.yy.cc

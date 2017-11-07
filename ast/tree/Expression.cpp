@@ -1,46 +1,46 @@
 #include "Expression.h"
-#include "IVisitor.h"
+#include "visitors/IVisitor.h"
 
-void NSyntaxTree::BinaryExpression::Accept(const NSyntaxTree::IVisitor *visitor) {
+void NSyntaxTree::BinaryExpression::Accept(NSyntaxTree::IVisitor *visitor) const {
     visitor->Visit(this);
 }
 
-void NSyntaxTree::ArrayElementAccessExpression::Accept(const NSyntaxTree::IVisitor *visitor) {
+void NSyntaxTree::ArrayElementAccessExpression::Accept(NSyntaxTree::IVisitor *visitor) const {
     visitor->Visit(this);
 }
 
-void NSyntaxTree::ArrayLengthExpression::Accept(const NSyntaxTree::IVisitor *visitor) {
+void NSyntaxTree::ArrayLengthExpression::Accept(NSyntaxTree::IVisitor *visitor) const {
     visitor->Visit(this);
 }
 
-void NSyntaxTree::MethodCallExpression::Accept(const NSyntaxTree::IVisitor *visitor) {
+void NSyntaxTree::MethodCallExpression::Accept(NSyntaxTree::IVisitor *visitor) const {
     visitor->Visit(this);
 }
 
-void NSyntaxTree::IntegerLiteralExpression::Accept(const NSyntaxTree::IVisitor *visitor) {
+void NSyntaxTree::IntegerLiteralExpression::Accept(NSyntaxTree::IVisitor *visitor) const {
     visitor->Visit(this);
 }
 
-void NSyntaxTree::BoolLiteralExpression::Accept(const NSyntaxTree::IVisitor *visitor) {
+void NSyntaxTree::BoolLiteralExpression::Accept(NSyntaxTree::IVisitor *visitor) const {
     visitor->Visit(this);
 }
 
-void NSyntaxTree::IdentifierExpression::Accept(const NSyntaxTree::IVisitor *visitor) {
+void NSyntaxTree::IdentifierExpression::Accept(NSyntaxTree::IVisitor *visitor) const {
     visitor->Visit(this);
 }
 
-void NSyntaxTree::ThisExpression::Accept(const NSyntaxTree::IVisitor *visitor) {
+void NSyntaxTree::ThisExpression::Accept(NSyntaxTree::IVisitor *visitor) const {
     visitor->Visit(this);
 }
 
-void NSyntaxTree::NewIntArrayExpression::Accept(const NSyntaxTree::IVisitor *visitor) {
+void NSyntaxTree::NewIntArrayExpression::Accept(NSyntaxTree::IVisitor *visitor) const {
     visitor->Visit(this);
 }
 
-void NSyntaxTree::NewExpression::Accept(const NSyntaxTree::IVisitor *visitor) {
+void NSyntaxTree::NewExpression::Accept(NSyntaxTree::IVisitor *visitor) const {
     visitor->Visit(this);
 }
 
-void NSyntaxTree::NegateExpression::Accept(const NSyntaxTree::IVisitor *visitor) {
+void NSyntaxTree::NegateExpression::Accept(NSyntaxTree::IVisitor *visitor) const {
     visitor->Visit(this);
 }

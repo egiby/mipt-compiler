@@ -1,7 +1,7 @@
 #include "MethodDeclaration.h"
 
-#include "IVisitor.h"
+#include "visitors/IVisitor.h"
 
-void NSyntaxTree::MethodDeclaration::Accept(const NSyntaxTree::IVisitor *visitor) {
+void NSyntaxTree::MethodDeclaration::Accept(NSyntaxTree::IVisitor *visitor) const {
     visitor->Visit(this);
 }

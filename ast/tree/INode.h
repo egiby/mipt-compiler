@@ -7,6 +7,9 @@ namespace NSyntaxTree {
 
     class INode {
     protected:
-        virtual void Accept(const IVisitor *visitor) = 0;
+        virtual void Accept(IVisitor *visitor) const = 0;
+    public:
+        virtual ~INode() {
+        }
     };
 }

@@ -20,7 +20,18 @@ namespace NSyntaxTree {
 
         vector<unique_ptr<VarDeclaration>> localVars;
         vector<unique_ptr<IStatement>> statements;
-    protected:
-        void Accept(const IVisitor *visitor) override;
+        
+        unique_ptr<IExpression> returnExpression;
+
+        inline MethodDeclaration(Type type
+            , const string& name
+            , const vector<std::pair<Type, string>> args
+            , vector<unique_ptr<VarDeclaration>> vars
+            , vector<unique_ptr<IStatement>> statements
+            , unique_ptr<IExpression> expression)
+            : returnType(type), nameId(name), args(args), localVars(std::move(vars)), statements(statements), returnExpression(std::move(expression)) {
+            }
+
+        void Accept(IVisitor *visitor) const override;
     };
 }

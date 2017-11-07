@@ -1,27 +1,27 @@
 #include "Statement.h"
 
-#include "IVisitor.h"
+#include "visitors/IVisitor.h"
 
-void NSyntaxTree::Statements::Accept(const NSyntaxTree::IVisitor *visitor) {
+void NSyntaxTree::Statements::Accept(NSyntaxTree::IVisitor *visitor) const {
     visitor->Visit(this);
 }
 
-void NSyntaxTree::IfStatement::Accept(const NSyntaxTree::IVisitor *visitor) {
+void NSyntaxTree::IfStatement::Accept(NSyntaxTree::IVisitor *visitor) const {
     visitor->Visit(this);
 }
 
-void NSyntaxTree::WhileStatement::Accept(const NSyntaxTree::IVisitor *visitor) {
+void NSyntaxTree::WhileStatement::Accept(NSyntaxTree::IVisitor *visitor) const {
     visitor->Visit(this);
 }
 
-void NSyntaxTree::PrintlnStatement::Accept(const NSyntaxTree::IVisitor *visitor) {
+void NSyntaxTree::PrintlnStatement::Accept(NSyntaxTree::IVisitor *visitor) const {
     visitor->Visit(this);
 }
 
-void NSyntaxTree::AssignStatement::Accept(const NSyntaxTree::IVisitor *visitor) {
+void NSyntaxTree::AssignStatement::Accept(NSyntaxTree::IVisitor *visitor) const {
     visitor->Visit(this);
 }
 
-void NSyntaxTree::ArrayElementAssignmentStatement::Accept(const NSyntaxTree::IVisitor *visitor) {
+void NSyntaxTree::ArrayElementAssignmentStatement::Accept(NSyntaxTree::IVisitor *visitor) const {
     visitor->Visit(this);
 }

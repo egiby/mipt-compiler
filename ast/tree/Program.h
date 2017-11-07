@@ -12,7 +12,7 @@ namespace NSyntaxTree {
     struct Program : public INode {
         unique_ptr<MainClass> mainClass;
         vector<std::unique_ptr<ClassDeclaration>> classes;
-    protected:
-        void Accept(const IVisitor *visitor) override;
+
+        void Accept(IVisitor *visitor) const override;
     };
 }

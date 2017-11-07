@@ -1,8 +1,8 @@
 #include "Program.h"
-#include "IVisitor.h"
+#include "visitors/IVisitor.h"
 
 namespace NSyntaxTree {
-    void Program::Accept(const IVisitor *visitor) {
+    void Program::Accept(IVisitor *visitor) const {
         visitor->Visit(this);
     }
 }

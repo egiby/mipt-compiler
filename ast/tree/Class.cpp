@@ -1,12 +1,12 @@
 #include "Class.h"
-#include "IVisitor.h"
+#include "visitors/IVisitor.h"
 
 namespace NSyntaxTree {
-    void ClassDeclaration::Accept(const IVisitor *visitor) {
+    void ClassDeclaration::Accept(IVisitor *visitor) const {
         visitor->Visit(this);
     }
 
-    void MainClass::Accept(const IVisitor *visitor) {
+    void MainClass::Accept(IVisitor *visitor) const {
         visitor->Visit(this);
     }
 }

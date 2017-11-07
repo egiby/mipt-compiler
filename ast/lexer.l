@@ -50,6 +50,12 @@ public{WHITE_SPACE}static{WHITE_SPACE}void{WHITE_SPACE}main {
 "String[]" {
 	return token::T_STRING_ARRAY;
 }
+public {
+	return token::T_PUBLIC;
+}
+"return" {
+	return token::T_RETURN;
+}
 
 if {
 	return token::T_IF;
@@ -84,6 +90,9 @@ this {
 }
 new {
 	return token::T_NEW;
+}
+length {
+	return token::T_LENGTH;
 }
 
 "+" {
