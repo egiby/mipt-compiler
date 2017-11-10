@@ -5,10 +5,9 @@
 namespace NSyntaxTree {
     class IVisitor;
 
-    class INode {
-    protected:
+    interface INode {
         virtual void Accept(IVisitor *visitor) const = 0;
-    public:
+        
         virtual ~INode() {
         }
     };

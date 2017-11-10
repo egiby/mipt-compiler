@@ -12,9 +12,9 @@ namespace NSyntaxTree {
     };
 
     struct Statements : public IStatement {
-        vector<unique_ptr<IStatement>> statements;
+        unique_ptr<vector<unique_ptr<IStatement>>> statements;
 
-        inline explicit Statements(vector<unique_ptr<IStatement>> newStatements) : statements(std::move(newStatements)) {
+        inline explicit Statements(vector<unique_ptr<IStatement>>* newStatements) : statements(newStatements) {
         }
 
         void Accept(IVisitor *visitor) const override;
@@ -26,10 +26,10 @@ namespace NSyntaxTree {
         unique_ptr<IStatement> trueStatement;
         unique_ptr<IStatement> falseStatement;
 
-        inline IfStatement(unique_ptr<IExpression> expression
-            , unique_ptr<IStatement> newTrueStatement
-            , unique_ptr<IStatement> newFalseStatement) 
-            : condition(std::move(expression)), trueStatement(std::move(newTrueStatement)), falseStatement(std::move(newFalseStatement)) {
+        inline IfStatement(IExpression* expression
+            , IStatement* newTrueStatement
+            , IStatement* newFalseStatement) 
+            : condition(expression), trueStatement(newTrueStatement), falseStatement(newFalseStatement) {
         }
 
         void Accept(IVisitor *visitor) const override;
@@ -39,8 +39,8 @@ namespace NSyntaxTree {
         unique_ptr<IExpression> condition;
         unique_ptr<IStatement> trueStatement;
         
-        inline WhileStatement(unique_ptr<IExpression> expression, unique_ptr<IStatement> statement) 
-            : condition(std::move(expression)), trueStatement(std::move(statement)) {
+        inline WhileStatement(IExpression* expression, IStatement* statement) 
+            : condition(expression), trueStatement(statement) {
         }
 
         void Accept(IVisitor *visitor) const override;
@@ -49,7 +49,7 @@ namespace NSyntaxTree {
     struct PrintlnStatement : public IStatement {
         unique_ptr<IExpression> toPrint;
 
-        inline explicit PrintlnStatement(unique_ptr<IExpression> expression) : toPrint(std::move(expression)) {
+        inline explicit PrintlnStatement(IExpression* expression) : toPrint(expression) {
         }
 
         void Accept(IVisitor *visitor) const override;
@@ -59,7 +59,7 @@ namespace NSyntaxTree {
         string lvalue;
         unique_ptr<IExpression> rvalue;
 
-        inline AssignStatement(string id, unique_ptr<IExpression> expression) : lvalue(id), rvalue(std::move(expression)) {
+        inline AssignStatement(string id, IExpression* expression) : lvalue(id), rvalue(expression) {
         }
 
         void Accept(IVisitor *visitor) const override;
@@ -71,9 +71,9 @@ namespace NSyntaxTree {
         unique_ptr<IExpression> rvalue;
 
         inline ArrayElementAssignmentStatement(string id
-            , unique_ptr<IExpression> indexExpr
-            , unique_ptr<IExpression> rvalueExpr)
-            : arrayId(id), index(std::move(indexExpr)), rvalue(std::move(rvalueExpr)) {
+            , IExpression* indexExpr
+            , IExpression* rvalueExpr)
+            : arrayId(id), index(indexExpr), rvalue(rvalueExpr) {
             }
 
         void Accept(IVisitor *visitor) const override;

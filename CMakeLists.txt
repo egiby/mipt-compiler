@@ -21,7 +21,12 @@ set(SyntaxTreeSrc
         ast/tree/VarDeclaration.cpp
         ast/tree/MethodDeclaration.cpp
         ast/tree/Statement.cpp
-        ast/tree/Expression.cpp ast/tree/visitors/PrettyPrinterVisitor.cpp)
+        ast/tree/Expression.cpp
+        )
+
+set(Visitors
+        ast/tree/visitors/PrettyPrinterVisitor.cpp
+        )
 
 add_executable(parser
         ${CMAKE_CURRENT_BINARY_DIR}/lexer.yy.cc

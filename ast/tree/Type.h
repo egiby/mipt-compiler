@@ -11,7 +11,7 @@ namespace NSyntaxTree {
     };
     
     struct Type {
-        EType type;
+        EType type = CLASS;
         std::string id;
     };
 }

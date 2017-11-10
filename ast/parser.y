@@ -1,7 +1,6 @@
 %skeleton "lalr1.cc"
 
 %{
-    #include "tree/NodeTypes.h"
     #include <iostream>
     using std::cerr;
     using std::endl;
@@ -16,6 +15,7 @@
 %define api.value.type variant
 
 %code requires {
+    #include "ast/tree/NodeTypes.h"
     class Scanner;
 }
 
@@ -82,32 +82,31 @@
 
 %token T_EOF
 
-%type<std::unique_ptr<NSyntaxTree::MainClass>> MainClass
-%type<std::vector<std::unique_ptr<NSyntaxTree::ClassDeclaration>>> ClassDeclarations
-%type<std::unique_ptr<NSyntaxTree::ClassDeclaration>> ClassDeclaration
+%type<NSyntaxTree::MainClass*> MainClass;
+%type<std::vector<std::unique_ptr<NSyntaxTree::ClassDeclaration>>*> ClassDeclarations;
+%type<NSyntaxTree::ClassDeclaration*> ClassDeclaration;
 
-%type<std::vector<std::unique_ptr<NSyntaxTree::VarDeclaration>>> VarDeclarations
-%type<std::unique_ptr<NSyntaxTree::VarDeclaration>> VarDeclaration
+%type<std::vector<std::unique_ptr<NSyntaxTree::VarDeclaration>>*> VarDeclarations;
+%type<NSyntaxTree::VarDeclaration*> VarDeclaration;
 
-%type<NSyntaxTree::Type> Type
+%type<NSyntaxTree::Type> Type;
 
-%type<std::vector<std::unique_ptr<NSyntaxTree::MethodDeclaration>>> MethodDeclarations
-%type<std::unique_ptr<NSyntaxTree::MethodDeclaration>> MethodDeclaration
+%type<std::vector<std::unique_ptr<NSyntaxTree::MethodDeclaration>>*> MethodDeclarations;
+%type<NSyntaxTree::MethodDeclaration*> MethodDeclaration;
+%type<std::vector<std::pair<NSyntaxTree::Type, std::string>>> MethodArguments NotEmptyArgumentList;
 
-%type<std::vector<std::unique_ptr<NSyntaxTree::IStatement>>> Statements
-%type<std::unique_ptr<NSyntaxTree::IStatement>> Statement
 
-%type<std::unique_ptr<NSyntaxTree::IExpression>> Expression
-%type<std::vector<std::unique_ptr<NSyntaxTree::IExpression>>> ArgumentExpressions
+%type<std::vector<std::unique_ptr<NSyntaxTree::IStatement>>*> Statements;
+%type<NSyntaxTree::IStatement*> Statement;
 
-%type<std::vector<std::pair<NSyntaxTree::Type, std::string>>> MethodArguments
-%type<std::pair<NSyntaxTree::Type, std::string>> MethodArgument
+%type<NSyntaxTree::IExpression*> Expression;
+%type<std::vector<std::unique_ptr<NSyntaxTree::IExpression>>*> ArgumentExpressions NotEmptyArgumentExpressions;
 
 %%
 Goal 
     : MainClass ClassDeclarations {
-        program.mainClass = std::move($1);
-        program.classes = std::move($2);
+        program.mainClass.reset($1);
+        program.classes.reset($2);
     }
 ;
 MainClass
@@ -116,14 +115,16 @@ MainClass
             Statement
         T_RBRACE
     T_RBRACE {
-        $$ = std::make_unique<NSyntaxTree::MainClass>($name, $args, std::move($Statement));
+        $$ = new NSyntaxTree::MainClass($name, $args, $Statement);
     }
 ;
 ClassDeclarations
-    : %empty {}
+    : %empty {
+        $$ = new std::vector<std::unique_ptr<NSyntaxTree::ClassDeclaration>>();
+    }
     | ClassDeclarations ClassDeclaration {
-        $$ = std::move($1);
-        $$.push_back(std::move($2));
+        $$ = $1;
+        $$->emplace_back($2);
     }
 ;
 ClassDeclaration
@@ -131,25 +132,27 @@ ClassDeclaration
         VarDeclarations
         MethodDeclarations
     T_RBRACE {
-        $$ = std::make_unique<NSyntaxTree::ClassDeclaration>($name, std::string(), std::move($VarDeclarations), std::move($MethodDeclarations));
+        $$ = new NSyntaxTree::ClassDeclaration($name, std::string(), $VarDeclarations, $MethodDeclarations);
     }
     | T_CLASS T_ID[name] T_EXTENDS T_ID[parent] T_LBRACE
         VarDeclarations
         MethodDeclarations
     T_RBRACE {
-        $$ = std::make_unique<NSyntaxTree::ClassDeclaration>($name, $parent, std::move($VarDeclarations), std::move($MethodDeclarations));
+        $$ = new NSyntaxTree::ClassDeclaration($name, $parent, $VarDeclarations, $MethodDeclarations);
     }
 ;
 VarDeclarations
-    : %empty {}
+    : %empty {
+        $$ = new std::vector<std::unique_ptr<NSyntaxTree::VarDeclaration>>();
+    }
     | VarDeclarations VarDeclaration {
-        $$ = std::move($1);
-        $$.push_back(std::move($2));
+        $$ = $1;
+        $$->emplace_back($2);
     }
 ;
 VarDeclaration
     : Type T_ID T_SEMICOLON {
-        $$ = std::make_unique<NSyntaxTree::VarDeclaration>($1, $2);
+        $$ = new NSyntaxTree::VarDeclaration($1, $2);
     }
 ;
 Type
@@ -167,10 +170,12 @@ Type
     }
 ;
 MethodDeclarations
-    : %empty {}
+    : %empty {
+        $$ = new std::vector<std::unique_ptr<NSyntaxTree::MethodDeclaration>>();
+    }
     | MethodDeclarations MethodDeclaration {
-        $$ = std::move($1);
-        $$.push_back(std::move($2));
+        $$ = $1;
+        $$->emplace_back($2);
     }
 ;
 MethodDeclaration
@@ -179,81 +184,125 @@ MethodDeclaration
         Statements
         T_RETURN Expression T_SEMICOLON
     T_RBRACE {
-        $$ = std::make_unique<NSyntaxTree::MethodDeclaration>($type, $name, $MethodArguments, $VarDeclarations, $Statements, $Expression);
+        $$ = new NSyntaxTree::MethodDeclaration($type, $name, $MethodArguments, $VarDeclarations, $Statements, $Expression);
+    }
+;
+NotEmptyArgumentList
+    : Type T_ID {
+        $$.push_back({$1, $2});
+    }
+    | NotEmptyArgumentList T_COMMA Type T_ID {
+        $$ = std::move($1);
+        $$.push_back({$3, $4});
+    }
+;
+MethodArguments
+    : %empty {}
+    | NotEmptyArgumentList {
+        $$ = std::move($1);
     }
 ;
 Statements
-    : %empty {}
+    : %empty {
+        $$ = new std::vector<std::unique_ptr<NSyntaxTree::IStatement>>();
+    }
     | Statements Statement {
-        $$ = std::move($1);
-        $$.push_back(std::move($2));
+        $$ = $1;
+        $$->emplace_back($2);
     }
 ;
 Statement
     : T_LBRACE
         Statements
     T_RBRACE {
-        $$.reset(new NSyntaxTree::Statements(std::move($Statements)));
+        $$ = new NSyntaxTree::Statements($Statements);
     }
     | T_IF T_LPAREN Expression T_RPAREN Statement[trueStatement] T_ELSE Statement[falseStatement] {
-        $$.reset(new NSyntaxTree::IfStatement($Expression, $trueStatement, $falseStatement));
+        $$ = new NSyntaxTree::IfStatement($Expression, $trueStatement, $falseStatement);
     }
     | T_WHILE T_LPAREN Expression T_RPAREN Statement[statement] {
-        $$.reset(new NSyntaxTree::WhileStatement($Expression, $statement));
+        $$ = new NSyntaxTree::WhileStatement($Expression, $statement);
     }
     | T_PRINT T_LPAREN Expression T_RPAREN T_SEMICOLON {
-        $$.reset(new NSyntaxTree::PrintlnStatement($Expression));
+        $$ = new NSyntaxTree::PrintlnStatement($Expression);
     }
     | T_ID T_ASSIGN Expression T_SEMICOLON {
-        $$.reset(new NSyntaxTree::AssignStatement($1, std::move($3)));
+        $$ = new NSyntaxTree::AssignStatement($1, $3);
     }
     | T_ID T_LBRACKET Expression[index] T_RBRACKET T_ASSIGN Expression[rvalue] T_SEMICOLON {
-        $$.reset(new NSyntaxTree::AssignStatement($1, std::move($index), std::move($rvalue)));
+        $$ = new NSyntaxTree::ArrayElementAssignmentStatement($1, $index, $rvalue);
     }
 ;
 Expression
     : Expression[left] T_AND Expression[right] {
-        $$.reset(new NSyntaxTree::BinaryExpression(NSyntaxTree::EBinaryExprType::AND, $left, $right));
+        $$ = new NSyntaxTree::BinaryExpression(NSyntaxTree::EBinaryExprType::AND, $left, $right);
     }
     | Expression[left] T_LESS Expression[right] {
-        $$.reset(new NSyntaxTree::BinaryExpression(NSyntaxTree::EBinaryExprType::LESS, $left, $right));
+        $$ = new NSyntaxTree::BinaryExpression(NSyntaxTree::EBinaryExprType::LESS, $left, $right);
     }
     | Expression[left] T_PLUS Expression[right] {
-        $$.reset(new NSyntaxTree::BinaryExpression(NSyntaxTree::EBinaryExprType::PLUS, $left, $right));
+        $$ = new NSyntaxTree::BinaryExpression(NSyntaxTree::EBinaryExprType::PLUS, $left, $right);
     }
     | Expression[left] T_MINUS Expression[right] {
-        $$.reset(new NSyntaxTree::BinaryExpression(NSyntaxTree::EBinaryExprType::MINUS, $left, $right));
+        $$ = new NSyntaxTree::BinaryExpression(NSyntaxTree::EBinaryExprType::MINUS, $left, $right);
     } 
     | Expression[left] T_MULTIPLY Expression[right] {
-        $$.reset(new NSyntaxTree::BinaryExpression(NSyntaxTree::EBinaryExprType::MULTIPLY, $left, $right));
+        $$ = new NSyntaxTree::BinaryExpression(NSyntaxTree::EBinaryExprType::MULTIPLY, $left, $right);
     }
     | Expression[array] T_RBRACKET Expression[index] T_LBRACKET {
-        $$.reset(new NSyntaxTree::BinaryExpression(NSyntaxTree::ArrayElementAccessExpression(std::move($array), std::move($index))));
+        $$ = new NSyntaxTree::ArrayElementAccessExpression($array, $index);
     }
     | Expression[array] T_DOT T_LENGTH {
-        $$.reset(new NSyntaxTree::ArrayLengthExpression(std::move($1)));
+        $$ = new NSyntaxTree::ArrayLengthExpression($1);
     }
     | Expression[object] T_DOT T_ID[methodName] T_LPAREN ArgumentExpressions[args] T_RPAREN {
-        $$.reset(new NSyntaxTree::MethodCallExpression(std::move($object), $methodName, std::move($args)));
+        $$ = new NSyntaxTree::MethodCallExpression($object, $methodName, $args);
     }
     | T_INT_LITERAL {
-        $$.reset(new NSyntaxTree::IntegerLiteralExpression($1));
+        $$ = new NSyntaxTree::IntegerLiteralExpression($1);
     }
     | T_TRUE {
-        $$.reset(new NSyntaxTree::BoolLiteralExpression(true));
+        $$ = new NSyntaxTree::BoolLiteralExpression(true);
     }
     | T_FALSE {
-        $$.reset(new NSyntaxTree::BoolLiteralExpression(false));
+        $$ = new NSyntaxTree::BoolLiteralExpression(false);
     }
     | T_ID {
-        $$.reset(new NSyntaxTree::IdentifierExpression($1));
+        $$ = new NSyntaxTree::IdentifierExpression($1);
     }
     | T_THIS {
-        $$.reset(new NSyntaxTree::ThisExpression());
+        $$ = new NSyntaxTree::ThisExpression();
     }
     | T_NEW T_INT T_LBRACKET Expression[size] T_RBRACKET {
-        $$.reset(new NSyntaxTree::NewIntArrayExpression($size));
+        $$ = new NSyntaxTree::NewIntArrayExpression($size);
     }
+    | T_NEW T_ID[clazz] T_LPAREN T_RPAREN {
+        $$ = new NSyntaxTree::NewExpression($clazz);
+    }
+    | T_NOT Expression[expression] {
+        $$ = new NSyntaxTree::NegateExpression($expression);
+    }
+    | T_LPAREN Expression[expression] T_RPAREN {
+        $$ = $expression;
+    }
+;
+NotEmptyArgumentExpressions
+    : Expression {
+        $$->emplace_back($1);
+    }
+    | ArgumentExpressions T_COMMA Expression {
+        $$ = $1;
+        $$->emplace_back($3);
+    }
+;
+ArgumentExpressions
+    : %empty {
+        $$ = new std::vector<std::unique_ptr<NSyntaxTree::IExpression>>();
+    }
+    | NotEmptyArgumentExpressions {
+        $$ = $1;
+    }
+;
 %%
 
 void yy::parser::error(const yy::parser::location_type& l, const std::string &err_message) {

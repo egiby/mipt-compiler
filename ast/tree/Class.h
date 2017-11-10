@@ -15,14 +15,14 @@ namespace NSyntaxTree {
         string nameId;
         string extendsId;
 
-        vector<unique_ptr<VarDeclaration>> varDeclarations;
-        vector<unique_ptr<MethodDeclaration>> methodDeclarations;
+        unique_ptr<vector<unique_ptr<VarDeclaration>>> varDeclarations;
+        unique_ptr<vector<unique_ptr<MethodDeclaration>>> methodDeclarations;
         
         inline ClassDeclaration(const string &name
             , const string &extends
-            , vector<unique_ptr<VarDeclaration>> vars
-            , vector<unique_ptr<MethodDeclaration>> methods) 
-            : nameId(name), extendsId(extends), varDeclarations(std::move(vars)), methodDeclarations(std::move(methods)) {
+            , vector<unique_ptr<VarDeclaration>>* vars
+            , vector<unique_ptr<MethodDeclaration>>* methods) 
+            : nameId(name), extendsId(extends), varDeclarations(vars), methodDeclarations(methods) {
             }
 
         void Accept(IVisitor *visitor) const override;
@@ -34,8 +34,8 @@ namespace NSyntaxTree {
 
         unique_ptr<IStatement> mainStatement;
 
-        inline MainClass(const std::string& name, const std::string& args, unique_ptr<IStatement> statement) 
-            : nameId(name), mainArgsId(args), mainStatement(std::move(statement)) {
+        inline MainClass(const std::string& name, const std::string& args, IStatement* statement) 
+            : nameId(name), mainArgsId(args), mainStatement(statement) {
         }
 
         void Accept(IVisitor *visitor) const override;
