@@ -36,6 +36,7 @@ EOL (\n)|(\r\n)
 	yylloc->lines();
 }
 {LINE_COMMENT} {
+	yylloc->lines();
 }
 
 class {
