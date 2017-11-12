@@ -2,7 +2,7 @@
 
 namespace NSyntaxTree {
 
-    void PrettyPrinterVisitor::Visit(const Program *node) {
+    /*void PrettyPrinterVisitor::Visit(const Program *node) {
         PrintIndent();
         out << "Program:\n";
 
@@ -120,5 +120,5 @@ namespace NSyntaxTree {
     void PrettyPrinterVisitor::PrintIndent() {
         for (int i = 0; i < level; ++i)
             out << "    ";
-    }
+    }*/
 }

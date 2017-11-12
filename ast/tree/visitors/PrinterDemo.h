@@ -1,19 +1,28 @@
-#pragma once
+//# include "IVisitor.h"
+
+#include <fstream>
+#include <string>
 
 #include "IVisitor.h"
-
-#include <iostream>
+#include "INode.h"
+#include "Program.h"
+#include "Expression.h"
+#include "Statement.h"
+#include "Class.h"
 
 namespace NSyntaxTree {
-    class PrettyPrinterVisitor : public IVisitor {
-
-        std::ostream& out;
-        int level;
-
-        void PrintIndent();
+    class PrinterDemo : public IVisitor {
     public:
-        inline explicit PrettyPrinterVisitor(std::ostream& out = std::cout) : out(out), level(0) {
-        }
+        PrinterDemo();
+
+        const Program* CreateDemoTree();
+        void PrintDemo(std::string path);
+
+        void printVertex(const INode *node, const std::string label);
+        void printEdge(const INode* from, const INode * to);
+        void printEdge(const INode* from, const INode * to, const std::string label);
+        void printEdge(std::string from, std::string to);
+        void printEdge(std::string from, const INode* to);
 
         void Visit(const Program *) override;
 
@@ -42,5 +51,8 @@ namespace NSyntaxTree {
         void Visit(const NewIntArrayExpression *)  override;
         void Visit(const NewExpression *) override;
         void Visit(const NegateExpression *) override;
+
+    private:
+        std::ofstream outPut;
     };
 }
