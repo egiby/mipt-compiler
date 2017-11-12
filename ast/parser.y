@@ -363,9 +363,9 @@ void yy::parser::error(const yy::parser::location_type& l, const std::string &er
 }
 
 
-int main() {
+/*int main() {
     Scanner scanner(&std::cin);
     NSyntaxTree::Program program;
     yy::parser parser(scanner, program);
     parser.parse();
-}
+}*/

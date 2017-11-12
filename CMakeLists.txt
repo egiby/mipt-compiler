@@ -1,3 +1,4 @@
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-deprecated-register")
 
 cmake_minimum_required(VERSION 3.1)
@@ -26,12 +27,15 @@ set(SyntaxTreeSrc
 
 set(Visitors
         ast/tree/visitors/PrettyPrinterVisitor.cpp
+        ast/tree/visitors/PrinterDemo.cpp
         )
 
 add_executable(parser
-        ${CMAKE_CURRENT_BINARY_DIR}/lexer.yy.cc
-        ${BISON_parser_OUTPUTS}
         ${SyntaxTreeSrc}
+        ${Visitors}
+        ast/tree/visitors/main.cpp
+        ${FLEX_lexer_OUTPUTS}
+        ${BISON_parser_OUTPUTS}
         )
 
 include_directories(. ${CMAKE_CURRENT_BINARY_DIR})

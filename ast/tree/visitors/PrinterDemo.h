@@ -4,11 +4,11 @@
 #include <string>
 
 #include "IVisitor.h"
-#include "INode.h"
-#include "Program.h"
-#include "Expression.h"
-#include "Statement.h"
-#include "Class.h"
+#include <ast/tree/INode.h>
+#include <ast/tree/Program.h>
+#include <ast/tree/Expression.h>
+#include <ast/tree/Statement.h>
+#include <ast/tree/Class.h>
 
 namespace NSyntaxTree {
     class PrinterDemo : public IVisitor {

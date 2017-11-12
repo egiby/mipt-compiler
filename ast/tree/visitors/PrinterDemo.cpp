@@ -112,4 +112,76 @@ namespace NSyntaxTree {
         node->res->accept(this);
         printEdge(node, node->res, "return");*/
     }
+
+    void PrinterDemo::Visit(const Statements *) {
+
+    }
+
+    void PrinterDemo::Visit(const IfStatement *) {
+
+    }
+
+    void PrinterDemo::Visit(const WhileStatement *) {
+
+    }
+
+    void PrinterDemo::Visit(const PrintlnStatement *) {
+
+    }
+
+    void PrinterDemo::Visit(const AssignStatement *) {
+
+    }
+
+    void PrinterDemo::Visit(const ArrayElementAssignmentStatement *) {
+
+    }
+
+    void PrinterDemo::Visit(const BinaryExpression *) {
+
+    }
+
+    void PrinterDemo::Visit(const ArrayElementAccessExpression *) {
+
+    }
+
+    void PrinterDemo::Visit(const ArrayLengthExpression *) {
+
+    }
+
+    void PrinterDemo::Visit(const MethodCallExpression *) {
+
+    }
+
+    void PrinterDemo::Visit(const IntegerLiteralExpression *) {
+
+    }
+
+    void PrinterDemo::Visit(const BoolLiteralExpression *) {
+
+    }
+
+    void PrinterDemo::Visit(const IdentifierExpression *) {
+
+    }
+
+    void PrinterDemo::Visit(const ThisExpression *) {
+
+    }
+
+    void PrinterDemo::Visit(const NewIntArrayExpression *) {
+
+    }
+
+    void PrinterDemo::Visit(const NewExpression *) {
+
+    }
+
+    void PrinterDemo::Visit(const NegateExpression *) {
+
+    }
+
+    const Program *PrinterDemo::CreateDemoTree() {
+        return nullptr;
+    }
 }
