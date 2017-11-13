@@ -19,7 +19,8 @@ namespace NSyntaxTree {
     }
 
     void PrettyPrinterVisitor::printEdge(const std::string &from, const std::string &to) {
-        outPut << "\t" << from << "->" << to << "\n";
+        //outPut << "\t" << from << "->" << to << "\n";
+        outPut << "\tnode" << from << "->" << to << "\n";
     }
 
     void PrettyPrinterVisitor::printEdge(const std::string &from, const INode *to) {
@@ -77,47 +78,39 @@ namespace NSyntaxTree {
     }
 
     void PrettyPrinterVisitor::Visit(const MethodDeclaration *node) {
-        //printVertex(node, "method " + node->returnType.id + " " + node->nameId);
-        printVertex(node, "method " + node->nameId);
+        std::string label = "method" + node->nameId;
         switch ((node->returnType).type) {
             case CLASS:
-                printVertex("CLASS " + node->returnType.id, "returnType");
-                printEdge(node, "CLASS " + node->returnType.id);
+                label = label + " returnType: CLASS " + node->returnType.id;
                 break;
             case INT:
-                printVertex("INT " + node->nameId, "returnType");
-                printEdge(node, "INT " + node->nameId);
+                label = label + " returnType: INT";
                 break;
             case BOOL:
-                printVertex("BOOL " + node->nameId, "returnType");
-                printEdge(node, "BOOL " + node->nameId);
+                label = label + " returnType: BOOL";
                 break;
             case INT_ARRAY:
-                printVertex("INT_ARRAY " + node->nameId, "returnType");
-                printEdge(node, "INT_ARRAY " + node->nameId);
+                label = label + " returnType: INT_ARRAY";
                 break;
-        }
+        }  
 
         for (const auto arg : node->args) {
             switch (arg.first.type) {
                 case CLASS:
-                    printVertex("CLASS " + arg.first.id + " " + arg.second, "arg");
-                    printEdge(node, "CLASS " + arg.first.id + " " + arg.second);
+                    label = label + " arg: CLASS " + arg.first.id + " " + arg.second;
                     break;
                 case INT:
-                    printVertex("INT " + arg.second, "arg");
-                    printEdge(node, "INT " + arg.second);
+                    label = label + " arg: INT " + arg.second;
                     break;
                 case BOOL:
-                    printVertex("BOOL " + arg.second, "arg");
-                    printEdge(node, "BOOL " + arg.second);
+                    label = label + " arg: BOOL" + arg.second;
                     break;
                 case INT_ARRAY:
-                    printVertex("INT_ARRAY " + arg.second, "arg");
-                    printEdge(node, "INT_ARRAY " + arg.second);
+                    label = label + " arg INT_ARRAY " + arg.second;
                     break;
             }
         }
+        printVertex(node, label); 
 
         if (node->localVars != nullptr) {
             for (const auto &var : *(node->localVars)) {
