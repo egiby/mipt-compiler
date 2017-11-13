@@ -1,8 +1,7 @@
 #pragma once
 
-#include "ast/tree/common.h"
-
-#include "ast/tree/NodeTypes.h"
+#include <ast/tree/common.h>
+#include <ast/tree/NodeTypes.h>
 
 namespace NSyntaxTree {
     interface IVisitor {

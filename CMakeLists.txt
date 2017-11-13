@@ -27,10 +27,9 @@ set(SyntaxTreeSrc
 
 set(Visitors
         ast/tree/visitors/PrettyPrinterVisitor.cpp
-        ast/tree/visitors/PrinterDemo.cpp
         )
 
-add_executable(parser
+add_executable(printer
         ${SyntaxTreeSrc}
         ${Visitors}
         ast/tree/visitors/main.cpp
