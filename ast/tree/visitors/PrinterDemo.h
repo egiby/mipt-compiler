@@ -20,10 +20,12 @@ namespace NSyntaxTree {
         void PrintDemo(std::string path);
 
         void printVertex(const INode *node, const std::string label);
+        void printVertex(const std::string node, const std::string label);
         void printEdge(const INode* from, const INode * to);
         void printEdge(const INode* from, const INode * to, const std::string label);
         void printEdge(std::string from, std::string to);
         void printEdge(std::string from, const INode* to);
+        void printEdge(const INode* from, std::string to);
 
         void Visit(const Program *) override;
 

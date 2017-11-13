@@ -1,23 +1,19 @@
 #include "PrinterDemo.h"
-
+#include <iostream>
 
 namespace NSyntaxTree {
 
-    PrinterDemo::PrinterDemo() {
-        PrintDemo("./tmp.gv");
-    }
+    PrinterDemo::PrinterDemo() {}
 
     void PrinterDemo::PrintDemo(std::string path) {
         Program demoProgram;
         CreateDemoTree(demoProgram);
-        return;/////
 
         /*Эта часть должна быть в конструкторе PrettyPrinterVisitor, я полагаю*/
         outPut.open(path.c_str());
         outPut << "digraph g {\n" << "\n";
         /**/
 
-        //printVertex(demoProgram, std::string("Program"));
         Visit(&demoProgram);
 
         /*Эта часть должна быть в деструкторе PrettyPrinterVisitor, я полагаю*/
@@ -27,18 +23,19 @@ namespace NSyntaxTree {
 
     void PrinterDemo::CreateDemoTree(Program &program) {
         int value = 5;
-        IntegerLiteralExpression integerLiteralExp(value);
-        PrintlnStatement printLnStatement(&integerLiteralExp);
-        return;/////
-        MainClass mainClass("nameId", "mainClassArgsId", &printLnStatement);
+        IntegerLiteralExpression *integerLiteralExp = new IntegerLiteralExpression(value);
+        PrintlnStatement *printLnStatement = new PrintlnStatement(integerLiteralExp);
+        MainClass *mainClass = new MainClass("nameId", "mainClassArgsId", printLnStatement);
 
-        program.mainClass = std::unique_ptr<MainClass>(&mainClass);
+        program.mainClass = std::unique_ptr<MainClass>(mainClass);
         program.classes = nullptr;
-
-        //return program;
     }
 
-    void PrinterDemo::printVertex(const INode* node, const std::string label){
+    void PrinterDemo::printVertex(const INode* node, const std::string label) {
+        outPut << "\tnode" << node << "[label=\"" << label << "\"]\n";
+    }
+
+    void PrinterDemo::printVertex(const std::string node, const std::string label) {
         outPut << "\tnode" << node << "[label=\"" << label << "\"]\n";
     }
 
@@ -57,34 +54,48 @@ namespace NSyntaxTree {
         outPut << "\t"<< from << "->" << "node" << to << "\n";
     }
 
+    void PrinterDemo::printEdge(const INode* from, std::string to) {
+         outPut << "\tnode" << from << "->" << to << "\n";
+    }
+
     void PrinterDemo::Visit(const Program* node) {
+        //std::cout << "Visiting program node" << std::endl;
         this->printVertex(node, std::string("Program"));
 
+        //std::cout << "Going to visit main class" << std::endl;
         node->mainClass->Accept(this);
         printEdge(node, (node->mainClass).get());
 
-        for (const auto& cl : *(node->classes)){
-            cl->Accept(this);
-            printEdge(node, cl.get());
+        //std::cout << "Going to visit classes" << std::endl;
+        if (node->classes != nullptr) {
+            for (const auto &cl : *(node->classes)) {
+                //std::cout << "Class visiting started" << std::endl;
+                cl->Accept(this);
+                printEdge(node, cl.get());
+            }
         }
     }    
 
     void PrinterDemo::Visit(const ClassDeclaration* node) {
         printVertex(node, "Class " + node->nameId + " extends " + node->extendsId);
 
-        for (const auto& var : *(node->varDeclarations)) {
-            var->Accept(this);
-            printEdge(node, var.get());
+        if (node->varDeclarations != nullptr) {
+            for (const auto& var : *(node->varDeclarations)) {
+                var->Accept(this);
+                printEdge(node, var.get());
+            }
         }
 
-        for (const auto& method : *(node->methodDeclarations)){
-            method->Accept(this);
-            printEdge(node, method.get());
+        if (node->methodDeclarations != nullptr) {
+            for (const auto& method : *(node->methodDeclarations)){
+                method->Accept(this);
+                printEdge(node, method.get());
+            }
         }
     }
 
     void PrinterDemo::Visit(const MainClass* node) {
-        printVertex(node, "Main " + node->nameId + " mainArgsId" + node->mainArgsId);
+        printVertex(node, "Main " + node->nameId + " mainArgsId " + node->mainArgsId);
         node->mainStatement->Accept(this);
         printEdge(node, (node->mainStatement).get());
     }
@@ -94,21 +105,59 @@ namespace NSyntaxTree {
     }
 
     void PrinterDemo::Visit(const MethodDeclaration* node) {
-        printVertex(node, "method " + node->returnType.id + " " + node->nameId);
-        
-        //????
-        // не понимаю, как это вывести
-        /*for (const auto arg : node->args){
-            printEdge(node, arg, "arg");
-        }*/
-
-        for (const auto& var : *(node->localVars)) {
-            var->Accept(this);
-            printEdge(node, var.get(), "local var");
+        //printVertex(node, "method " + node->returnType.id + " " + node->nameId);
+        printVertex(node, "method " + node->nameId);
+        switch ((node->returnType).type) {
+            case CLASS:
+                printVertex("CLASS " + node->returnType.id, "returnType");
+                printEdge(node, "CLASS " + node->returnType.id);
+                break;
+            case INT:
+                printVertex("INT " + node->nameId, "returnType");
+                printEdge(node, "INT " + node->nameId);
+                break;
+            case BOOL:
+                printVertex("BOOL " + node->nameId, "returnType");
+                printEdge(node, "BOOL " + node->nameId);
+                break;
+            case INT_ARRAY:
+                printVertex("INT_ARRAY " + node->nameId, "returnType");
+                printEdge(node, "INT_ARRAY " + node->nameId);
+                break;
         }
-        for (const auto& statement : *(node->statements)) {
-            statement->Accept(this);
-            printEdge(node, statement.get());
+        
+        for (const auto arg : node->args) {
+            switch(arg.first.type) {
+                case CLASS:
+                    printVertex("CLASS " + arg.first.id + " " + arg.second, "arg");
+                    printEdge(node, "CLASS " + arg.first.id + " " + arg.second);
+                    break;
+                case INT:
+                    printVertex("INT " + arg.second, "arg");
+                    printEdge(node, "INT " + arg.second);
+                    break;
+                case BOOL:
+                    printVertex("BOOL " + arg.second, "arg");
+                    printEdge(node, "BOOL " + arg.second);
+                    break;
+                case INT_ARRAY:
+                    printVertex("INT_ARRAY " + arg.second, "arg");
+                    printEdge(node, "INT_ARRAY " + arg.second);
+                    break;
+            }
+        }
+
+        if (node->localVars != nullptr) {
+            for (const auto& var : *(node->localVars)) {
+                var->Accept(this);
+                printEdge(node, var.get(), "local var");
+            }
+        }
+        if (node->statements != nullptr) {
+            for (const auto& statement : *(node->statements)) {
+               statement->Accept(this);
+                printEdge(node, statement.get());
+            }
         }
         
         node->returnExpression->Accept(this);
@@ -117,9 +166,11 @@ namespace NSyntaxTree {
 
     void PrinterDemo::Visit(const Statements* node) {
         printVertex(node, "statements");
-        for (const auto& statement : *(node->statements)){
-            statement->Accept(this);
-            printEdge(node, statement.get());
+        if (node->statements != nullptr) {
+            for (const auto& statement : *(node->statements)){
+                statement->Accept(this);
+                printEdge(node, statement.get());
+            }
         }
     }
 
@@ -162,8 +213,7 @@ namespace NSyntaxTree {
     }
 
     void PrinterDemo::Visit(const BinaryExpression* node) {
-        printVertex(node, "binary exp");
-        //printVertex(node, node->type);?????? надо сделать
+        printVertex(node, "binary exp " + node->type);
         node->left->Accept(this);
         node->right->Accept(this);
         printEdge(node, (node->left).get(), "left");
@@ -189,9 +239,11 @@ namespace NSyntaxTree {
         node->object->Accept(this);
         printEdge(node, (node->object).get(), "method " + node->nameId);
         
-        for (const auto& arg : *(node->args)){
-            arg->Accept(this);
-            printEdge(node, arg.get(), "arg");
+        if (node->args != nullptr) {
+            for (const auto& arg : *(node->args)){
+               arg->Accept(this);
+                printEdge(node, arg.get(), "arg");
+            }
         }
     }
 
