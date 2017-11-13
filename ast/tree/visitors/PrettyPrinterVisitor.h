@@ -4,16 +4,33 @@
 
 #include <iostream>
 
+#include <fstream>
+#include <string>
+#include <ast/tree/INode.h>
+#include <ast/tree/Program.h>
+#include <ast/tree/Expression.h>
+#include <ast/tree/Statement.h>
+#include <ast/tree/Class.h>
+
 namespace NSyntaxTree {
     class PrettyPrinterVisitor : public IVisitor {
 
-        std::ostream& out;
-        int level;
+        std::ofstream outPut;
+        //int level;
 
         void PrintIndent();
     public:
-        inline explicit PrettyPrinterVisitor(std::ostream& out = std::cout) : out(out), level(0) {
-        }
+        //inline explicit PrettyPrinterVisitor(std::ostream& out = std::cout) : out(out), level(0) {}
+        PrettyPrinterVisitor(std::string path);
+        ~PrettyPrinterVisitor();
+
+        void printVertex(const INode* node, const std::string label);
+        void printVertex(const std::string node, const std::string label);
+        void printEdge(const INode* from, const INode * to);
+        void printEdge(const INode* from, const INode * to, const std::string label);
+        void printEdge(std::string from, std::string to);
+        void printEdge(std::string from, const INode* to);
+        void printEdge(const INode* from, std::string to);
 
         void Visit(const Program *) override;
 
