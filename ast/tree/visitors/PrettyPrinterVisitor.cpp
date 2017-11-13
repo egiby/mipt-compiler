@@ -2,16 +2,6 @@
 
 namespace NSyntaxTree {
 
-    PrettyPrinterVisitor::PrettyPrinterVisitor(std::string path) {
-        outPut.open(path.c_str());
-        outPut << "digraph g {\n" << "\n";
-    }
-
-    PrettyPrinterVisitor::~PrettyPrinterVisitor() {
-        outPut << "}";
-        outPut.close();
-    }
-
     void PrettyPrinterVisitor::printVertex(const INode* node, const std::string label) {
         outPut << "\tnode" << node << "[label=\"" << label << "\"]\n";
     }
@@ -40,21 +30,23 @@ namespace NSyntaxTree {
     }
         
     void PrettyPrinterVisitor::Visit(const Program* node) {
-        //std::cout << "Visiting program node" << std::endl;
+        //outPut.open(path.c_str());
+        outPut << "digraph g {\n" << "\n";
+
         this->printVertex(node, std::string("Program"));
 
-        //std::cout << "Going to visit main class" << std::endl;
         node->mainClass->Accept(this);
         printEdge(node, (node->mainClass).get());
 
-        //std::cout << "Going to visit classes" << std::endl;
         if (node->classes != nullptr) {
             for (const auto &cl : *(node->classes)) {
-                //std::cout << "Class visiting started" << std::endl;
                 cl->Accept(this);
                 printEdge(node, cl.get());
             }
         }
+
+        outPut << "}";
+        //outPut.close();
     }    
 
     void PrettyPrinterVisitor::Visit(const ClassDeclaration* node) {
@@ -259,7 +251,6 @@ namespace NSyntaxTree {
         node->expression->Accept(this);
         printEdge(node, (node->expression).get());
     }
-        
 
     /*void PrettyPrinterVisitor::Visit(const Program *node) {
         PrintIndent();

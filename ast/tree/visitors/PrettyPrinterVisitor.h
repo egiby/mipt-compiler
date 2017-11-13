@@ -6,23 +6,24 @@
 
 #include <fstream>
 #include <string>
-#include <ast/tree/INode.h>
-#include <ast/tree/Program.h>
-#include <ast/tree/Expression.h>
-#include <ast/tree/Statement.h>
-#include <ast/tree/Class.h>
+#include "ast/tree/INode.h"
+#include "ast/tree/Program.h"
+#include "ast/tree/Expression.h"
+#include "ast/tree/Statement.h"
+#include "ast/tree/Class.h"
 
 namespace NSyntaxTree {
     class PrettyPrinterVisitor : public IVisitor {
 
-        std::ofstream outPut;
+        std::ostream& outPut;
+        //std::string path;
         //int level;
 
         void PrintIndent();
     public:
         //inline explicit PrettyPrinterVisitor(std::ostream& out = std::cout) : out(out), level(0) {}
-        PrettyPrinterVisitor(std::string path);
-        ~PrettyPrinterVisitor();
+        inline explicit PrettyPrinterVisitor(std::ostream& _outPut = std::cout) : outPut(_outPut) {}
+        ~PrettyPrinterVisitor() {}
 
         void printVertex(const INode* node, const std::string label);
         void printVertex(const std::string node, const std::string label);

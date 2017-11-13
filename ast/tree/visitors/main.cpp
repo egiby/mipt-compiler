@@ -1,11 +1,20 @@
 #include <iostream>
-#include "PrinterDemo.h"
+#include <fstream>
+#include "PrettyPrinterVisitor.h"
+#include "DemoTreeCreator.h"
+#include "ast/tree/Program.h"
 
 int main() {
-    std::cout << "Hello!" << std::endl;
+    std::ofstream outPut;
+    outPut.open("./graph.gv");
+    
+    NSyntaxTree::Program program;
+    NSyntaxTree::CreateDemoTree(program);
+    NSyntaxTree::PrettyPrinterVisitor printer(outPut);
 
-    NSyntaxTree::PrinterDemo pd;
-    pd.PrintDemo("./graph.gv");
+    printer.Visit(&program);
+
+    outPut.close();
 
     return 0;
 }
