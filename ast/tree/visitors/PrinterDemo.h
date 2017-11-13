@@ -15,7 +15,8 @@ namespace NSyntaxTree {
     public:
         PrinterDemo();
 
-        const Program* CreateDemoTree();
+        //const Program* CreateDemoTree();
+        void CreateDemoTree(Program &program);
         void PrintDemo(std::string path);
 
         void printVertex(const INode *node, const std::string label);
