@@ -2,18 +2,26 @@
 
 #include "IVisitor.h"
 
+#include <ast/tree/NodeTypes.h>
+
 #include <iostream>
+#include <string>
 
 namespace NSyntaxTree {
     class PrettyPrinterVisitor : public IVisitor {
 
-        std::ostream& out;
-        int level;
-
-        void PrintIndent();
+        std::ostream& outPut;
     public:
-        inline explicit PrettyPrinterVisitor(std::ostream& out = std::cout) : out(out), level(0) {
-        }
+        inline explicit PrettyPrinterVisitor(std::ostream& _outPut = std::cout) : outPut(_outPut) {}
+        ~PrettyPrinterVisitor() = default;
+
+        void printVertex(const INode* node, const std::string& label);
+        void printVertex(const std::string& node, const std::string& label);
+        void printEdge(const INode* from, const INode * to);
+        void printEdge(const INode* from, const INode * to, const std::string& label);
+        void printEdge(const std::string& from, const std::string& to);
+        void printEdge(const std::string& from, const INode* to);
+        void printEdge(const INode* from, const std::string& to);
 
         void Visit(const Program *) override;
 
