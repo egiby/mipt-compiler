@@ -23,13 +23,14 @@ namespace NSyntaxTree {
         
         unique_ptr<IExpression> returnExpression;
 
-        inline MethodDeclaration(Type type
+        inline MethodDeclaration(const Location& location
+            , Type type
             , const string& name
             , const vector<std::pair<Type, string>>& args
             , vector<unique_ptr<VarDeclaration>>* vars
             , vector<unique_ptr<IStatement>>* statements
             , IExpression* expression)
-            : returnType(type), nameId(name), args(args), localVars(vars), statements(statements), returnExpression(expression) {
+            : INode(location), returnType(type), nameId(name), args(args), localVars(vars), statements(statements), returnExpression(expression) {
             }
 
         void Accept(IVisitor *visitor) const override;

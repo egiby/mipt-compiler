@@ -15,15 +15,17 @@
 %define api.value.type variant
 
 %code requires {
-    #include "ast/tree/NodeTypes.h"
+    #include <ast/tree/NodeTypes.h>
+    #include <ast/Utils.h>
     class Scanner;
+    using NSyntaxTree::ConvertLocation;
 }
 
 %parse-param { Scanner &scanner }
 %parse-param { NSyntaxTree::Program& program }
 
 %code {
-    #include "ast/Scanner.h"
+    #include <ast/Scanner.h>
 
     #undef yylex
     #define yylex scanner.yylex
@@ -118,6 +120,7 @@
 %%
 Goal
     : MainClass ClassDeclarations T_EOF {
+        program.location = ConvertLocation(@$);
         program.mainClass.reset($1);
         program.classes.reset($2);
     }
@@ -128,7 +131,7 @@ MainClass
             Statement
         "}"
     "}" {
-        $$ = new NSyntaxTree::MainClass($name, $args, $Statement);
+        $$ = new NSyntaxTree::MainClass(ConvertLocation(@$), $name, $args, $Statement);
     }
 ;
 ClassDeclarations
@@ -145,13 +148,13 @@ ClassDeclaration
         VarDeclarations
         MethodDeclarations
     "}" {
-        $$ = new NSyntaxTree::ClassDeclaration($name, std::string(), $VarDeclarations, $MethodDeclarations);
+        $$ = new NSyntaxTree::ClassDeclaration(ConvertLocation(@$), $name, std::string(), $VarDeclarations, $MethodDeclarations);
     }
     | T_CLASS T_ID[name] T_EXTENDS T_ID[parent] "{"
         VarDeclarations
         MethodDeclarations
     "}" {
-        $$ = new NSyntaxTree::ClassDeclaration($name, $parent, $VarDeclarations, $MethodDeclarations);
+        $$ = new NSyntaxTree::ClassDeclaration(ConvertLocation(@$), $name, $parent, $VarDeclarations, $MethodDeclarations);
     }
 ;
 NotEmptyVarDeclarationList
@@ -174,7 +177,7 @@ VarDeclarations
 ;
 VarDeclaration
     : Type T_ID ";" {
-        $$ = new NSyntaxTree::VarDeclaration($1, $2);
+        $$ = new NSyntaxTree::VarDeclaration(ConvertLocation(@$), $1, $2);
     }
 ;
 Type
@@ -206,28 +209,28 @@ MethodDeclaration
         NotEmptyStatementList
         T_RETURN Expression ";"
     "}" {
-        $$ = new NSyntaxTree::MethodDeclaration($type, $name, $ArgumentList, $NotEmptyVarDeclarationList, $NotEmptyStatementList, $Expression);
+        $$ = new NSyntaxTree::MethodDeclaration(ConvertLocation(@$), $type, $name, $ArgumentList, $NotEmptyVarDeclarationList, $NotEmptyStatementList, $Expression);
     }
     | T_PUBLIC Type[type] T_ID[name] "(" ArgumentList ")" "{"
         NotEmptyStatementList
         T_RETURN Expression ";"
     "}" {
         auto varDeclarations = new std::vector<std::unique_ptr<NSyntaxTree::VarDeclaration>>();
-        $$ = new NSyntaxTree::MethodDeclaration($type, $name, $ArgumentList, varDeclarations, $NotEmptyStatementList, $Expression);
+        $$ = new NSyntaxTree::MethodDeclaration(ConvertLocation(@$), $type, $name, $ArgumentList, varDeclarations, $NotEmptyStatementList, $Expression);
     }
     | T_PUBLIC Type[type] T_ID[name] "(" ArgumentList ")" "{"
         NotEmptyVarDeclarationList
         T_RETURN Expression ";"
     "}" {
         auto statements = new std::vector<std::unique_ptr<NSyntaxTree::IStatement>>();
-        $$ = new NSyntaxTree::MethodDeclaration($type, $name, $ArgumentList, $NotEmptyVarDeclarationList, statements, $Expression);
+        $$ = new NSyntaxTree::MethodDeclaration(ConvertLocation(@$), $type, $name, $ArgumentList, $NotEmptyVarDeclarationList, statements, $Expression);
     }
     | T_PUBLIC Type[type] T_ID[name] "(" ArgumentList ")" "{"
         T_RETURN Expression ";"
     "}" {
         auto varDeclarations = new std::vector<std::unique_ptr<NSyntaxTree::VarDeclaration>>();
         auto statements = new std::vector<std::unique_ptr<NSyntaxTree::IStatement>>();
-        $$ = new NSyntaxTree::MethodDeclaration($type, $name, $ArgumentList, varDeclarations, statements, $Expression);
+        $$ = new NSyntaxTree::MethodDeclaration(ConvertLocation(@$), $type, $name, $ArgumentList, varDeclarations, statements, $Expression);
     }
 ;
 NotEmptyArgumentList
@@ -265,74 +268,74 @@ Statement
     : "{"
         Statements
     "}" {
-        $$ = new NSyntaxTree::Statements($Statements);
+        $$ = new NSyntaxTree::Statements(ConvertLocation(@$), $Statements);
     }
     | T_IF "(" Expression ")" Statement[trueStatement] T_ELSE Statement[falseStatement] {
-        $$ = new NSyntaxTree::IfStatement($Expression, $trueStatement, $falseStatement);
+        $$ = new NSyntaxTree::IfStatement(ConvertLocation(@$), $Expression, $trueStatement, $falseStatement);
     }
     | T_WHILE "(" Expression ")" Statement[statement] {
-        $$ = new NSyntaxTree::WhileStatement($Expression, $statement);
+        $$ = new NSyntaxTree::WhileStatement(ConvertLocation(@$), $Expression, $statement);
     }
     | T_PRINT "(" Expression ")" ";" {
-        $$ = new NSyntaxTree::PrintlnStatement($Expression);
+        $$ = new NSyntaxTree::PrintlnStatement(ConvertLocation(@$), $Expression);
     }
     | T_ID T_ASSIGN Expression ";" {
-        $$ = new NSyntaxTree::AssignStatement($1, $3);
+        $$ = new NSyntaxTree::AssignStatement(ConvertLocation(@$), $1, $3);
     }
     | T_ID "[" Expression[index] "]" T_ASSIGN Expression[rvalue] ";" {
-        $$ = new NSyntaxTree::ArrayElementAssignmentStatement($1, $index, $rvalue);
+        $$ = new NSyntaxTree::ArrayElementAssignmentStatement(ConvertLocation(@$), $1, $index, $rvalue);
     }
 ;
 Expression
     : Expression[left] T_AND Expression[right] {
-        $$ = new NSyntaxTree::BinaryExpression(NSyntaxTree::EBinaryExprType::AND, $left, $right);
+        $$ = new NSyntaxTree::BinaryExpression(ConvertLocation(@$), NSyntaxTree::EBinaryExprType::AND, $left, $right);
     }
     | Expression[left] T_LESS Expression[right] {
-        $$ = new NSyntaxTree::BinaryExpression(NSyntaxTree::EBinaryExprType::LESS, $left, $right);
+        $$ = new NSyntaxTree::BinaryExpression(ConvertLocation(@$), NSyntaxTree::EBinaryExprType::LESS, $left, $right);
     }
     | Expression[left] T_PLUS Expression[right] {
-        $$ = new NSyntaxTree::BinaryExpression(NSyntaxTree::EBinaryExprType::PLUS, $left, $right);
+        $$ = new NSyntaxTree::BinaryExpression(ConvertLocation(@$), NSyntaxTree::EBinaryExprType::PLUS, $left, $right);
     }
     | Expression[left] T_MINUS Expression[right] {
-        $$ = new NSyntaxTree::BinaryExpression(NSyntaxTree::EBinaryExprType::MINUS, $left, $right);
+        $$ = new NSyntaxTree::BinaryExpression(ConvertLocation(@$), NSyntaxTree::EBinaryExprType::MINUS, $left, $right);
     } 
     | Expression[left] T_MULTIPLY Expression[right] {
-        $$ = new NSyntaxTree::BinaryExpression(NSyntaxTree::EBinaryExprType::MULTIPLY, $left, $right);
+        $$ = new NSyntaxTree::BinaryExpression(ConvertLocation(@$), NSyntaxTree::EBinaryExprType::MULTIPLY, $left, $right);
     }
 
     | Expression[array] "[" Expression[index] "]" {
-        $$ = new NSyntaxTree::ArrayElementAccessExpression($array, $index);
+        $$ = new NSyntaxTree::ArrayElementAccessExpression(ConvertLocation(@$), $array, $index);
     }
     | Expression[array] T_DOT T_LENGTH {
-        $$ = new NSyntaxTree::ArrayLengthExpression($1);
+        $$ = new NSyntaxTree::ArrayLengthExpression(ConvertLocation(@$), $1);
     }
     | Expression[object] T_DOT T_ID[methodName] "(" ArgumentExpressions[args] ")" {
-        $$ = new NSyntaxTree::MethodCallExpression($object, $methodName, $args);
+        $$ = new NSyntaxTree::MethodCallExpression(ConvertLocation(@$), $object, $methodName, $args);
     }
     
     | T_INT_LITERAL {
-        $$ = new NSyntaxTree::IntegerLiteralExpression($1);
+        $$ = new NSyntaxTree::IntegerLiteralExpression(ConvertLocation(@$), $1);
     }
     | T_TRUE {
-        $$ = new NSyntaxTree::BoolLiteralExpression(true);
+        $$ = new NSyntaxTree::BoolLiteralExpression(ConvertLocation(@$), true);
     }
     | T_FALSE {
-        $$ = new NSyntaxTree::BoolLiteralExpression(false);
+        $$ = new NSyntaxTree::BoolLiteralExpression(ConvertLocation(@$), false);
     }
     | T_ID {
-        $$ = new NSyntaxTree::IdentifierExpression($1);
+        $$ = new NSyntaxTree::IdentifierExpression(ConvertLocation(@$), $1);
     }
     | T_THIS {
-        $$ = new NSyntaxTree::ThisExpression();
+        $$ = new NSyntaxTree::ThisExpression(ConvertLocation(@$));
     }
     | T_NEW T_INT "[" Expression[size] "]" {
-        $$ = new NSyntaxTree::NewIntArrayExpression($size);
+        $$ = new NSyntaxTree::NewIntArrayExpression(ConvertLocation(@$), $size);
     }
     | T_NEW T_ID[clazz] "(" ")" {
-        $$ = new NSyntaxTree::NewExpression($clazz);
+        $$ = new NSyntaxTree::NewExpression(ConvertLocation(@$), $clazz);
     }
     | T_NOT Expression[expression] {
-        $$ = new NSyntaxTree::NegateExpression($expression);
+        $$ = new NSyntaxTree::NegateExpression(ConvertLocation(@$), $expression);
     }
     | "(" Expression[expression] ")" {
         $$ = $expression;

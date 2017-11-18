@@ -9,12 +9,16 @@
 
 namespace NSyntaxTree {
     interface IStatement : public INode {
+        inline explicit IStatement(const Location& location) : INode(location) {
+        }
+        IStatement() = default;
     };
 
     struct Statements : public IStatement {
         unique_ptr<vector<unique_ptr<IStatement>>> statements;
 
-        inline explicit Statements(vector<unique_ptr<IStatement>>* newStatements) : statements(newStatements) {
+        inline Statements(const Location& location, vector<unique_ptr<IStatement>>* newStatements)
+            : IStatement(location), statements(newStatements) {
         }
 
         void Accept(IVisitor *visitor) const override;
@@ -26,10 +30,11 @@ namespace NSyntaxTree {
         unique_ptr<IStatement> trueStatement;
         unique_ptr<IStatement> falseStatement;
 
-        inline IfStatement(IExpression* expression
+        inline IfStatement(const Location& location
+            , IExpression* expression
             , IStatement* newTrueStatement
             , IStatement* newFalseStatement) 
-            : condition(expression), trueStatement(newTrueStatement), falseStatement(newFalseStatement) {
+            : IStatement(location), condition(expression), trueStatement(newTrueStatement), falseStatement(newFalseStatement) {
         }
 
         void Accept(IVisitor *visitor) const override;
@@ -39,8 +44,8 @@ namespace NSyntaxTree {
         unique_ptr<IExpression> condition;
         unique_ptr<IStatement> trueStatement;
         
-        inline WhileStatement(IExpression* expression, IStatement* statement) 
-            : condition(expression), trueStatement(statement) {
+        inline WhileStatement(const Location& location, IExpression* expression, IStatement* statement)
+            : IStatement(location), condition(expression), trueStatement(statement) {
         }
 
         void Accept(IVisitor *visitor) const override;
@@ -49,7 +54,8 @@ namespace NSyntaxTree {
     struct PrintlnStatement : public IStatement {
         unique_ptr<IExpression> toPrint;
 
-        inline explicit PrintlnStatement(IExpression* expression) : toPrint(expression) {
+        inline PrintlnStatement(const Location& location, IExpression* expression)
+            : IStatement(location), toPrint(expression) {
         }
 
         void Accept(IVisitor *visitor) const override;
@@ -59,7 +65,8 @@ namespace NSyntaxTree {
         string lvalue;
         unique_ptr<IExpression> rvalue;
 
-        inline AssignStatement(string id, IExpression* expression) : lvalue(id), rvalue(expression) {
+        inline AssignStatement(const Location& location, const string& id, IExpression* expression)
+            : IStatement(location), lvalue(id), rvalue(expression) {
         }
 
         void Accept(IVisitor *visitor) const override;
@@ -70,10 +77,11 @@ namespace NSyntaxTree {
         unique_ptr<IExpression> index;
         unique_ptr<IExpression> rvalue;
 
-        inline ArrayElementAssignmentStatement(string id
+        inline ArrayElementAssignmentStatement(const Location& location
+            , const string& id
             , IExpression* indexExpr
             , IExpression* rvalueExpr)
-            : arrayId(id), index(indexExpr), rvalue(rvalueExpr) {
+            : IStatement(location), arrayId(id), index(indexExpr), rvalue(rvalueExpr) {
             }
 
         void Accept(IVisitor *visitor) const override;

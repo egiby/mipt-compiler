@@ -12,8 +12,8 @@ namespace NSyntaxTree {
         Type type;
         string id;
 
-        inline VarDeclaration(Type type, const string& id)
-            : type(type), id(id) {
+        inline VarDeclaration(const Location& location, const Type& type, const string& id)
+            : INode(location), type(type), id(id) {
         }
 
         void Accept(IVisitor *visitor) const override;

@@ -14,6 +14,9 @@ namespace NSyntaxTree {
     };
 
     interface IExpression : public INode {
+        inline explicit IExpression(const Location& location) : INode(location) {
+        }
+        IExpression() = default;
     };
 
     struct BinaryExpression : public IExpression {
@@ -21,10 +24,11 @@ namespace NSyntaxTree {
         unique_ptr<IExpression> left;
         unique_ptr<IExpression> right;
 
-        inline BinaryExpression(EBinaryExprType expType
+        inline BinaryExpression(const Location& location
+            , EBinaryExprType expType
             , IExpression* leftExp
-            , IExpression* rightExp) 
-            : type(expType), left(leftExp), right(rightExp) {
+            , IExpression* rightExp)
+            : IExpression(location), type(expType), left(leftExp), right(rightExp) {
         }
 
         void Accept(IVisitor *visitor) const override;
@@ -34,8 +38,8 @@ namespace NSyntaxTree {
         unique_ptr<IExpression> array;
         unique_ptr<IExpression> index;
 
-        ArrayElementAccessExpression(IExpression* arrayExpr, IExpression* indexExpr) 
-            : array(arrayExpr), index(indexExpr) {
+        ArrayElementAccessExpression(const Location& location, IExpression* arrayExpr, IExpression* indexExpr)
+            : IExpression(location), array(arrayExpr), index(indexExpr) {
         }
 
         void Accept(IVisitor *visitor) const override;
@@ -44,7 +48,8 @@ namespace NSyntaxTree {
     struct ArrayLengthExpression : public IExpression {
         unique_ptr<IExpression> array;
         
-        inline explicit ArrayLengthExpression(IExpression* expression) : array(expression) {
+        inline explicit ArrayLengthExpression(const Location& location, IExpression* expression)
+            : IExpression(location), array(expression) {
         }
 
         void Accept(IVisitor *visitor) const override;
@@ -55,8 +60,11 @@ namespace NSyntaxTree {
         string nameId;
         unique_ptr<vector<unique_ptr<IExpression>>> args;
 
-        inline MethodCallExpression(IExpression* objectExpr, const string& name, vector<unique_ptr<IExpression>>* argsVector) 
-            : object(objectExpr), nameId(name), args(argsVector) {
+        inline MethodCallExpression(const Location& location
+            , IExpression* objectExpr
+            , const string& name
+            , vector<unique_ptr<IExpression>>* argsVector)
+            : IExpression(location), object(objectExpr), nameId(name), args(argsVector) {
         }
 
         void Accept(IVisitor *visitor) const override;
@@ -65,7 +73,8 @@ namespace NSyntaxTree {
     struct IntegerLiteralExpression : public IExpression {
         int value;
 
-        inline explicit IntegerLiteralExpression(int value) : value(value) {
+        inline IntegerLiteralExpression(const Location& location, int value)
+            : IExpression(location), value(value) {
         }
 
         void Accept(IVisitor *visitor) const override;
@@ -74,7 +83,8 @@ namespace NSyntaxTree {
     struct BoolLiteralExpression : public IExpression {
         bool value;
 
-        inline explicit BoolLiteralExpression(bool value) : value(value) {
+        inline BoolLiteralExpression(const Location& location, bool value)
+            : IExpression(location), value(value) {
         }
 
         void Accept(IVisitor *visitor) const override;
@@ -83,20 +93,25 @@ namespace NSyntaxTree {
     struct IdentifierExpression : public IExpression {
         string identifier;
 
-        inline explicit IdentifierExpression(const string& identifier) : identifier(identifier) {
+        inline IdentifierExpression(const Location& location, const string& identifier)
+            : IExpression(location), identifier(identifier) {
         }
 
         void Accept(IVisitor *visitor) const override;
     };
 
     struct ThisExpression : public IExpression {
+        inline explicit ThisExpression(const Location& location) : IExpression(location) {
+        }
+
         void Accept(IVisitor *visitor) const override;
     };
 
     struct NewIntArrayExpression : public IExpression {
         unique_ptr<IExpression> size;
 
-        inline explicit NewIntArrayExpression(IExpression* expression) : size(expression) {
+        inline NewIntArrayExpression(const Location& location, IExpression* expression)
+            : IExpression(location), size(expression) {
         }
 
         void Accept(IVisitor *visitor) const override;
@@ -105,7 +120,8 @@ namespace NSyntaxTree {
     struct NewExpression : public IExpression {
         string classId;
 
-        inline explicit NewExpression(const string& id) : classId(id) {
+        inline NewExpression(const Location& location, const string& id)
+            : IExpression(location), classId(id) {
         }
 
         void Accept(IVisitor *visitor) const override;
@@ -114,7 +130,8 @@ namespace NSyntaxTree {
     struct NegateExpression : public IExpression {
         unique_ptr<IExpression> expression;
 
-        inline explicit NegateExpression(IExpression* newExpr) : expression(newExpr) {
+        inline NegateExpression(const Location& location, IExpression* newExpr)
+            : IExpression(location), expression(newExpr) {
         }
 
         void Accept(IVisitor *visitor) const override;
