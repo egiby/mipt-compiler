@@ -32,6 +32,9 @@ set(Visitors
 set(SymbolTableSrc
         symbol_table/Symbol.cpp
         symbol_table/StringInterner.cpp
+        symbol_table/TypeInfo.cpp
+        symbol_table/VariableInfo.cpp
+        symbol_table/MethodInfo.cpp
         )
 
 add_executable(printer
