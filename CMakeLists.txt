@@ -29,12 +29,18 @@ set(Visitors
         ast/tree/visitors/PrettyPrinterVisitor.cpp
         )
 
+set(SymbolTableSrc
+        symbol_table/Symbol.cpp
+        symbol_table/StringInterner.cpp
+        )
+
 add_executable(printer
         ${SyntaxTreeSrc}
         ${Visitors}
         ast/tree/visitors/main.cpp
         ${FLEX_lexer_OUTPUTS}
         ${BISON_parser_OUTPUTS}
+        ${SymbolTableSrc}
         )
 
 include_directories(. ${CMAKE_CURRENT_BINARY_DIR})
