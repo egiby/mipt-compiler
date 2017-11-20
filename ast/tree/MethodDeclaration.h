@@ -12,8 +12,14 @@
 #include <string>
 
 namespace NSyntaxTree {
+    enum EModifier {
+        PUBLIC,
+        PRIVATE
+    };
+
     struct MethodDeclaration : public INode {
         Type returnType;
+        EModifier modifier = PUBLIC;
 
         string nameId;
         vector<std::pair<Type, string>> args;
