@@ -35,6 +35,7 @@ set(SymbolTableSrc
         symbol_table/TypeInfo.cpp
         symbol_table/VariableInfo.cpp
         symbol_table/MethodInfo.cpp
+        symbol_table/ClassInfo.cpp
         )
 
 add_executable(printer
