@@ -1,34 +1,35 @@
 #pragma once
-#include "Symbol.h"
-#pragma once
+
+#include "common.h"
+
+#include "IdentifierInfo.h"
+#include "TypeInfo.h"
+#include "VariableInfo.h"
+
+#include <ast/tree/MethodDeclaration.h>
+#include <util/Symbol.h>
 
 #include <vector>
 
-#include "TypeInfo.h"
-#include "Symbol.h"
-#include "ast/tree/MethodDeclaration.h"
-#include "VariableInfo.h"
-
 namespace NSymbolTable {
-    class MethodInfo : public Symbol {
-        NSyntaxTree::Location location;
+    class MethodInfo : public IdentifierInfo {
         TypeInfo returnType;
         NSyntaxTree::EModifier modifier;
-        std::vector<const Symbol*> argsInfo;
-        std::vector<const Symbol*> varsInfo;
+        std::unordered_map<const Symbol*, VariableInfo> argsInfo;
+        std::unordered_map<const Symbol*, VariableInfo> varsInfo;
 
     public:
-        MethodInfo(std::string _methodId, NSyntaxTree::Location _location, TypeInfo _returnType,
-             NSyntaxTree::EModifier _modifier);
+        MethodInfo(const Symbol* _methodId
+                , Location _location
+                , TypeInfo _returnType
+                , NSyntaxTree::EModifier _modifier);
 
-        void InsertArgumentInfo(const VariableInfo *argInfo);
-        void InsertVariableInfo(const VariableInfo *varInfo);
+        void InsertArgumentInfo(const VariableInfo& argInfo);
+        void InsertVariableInfo(const VariableInfo& varInfo);
             
-        TypeInfo GetReturnType() const { return returnType; }
+        const TypeInfo& GetReturnType() const { return returnType; }
         NSyntaxTree::EModifier GetModifier() const { return modifier; }
-        const std::vector<const Symbol*> &GetArgsInfo() const { return argsInfo; }
-        const std::vector<const Symbol*> &GetVarsInfo() const { return varsInfo; }
-
-
+        const std::unordered_map<const Symbol*, VariableInfo> &GetArgsInfo() const { return argsInfo; }
+        const std::unordered_map<const Symbol*, VariableInfo> &GetVarsInfo() const { return varsInfo; }
     };
 }

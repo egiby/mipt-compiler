@@ -1,14 +1,18 @@
 #pragma once
 
+#include "common.h"
+#include "IdentifierInfo.h"
 #include "TypeInfo.h"
-#include "ast/tree/INode.h"
+
+#include <ast/tree/INode.h>
+#include <util/Symbol.h>
 
 namespace NSymbolTable {
-    class VariableInfo : public Symbol {
+    class VariableInfo : public IdentifierInfo {
         TypeInfo typeInfo;
-        NSyntaxTree::Location location;
+
     public:
-        VariableInfo(std::string _varName, NSyntaxTree::Location _location, TypeInfo _typeInfo);
+        VariableInfo(const Symbol* _varName, const Location& _location, const TypeInfo& _typeInfo);
         const TypeInfo& GetTypeInfo() const { return typeInfo; }
     };
 }

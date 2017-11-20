@@ -1,28 +1,29 @@
 #pragma once
 
-#include <vector>
+#include "common.h"
 
-#include "Symbol.h"
-#include "VariableInfo.h"
+#include "IdentifierInfo.h"
 #include "MethodInfo.h"
+#include "VariableInfo.h"
+
+#include <util/Symbol.h>
+
+#include <unordered_map>
 
 namespace NSymbolTable {
-    static StringInterner stringInterner;
-
-    class ClassInfo : public Symbol {
-        NSyntaxTree::Location location;
-        std::vector<const Symbol*> varsInfo;
-        std::vector<const Symbol*> methodsInfo;
+    class ClassInfo : public IdentifierInfo {
+        std::unordered_map<const Symbol*, VariableInfo> varsInfo;
+        std::unordered_map<const Symbol*, MethodInfo> methodsInfo;
         const Symbol *superClassId;
 
     public:
-        ClassInfo(std::string _classId, NSyntaxTree::Location _location, std::string _superClassId);
-        void InsertVarInfo(const VariableInfo *varInfo);
-        void InsertMethodInfo(const MethodInfo *methodInfo);    
+        ClassInfo(const Symbol* _classId, const NSyntaxTree::Location& _location, const Symbol* _superClassId = nullptr);
 
-        NSyntaxTree::Location GetLocation() { return location; }
-        std::vector<const Symbol*> GetVarsInfo() { return varsInfo; }
-        std::vector<const Symbol*> GetMethodsInfo() { return methodsInfo; }
-        const Symbol* GetSuperClassId() { return superClassId;  }
+        void InsertVarInfo(const VariableInfo& varInfo);
+        void InsertMethodInfo(const MethodInfo& methodInfo);
+
+        const std::unordered_map<const Symbol*, VariableInfo>& GetVarsInfo() const { return varsInfo; }
+        const std::unordered_map<const Symbol*, MethodInfo>& GetMethodsInfo() const { return methodsInfo; }
+        const Symbol* GetSuperClassId() { return superClassId; }
     };
 }

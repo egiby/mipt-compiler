@@ -1,6 +1,6 @@
 #include "VariableInfo.h"
 
 namespace NSymbolTable {
-    VariableInfo::VariableInfo(std::string _varName, NSyntaxTree::Location _location, TypeInfo _typeInfo) :
-        Symbol(_varName), typeInfo(_typeInfo), location(_location) {}
+    VariableInfo::VariableInfo(const Symbol* _varName, const Location& _location, const TypeInfo& _typeInfo) :
+        IdentifierInfo(_varName, _location), typeInfo(_typeInfo) {}
 }

@@ -30,12 +30,17 @@ set(Visitors
         )
 
 set(SymbolTableSrc
-        symbol_table/Symbol.cpp
-        symbol_table/StringInterner.cpp
         symbol_table/TypeInfo.cpp
         symbol_table/VariableInfo.cpp
         symbol_table/MethodInfo.cpp
         symbol_table/ClassInfo.cpp
+        symbol_table/SymbolTable.cpp
+        symbol_table/SymbolTableVisitor.cpp
+        )
+
+set(Util
+        util/Symbol.cpp
+        util/StringInterner.cpp
         )
 
 add_executable(printer
@@ -45,6 +50,7 @@ add_executable(printer
         ${FLEX_lexer_OUTPUTS}
         ${BISON_parser_OUTPUTS}
         ${SymbolTableSrc}
+        ${Util}
         )
 
 include_directories(. ${CMAKE_CURRENT_BINARY_DIR})
