@@ -1,12 +1,8 @@
-#include "PrettyPrinterVisitor.h"
+#include <ast/TreeBuilder.h>
+#include <ast/tree/visitors/PrettyPrinterVisitor.h>
 
-#include <ast/Scanner.h>
-
-#include <parser.tab.hh>
-
-#include <iostream>
 #include <fstream>
-
+#include <iostream>
 
 int main(int argc, char* argv[]) {
     if (argc <= 1) {
@@ -15,11 +11,7 @@ int main(int argc, char* argv[]) {
     }
 
     std::ifstream input(argv[1]);
-    Scanner scanner(&input);
-
-    NSyntaxTree::Program program;
-    yy::parser parser(scanner, program);
-    parser.parse();
+    auto program = NSyntaxTree::BuildTree(&input);
 
     std::ofstream outPut("./graph.gv");
 

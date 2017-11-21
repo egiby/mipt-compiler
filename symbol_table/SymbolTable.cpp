@@ -20,4 +20,8 @@ namespace NSymbolTable {
     void SymbolTable::SetMainClass(const Symbol* id) {
         mainClass = id;
     }
+
+    const Symbol *SymbolTable::GetMainClassId() const {
+        return mainClass;
+    }
 }

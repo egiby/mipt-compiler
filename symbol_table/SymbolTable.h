@@ -23,6 +23,6 @@ namespace NSymbolTable {
         void InsertClassInfo(const ClassInfo&);
         void SetMainClass(const Symbol*);
 
-        // TODO: main class
+        const Symbol* GetMainClassId() const;
     };
 }

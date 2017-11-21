@@ -29,7 +29,7 @@ set(Visitors
         ast/tree/visitors/PrettyPrinterVisitor.cpp
         )
 
-set(SymbolTableSrc
+set(SymbolTable
         symbol_table/TypeInfo.cpp
         symbol_table/VariableInfo.cpp
         symbol_table/MethodInfo.cpp
@@ -43,14 +43,24 @@ set(Util
         util/StringInterner.cpp
         )
 
-add_executable(printer
+set(TreeBuilder
+        ast/TreeBuilder.cpp
         ${SyntaxTreeSrc}
-        ${Visitors}
-        ast/tree/visitors/main.cpp
         ${FLEX_lexer_OUTPUTS}
         ${BISON_parser_OUTPUTS}
-        ${SymbolTableSrc}
         ${Util}
+        )
+
+add_executable(printer
+        tools/dot_printer.cpp
+        ${TreeBuilder}
+        ${Visitors}
+        )
+
+add_executable(symbol_table
+        tools/symbol_table_test.cpp
+        ${SymbolTable}
+        ${TreeBuilder}
         )
 
 include_directories(. ${CMAKE_CURRENT_BINARY_DIR})
