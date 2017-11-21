@@ -88,14 +88,13 @@
 %type<std::vector<std::unique_ptr<NSyntaxTree::ClassDeclaration>>*> ClassDeclarations;
 %type<NSyntaxTree::ClassDeclaration*> ClassDeclaration;
 
-%type<std::vector<std::unique_ptr<NSyntaxTree::VarDeclaration>>*> VarDeclarations NotEmptyVarDeclarationList;
+%type<std::vector<std::unique_ptr<NSyntaxTree::VarDeclaration>>*> VarDeclarations NotEmptyVarDeclarationList ArgumentList NotEmptyArgumentList;
 %type<NSyntaxTree::VarDeclaration*> VarDeclaration;
 
 %type<NSyntaxTree::Type> Type;
 
 %type<std::vector<std::unique_ptr<NSyntaxTree::MethodDeclaration>>*> MethodDeclarations;
 %type<NSyntaxTree::MethodDeclaration*> MethodDeclaration;
-%type<std::vector<std::pair<NSyntaxTree::Type, std::string>>> ArgumentList NotEmptyArgumentList;
 
 
 %type<std::vector<std::unique_ptr<NSyntaxTree::IStatement>>*> Statements NotEmptyStatementList;
@@ -235,18 +234,22 @@ MethodDeclaration
 ;
 NotEmptyArgumentList
     : Type T_ID {
-        $$.push_back({$1, $2});
+        $$ = new std::vector<std::unique_ptr<NSyntaxTree::VarDeclaration>>();
+        $$->emplace_back(new NSyntaxTree::VarDeclaration(ConvertLocation(@$), $Type, $T_ID));
     }
     | NotEmptyArgumentList T_COMMA Type T_ID {
-        $$ = std::move($1);
-        $$.push_back({$3, $4});
+        $$ = $1;
+        $$->emplace_back(new NSyntaxTree::VarDeclaration(ConvertLocation(@$), $Type, $T_ID));
     }
 ;
 ArgumentList
-    : %empty {}
-    | NotEmptyArgumentList {
-        $$ = std::move($1);
+    : %empty {
+        $$ = new std::vector<std::unique_ptr<NSyntaxTree::VarDeclaration>>();
     }
+    | NotEmptyArgumentList {
+        $$ = $1;
+    }
+;
 NotEmptyStatementList
     : Statement {
         $$ = new std::vector<std::unique_ptr<NSyntaxTree::IStatement>>();
