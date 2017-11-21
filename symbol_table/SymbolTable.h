@@ -12,9 +12,17 @@
 namespace NSymbolTable {
 
     class SymbolTable {
-        std::unique_ptr<StringInterner> interner;
         std::unordered_map<const Symbol*, ClassInfo> classes;
+        const Symbol* mainClass; // TODO: what should we do with main class?
     public:
+        bool HasClass(const Symbol* id) const;
+        const ClassInfo& GetClassInfo(const Symbol* id) const;
 
+        const std::unordered_map<const Symbol*, ClassInfo>& GetClasses() const;
+
+        void InsertClassInfo(const ClassInfo&);
+        void SetMainClass(const Symbol*);
+
+        // TODO: main class
     };
 }

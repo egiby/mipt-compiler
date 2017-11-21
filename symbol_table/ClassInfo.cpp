@@ -6,10 +6,10 @@ namespace NSymbolTable {
     }
 
     void ClassInfo::InsertVarInfo(const VariableInfo& varInfo) {
-        varsInfo[varInfo.GetId()] = varInfo;
+        varsInfo.insert({varInfo.GetId(), varInfo});
     }
 
     void ClassInfo::InsertMethodInfo(const MethodInfo& methodInfo) {
-        methodsInfo[methodInfo.GetId()] = methodInfo;
+        methodsInfo.insert({methodInfo.GetId(), methodInfo});
     }
 }

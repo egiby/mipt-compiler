@@ -8,7 +8,7 @@ namespace NUtil {
     class StringInterner {
         std::unordered_map<std::string, Symbol*> allStrings;
     public:
-        Symbol* getIntern(const std::string& src);
+        Symbol* GetIntern(const std::string& src);
         ~StringInterner();
     };
 }

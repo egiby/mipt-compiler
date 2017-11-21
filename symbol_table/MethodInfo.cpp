@@ -9,14 +9,10 @@ namespace NSymbolTable {
     }
 
     void MethodInfo::InsertArgumentInfo(const VariableInfo& argInfo) {
-        if (argsInfo.find(argInfo.GetId()) != argsInfo.end()) {
-
-        }
-
-        argsInfo[argInfo.GetId()] = argInfo;
+        argsInfo.insert({argInfo.GetId(), argInfo});
     }
 
     void MethodInfo::InsertVariableInfo(const VariableInfo& varInfo) {
-        varsInfo[varInfo.GetId()] = varInfo;
+        varsInfo.insert({varInfo.GetId(), varInfo});
     }
 }

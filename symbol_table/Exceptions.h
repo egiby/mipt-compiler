@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common.h"
+
 #include <stdexcept>
 
 namespace NSymbolTable {
@@ -12,7 +14,11 @@ namespace NSymbolTable {
 
     class RedefinitionException : public SymbolTableException {
     public:
-
+        RedefinitionException(const Location& currentLoc
+            , const Symbol* currentId
+            , const Location& shadowedLoc)
+            : SymbolTableException("Redefinition: " + currentId->String()
+                                   + " on " + currentLoc.ToString() + " shadows " + shadowedLoc.ToString()) {}
     };
 
     class CyclicDependencyException : public SymbolTableException {
