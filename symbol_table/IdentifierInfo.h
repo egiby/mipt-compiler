@@ -22,12 +22,15 @@ namespace NSymbolTable {
         inline const NSyntaxTree::Location& GetLocation() const {
             return location;
         }
+
+        virtual ~IdentifierInfo() {
+        }
     };
 
     template<class Map>
-    void CheckIdentifier(const Map& map, const IdentifierInfo& id) {
-        if (map.find(id.GetId()) != map.end()) {
-            throw RedefinitionException(id.GetLocation(), id.GetId(), map[id.GetId()].GetLocation());
+    void CheckIdentifier(const Map& map, const Symbol *newId, const Location &newLocation) {
+        if (map.find(newId) != map.end()) {
+            throw RedefinitionException(newLocation, newId, map.at(newId).GetLocation());
         }
     }
 }

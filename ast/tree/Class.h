@@ -12,7 +12,7 @@
 #include <vector>
 namespace NSyntaxTree {
     struct ClassDeclaration : public INode {
-        string nameId;
+        string id;
         string extendsId;
 
         unique_ptr<vector<unique_ptr<VarDeclaration>>> varDeclarations;
@@ -23,7 +23,7 @@ namespace NSyntaxTree {
             , const string &extends
             , vector<unique_ptr<VarDeclaration>>* vars
             , vector<unique_ptr<MethodDeclaration>>* methods) 
-            : INode(location), nameId(name), extendsId(extends), varDeclarations(vars), methodDeclarations(methods) {
+            : INode(location), id(name), extendsId(extends), varDeclarations(vars), methodDeclarations(methods) {
             }
 
         void Accept(IVisitor *visitor) const override;

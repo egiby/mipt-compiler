@@ -35,7 +35,7 @@ set(SymbolTableSrc
         symbol_table/MethodInfo.cpp
         symbol_table/ClassInfo.cpp
         symbol_table/SymbolTable.cpp
-        symbol_table/SymbolTableVisitor.cpp
+        symbol_table/SymbolTableCreatorVisitor.cpp
         )
 
 set(Util

@@ -50,7 +50,7 @@ namespace NSyntaxTree {
     }
 
     void PrettyPrinterVisitor::Visit(const ClassDeclaration *node) {
-        printVertex(node, "Class " + node->nameId + " extends " + node->extendsId);
+        printVertex(node, "Class " + node->id + " extends " + node->extendsId);
 
         if (node->varDeclarations != nullptr) {
             for (const auto &var : *(node->varDeclarations)) {
@@ -78,7 +78,7 @@ namespace NSyntaxTree {
     }
 
     void PrettyPrinterVisitor::Visit(const MethodDeclaration *node) {
-        std::string label = "method" + node->nameId;
+        std::string label = "method" + node->id;
         switch ((node->returnType).type) {
             case CLASS:
                 label = label + " returnType: CLASS " + node->returnType.id;
@@ -94,19 +94,19 @@ namespace NSyntaxTree {
                 break;
         }  
 
-        for (const auto arg : node->args) {
-            switch (arg.first.type) {
+        for (const auto& arg : *node->args) {
+            switch (arg->type.type) {
                 case CLASS:
-                    label = label + " arg: CLASS " + arg.first.id + " " + arg.second;
+                    label = label + " arg: CLASS " + arg->type.id + " " + arg->id;
                     break;
                 case INT:
-                    label = label + " arg: INT " + arg.second;
+                    label = label + " arg: INT " + arg->id;
                     break;
                 case BOOL:
-                    label = label + " arg: BOOL" + arg.second;
+                    label = label + " arg: BOOL " + arg->id;
                     break;
                 case INT_ARRAY:
-                    label = label + " arg INT_ARRAY " + arg.second;
+                    label = label + " arg INT_ARRAY " + arg->id;
                     break;
             }
         }
@@ -194,7 +194,7 @@ namespace NSyntaxTree {
     }
 
     void PrettyPrinterVisitor::Visit(const ArrayLengthExpression *node) {
-        printVertex(node, "lengthExpresstion");
+        printVertex(node, "lengthExpression");
         node->array->Accept(this);
         printEdge(node, (node->array).get(), "array");
     }

@@ -6,10 +6,18 @@ namespace NSymbolTable {
     }
 
     void ClassInfo::InsertVarInfo(const VariableInfo& varInfo) {
-        varsInfo.insert({varInfo.GetId(), varInfo});
+        membersInfo.insert({varInfo.GetId(), varInfo});
     }
 
     void ClassInfo::InsertMethodInfo(const MethodInfo& methodInfo) {
         methodsInfo.insert({methodInfo.GetId(), methodInfo});
+    }
+
+    bool ClassInfo::HasMember(const Symbol *id) const {
+        return membersInfo.find(id) != membersInfo.end();
+    }
+
+    bool ClassInfo::HasMethod(const Symbol *id) const {
+        return methodsInfo.find(id) != methodsInfo.end();
     }
 }
