@@ -10,7 +10,6 @@
 #include <unordered_map>
 
 namespace NSymbolTable {
-
     class SymbolTable {
         std::unordered_map<const Symbol*, ClassInfo> classes;
         const Symbol* mainClass; // TODO: what should we do with main class?
