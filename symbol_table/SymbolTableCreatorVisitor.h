@@ -12,7 +12,7 @@
 
 namespace NSymbolTable {
     class SymbolTableCreatorVisitor : public NSyntaxTree::IVisitor {
-        std::unique_ptr<StringInterner> interner;
+        StringInterner *interner;
         SymbolTable &symbolTable;
 
         std::shared_ptr<IdentifierInfo> returnValue;
@@ -40,8 +40,8 @@ namespace NSymbolTable {
         }
 
     public:
-        inline explicit SymbolTableCreatorVisitor(SymbolTable &table) : symbolTable(table) {
-            interner = std::make_unique<StringInterner>();
+        inline explicit SymbolTableCreatorVisitor(SymbolTable &table, StringInterner *interner)
+                : interner(interner), symbolTable(table) {
         }
 
         SymbolTableCreatorVisitor() = delete;

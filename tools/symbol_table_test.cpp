@@ -15,7 +15,9 @@ int main(int argc, char* argv[]) {
     auto program = NSyntaxTree::BuildTree(&input);
 
     NSymbolTable::SymbolTable table;
-    NSymbolTable::SymbolTableCreatorVisitor creator(table);
+    NUtil::StringInterner interner;
+
+    NSymbolTable::SymbolTableCreatorVisitor creator(table, &interner);
     creator.Visit(&program);
 
     std::cout << table.GetMainClassId()->String() << std::endl;
