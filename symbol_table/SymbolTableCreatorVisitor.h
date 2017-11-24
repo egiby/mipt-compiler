@@ -23,8 +23,9 @@ namespace NSymbolTable {
                 , const std::unordered_map<const Symbol *, TNodeInfo> & (TIdentifierInfo::* getMapFunction)() const
                 , const TVector& nodes) {
             for (const auto &node: nodes) {
-                const Symbol *varId = interner->GetIntern(node->id);
-                CheckIdentifier((info->*getMapFunction)(), varId, node->location);
+                //const Symbol *varId = interner->GetIntern(node->id);
+                //CheckIdentifier((info->*getMapFunction)(), varId, node->location);
+                CheckIdentifier((info->*getMapFunction)(), node->id, node->location);
 
                 node->Accept(this);
                 assert(returnValue);
@@ -36,7 +37,8 @@ namespace NSymbolTable {
         }
 
         TypeInfo FromType(const NSyntaxTree::Type& type) {
-            return TypeInfo(type.type, interner->GetIntern(type.id));
+            //return TypeInfo(type.type, interner->GetIntern(type.id));
+            return TypeInfo(type.type, type.id);
         }
 
     public:

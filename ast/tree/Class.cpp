@@ -7,6 +7,7 @@ namespace NSyntaxTree {
     }
 
     void MainClass::Accept(IVisitor *visitor) const {
+        std::cout << "This is mainClass accept method" << std::endl;
         visitor->Visit(this);
     }
 }

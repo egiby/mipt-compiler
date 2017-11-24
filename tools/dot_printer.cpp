@@ -16,7 +16,9 @@ int main(int argc, char* argv[]) {
     std::ofstream outPut("./graph.gv");
 
     NSyntaxTree::PrettyPrinterVisitor printer(outPut);
+    std::cout << "Going to visit program" << std::endl;
     printer.Visit(&program);
+    std::cout << "Program was visited" << std::endl;
 
     outPut.close();
 

@@ -4,8 +4,12 @@
 
 #include <parser.tab.hh>
 
+#include <memory>
+
 NSyntaxTree::Program NSyntaxTree::BuildTree(std::istream *input) {
-    Scanner scanner(input);
+    std::shared_ptr<NUtil::StringInterner> interner(new NUtil::StringInterner());
+
+    Scanner scanner(input, interner);
 
     NSyntaxTree::Program program;
     yy::parser parser(scanner, program);

@@ -8,9 +8,12 @@ namespace NSymbolTable {
     }
 
     void SymbolTableCreatorVisitor::Visit(const NSyntaxTree::ClassDeclaration *classDeclaration) {
-        const Symbol *id = interner->GetIntern(classDeclaration->id);
-        const Symbol *extends = interner->GetIntern(classDeclaration->extendsId);
-        auto classInfo = new ClassInfo(id, classDeclaration->location, extends);
+        //const Symbol *id = interner->GetIntern(classDeclaration->id);
+        //const Symbol *extends = interner->GetIntern(classDeclaration->extendsId);
+        //auto classInfo = new ClassInfo(id, classDeclaration->location, extends);
+        auto classInfo = new ClassInfo(classDeclaration->id
+            , classDeclaration->location
+            , classDeclaration->extendsId);
 
         InsertAll(classInfo, &ClassInfo::InsertVarInfo, &ClassInfo::GetVarsInfo, *classDeclaration->varDeclarations);
         InsertAll(classInfo, &ClassInfo::InsertMethodInfo, &ClassInfo::GetMethodsInfo, *classDeclaration->methodDeclarations);
@@ -19,19 +22,22 @@ namespace NSymbolTable {
     }
 
     void SymbolTableCreatorVisitor::Visit(const NSyntaxTree::MainClass *mainClass) {
-        symbolTable.SetMainClass(interner->GetIntern(mainClass->nameId));
+        //symbolTable.SetMainClass(interner->GetIntern(mainClass->nameId));
+        symbolTable.SetMainClass(mainClass->nameId);
     }
 
     void SymbolTableCreatorVisitor::Visit(const NSyntaxTree::VarDeclaration *var) {
-        const Symbol *id = interner->GetIntern(var->id);
-        auto varInfo = new VariableInfo(id, var->location, FromType(var->type));
+        //const Symbol *id = interner->GetIntern(var->id);
+        //auto varInfo = new VariableInfo(id, var->location, FromType(var->type));
+        auto varInfo = new VariableInfo(var->id, var->location, FromType(var->type));
 
         returnValue.reset(varInfo);
     }
 
     void SymbolTableCreatorVisitor::Visit(const NSyntaxTree::MethodDeclaration *method) {
-        const Symbol *id = interner->GetIntern(method->id);
-        auto methodInfo = new MethodInfo(id, method->location, FromType(method->returnType), method->modifier);
+        //const Symbol *id = interner->GetIntern(method->id);
+        //auto methodInfo = new MethodInfo(id, method->location, FromType(method->returnType), method->modifier);
+        auto methodInfo = new MethodInfo(method->id, method->location, FromType(method->returnType), method->modifier);
 
         InsertAll(methodInfo, &MethodInfo::InsertArgumentInfo, &MethodInfo::GetArgsInfo, *method->args);
         InsertAll(methodInfo, &MethodInfo::InsertVariableInfo, &MethodInfo::GetVarsInfo, *method->localVars);

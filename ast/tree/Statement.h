@@ -4,6 +4,7 @@
 
 #include "Expression.h"
 #include "INode.h"
+#include <util/Symbol.h>
 
 #include <memory>
 
@@ -62,10 +63,12 @@ namespace NSyntaxTree {
     };
 
     struct AssignStatement : public IStatement {
-        string lvalue;
+        //string lvalue;
+        const NUtil::Symbol* lvalue;
         unique_ptr<IExpression> rvalue;
 
-        inline AssignStatement(const Location& location, const string& id, IExpression* expression)
+        //inline AssignStatement(const Location& location, const string& id, IExpression* expression)
+        inline AssignStatement(const Location& location, const NUtil::Symbol* id, IExpression* expression)
             : IStatement(location), lvalue(id), rvalue(expression) {
         }
 
@@ -73,12 +76,14 @@ namespace NSyntaxTree {
     };
 
     struct ArrayElementAssignmentStatement : public IStatement {
-        string arrayId;
+        //string arrayId;
+        const NUtil::Symbol* arrayId;
         unique_ptr<IExpression> index;
         unique_ptr<IExpression> rvalue;
 
         inline ArrayElementAssignmentStatement(const Location& location
-            , const string& id
+            //, const string& id
+            , const NUtil::Symbol* id
             , IExpression* indexExpr
             , IExpression* rvalueExpr)
             : IStatement(location), arrayId(id), index(indexExpr), rvalue(rvalueExpr) {

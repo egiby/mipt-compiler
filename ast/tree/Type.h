@@ -1,5 +1,7 @@
 #pragma once
 
+#include <util/Symbol.h>
+
 #include <string>
 
 namespace NSyntaxTree {
@@ -12,6 +14,7 @@ namespace NSyntaxTree {
     
     struct Type {
         EType type = CLASS;
-        std::string id;
+        //std::string id;
+        const NUtil::Symbol* id;
     };
 }
