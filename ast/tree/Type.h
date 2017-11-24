@@ -14,7 +14,6 @@ namespace NSyntaxTree {
     
     struct Type {
         EType type = CLASS;
-        //std::string id;
         const NUtil::Symbol* id;
     };
 }

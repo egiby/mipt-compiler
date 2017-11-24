@@ -19,7 +19,6 @@ namespace NSyntaxTree {
     }
 
     void PrettyPrinterVisitor::printEdge(const std::string &from, const std::string &to) {
-        //outPut << "\t" << from << "->" << to << "\n";
         outPut << "\tnode" << from << "->" << to << "\n";
     }
 
@@ -32,16 +31,11 @@ namespace NSyntaxTree {
     }
 
     void PrettyPrinterVisitor::Visit(const Program *node) {
-        std::cout << "We are visiting node program" << std::endl;
         outPut << "digraph g {\n" << "\n";
 
         this->printVertex(node, std::string("Program"));
-        std::cout << "Printing the first vertex was ok" << std::endl;
 
-        std::cout << "We are going to accept mainclass" << std::endl;
-        std::cout << (node->mainClass != nullptr) << std::endl;
         node->mainClass->Accept(this);
-        std::cout << "mainClass was accepted" << std::endl;
 
         printEdge(node, (node->mainClass).get());
 
@@ -56,6 +50,7 @@ namespace NSyntaxTree {
     }
 
     void PrettyPrinterVisitor::Visit(const ClassDeclaration *node) {
+        (node->id)->String();
         if ((node->extendsId) != nullptr) {
             printVertex(node, "Class " + (node->id)->String() + " extends " + (node->extendsId)->String());
         } else {
@@ -78,17 +73,21 @@ namespace NSyntaxTree {
     }
 
     void PrettyPrinterVisitor::Visit(const MainClass *node) { 
-        std::cout << "And here we are visiting main class node" << std::endl;
-        std::cout << &(node->nameId)->String() << std::endl;
-        std::cout << "lalala" << std::endl;
         printVertex(node, "Main " + (node->nameId)->String() + " mainArgsId " + (node->mainArgsId)->String());
-        std::cout << "The first vertex was printed" << std::endl;
         node->mainStatement->Accept(this);
         printEdge(node, (node->mainStatement).get());
     }
 
     void PrettyPrinterVisitor::Visit(const VarDeclaration *node) {
-        printVertex(node, (node->type.id)->String() + " " + (node->id)->String());
+        if ((node->type.id) != nullptr && (node->id) != nullptr) {
+            printVertex(node, (node->type.id)->String() + " " + (node->id)->String());
+        } else {
+            if ((node->type.id) != nullptr) {
+                printVertex(node, (node->type.id)->String());
+            } else {
+                printVertex(node, (node->id)->String());
+            }
+        }
     }
 
     void PrettyPrinterVisitor::Visit(const MethodDeclaration *node) {
@@ -116,7 +115,6 @@ namespace NSyntaxTree {
                 label = label + " returnType: INT_ARRAY";
                 break;
         }  
-
         for (const auto& arg : *node->args) {
             switch (arg->type.type) {
                 case CLASS:
@@ -150,7 +148,6 @@ namespace NSyntaxTree {
             }
         }
         printVertex(node, label); 
-
         if (node->localVars != nullptr) {
             for (const auto &var : *(node->localVars)) {
                 var->Accept(this);

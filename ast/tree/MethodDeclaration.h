@@ -22,7 +22,6 @@ namespace NSyntaxTree {
         Type returnType;
         EModifier modifier = PUBLIC;
 
-        //string id;
         const NUtil::Symbol* id;
         unique_ptr<vector<unique_ptr<VarDeclaration>>> args;
 
@@ -33,7 +32,6 @@ namespace NSyntaxTree {
 
         inline MethodDeclaration(const Location& location
             , Type type
-            //, const string& name
             , const NUtil::Symbol* name
             , vector<unique_ptr<VarDeclaration>>* args
             , vector<unique_ptr<VarDeclaration>>* vars

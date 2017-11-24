@@ -12,6 +12,7 @@ NSyntaxTree::Program NSyntaxTree::BuildTree(std::istream *input) {
     Scanner scanner(input, interner);
 
     NSyntaxTree::Program program;
+    program.interner = interner;
     yy::parser parser(scanner, program);
     parser.parse();
 

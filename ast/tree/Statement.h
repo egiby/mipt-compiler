@@ -63,11 +63,9 @@ namespace NSyntaxTree {
     };
 
     struct AssignStatement : public IStatement {
-        //string lvalue;
         const NUtil::Symbol* lvalue;
         unique_ptr<IExpression> rvalue;
 
-        //inline AssignStatement(const Location& location, const string& id, IExpression* expression)
         inline AssignStatement(const Location& location, const NUtil::Symbol* id, IExpression* expression)
             : IStatement(location), lvalue(id), rvalue(expression) {
         }
@@ -76,13 +74,11 @@ namespace NSyntaxTree {
     };
 
     struct ArrayElementAssignmentStatement : public IStatement {
-        //string arrayId;
         const NUtil::Symbol* arrayId;
         unique_ptr<IExpression> index;
         unique_ptr<IExpression> rvalue;
 
         inline ArrayElementAssignmentStatement(const Location& location
-            //, const string& id
             , const NUtil::Symbol* id
             , IExpression* indexExpr
             , IExpression* rvalueExpr)
