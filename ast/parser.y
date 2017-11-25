@@ -17,6 +17,7 @@
 %code requires {
     #include <ast/tree/NodeTypes.h>
     #include <ast/Utils.h>
+    #include <util/Symbol.h>
     class Scanner;
     using NSyntaxTree::ConvertLocation;
 }
@@ -79,7 +80,7 @@
 %token T_RBRACKET "]"
 %token T_LBRACKET "["
 
-%token <std::string> T_ID
+%token <NUtil::Symbol*> T_ID
 %token <int> T_INT_LITERAL
 
 %token T_EOF 0
@@ -147,7 +148,7 @@ ClassDeclaration
         VarDeclarations
         MethodDeclarations
     "}" {
-        $$ = new NSyntaxTree::ClassDeclaration(ConvertLocation(@$), $name, std::string(), $VarDeclarations, $MethodDeclarations);
+        $$ = new NSyntaxTree::ClassDeclaration(ConvertLocation(@$), $name, nullptr, $VarDeclarations, $MethodDeclarations);
     }
     | T_CLASS T_ID[name] T_EXTENDS T_ID[parent] "{"
         VarDeclarations
@@ -181,13 +182,13 @@ VarDeclaration
 ;
 Type
     : T_INT {
-        $$ = NSyntaxTree::Type{NSyntaxTree::EType::INT, std::string()};
+        $$ = NSyntaxTree::Type{NSyntaxTree::EType::INT, nullptr};
     }
     | T_INT_ARRAY {
-        $$ = NSyntaxTree::Type{NSyntaxTree::EType::INT_ARRAY, std::string()};
+        $$ = NSyntaxTree::Type{NSyntaxTree::EType::INT_ARRAY, nullptr};
     }
     | T_BOOL {
-        $$ = NSyntaxTree::Type{NSyntaxTree::EType::BOOL, std::string()};
+        $$ = NSyntaxTree::Type{NSyntaxTree::EType::BOOL, nullptr};
     }
     | T_ID {
         $$ = NSyntaxTree::Type{NSyntaxTree::EType::CLASS, $1};

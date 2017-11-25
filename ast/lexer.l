@@ -162,8 +162,11 @@ length {
 	return token::T_INT_LITERAL;
 }
 {IDENTIFIER} {
-	yylval->build<std::string>(yytext);
+	//yylval->build<std::string>(yytext);
+	const NUtil::Symbol* str = interner->GetIntern(yytext);
+	yylval->build<const NUtil::Symbol*>(str);
 	return token::T_ID;
+	//return str;
 }
 <<EOF>> {
 	return token::T_EOF;
