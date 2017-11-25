@@ -44,7 +44,7 @@ namespace NSyntaxTree {
     struct WhileStatement : public IStatement {
         unique_ptr<IExpression> condition;
         unique_ptr<IStatement> trueStatement;
-        
+
         inline WhileStatement(const Location& location, IExpression* expression, IStatement* statement)
             : IStatement(location), condition(expression), trueStatement(statement) {
         }

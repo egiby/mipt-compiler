@@ -20,12 +20,10 @@ namespace NSymbolTable {
         template<class TNodeInfo, class TIdentifierInfo, class TVector>
         void InsertAll(TIdentifierInfo *info
                 , void (TIdentifierInfo::* insertFunction)(const TNodeInfo&)
-                , const std::unordered_map<const Symbol *, TNodeInfo> & (TIdentifierInfo::* getMapFunction)() const
+                , const std::unordered_map<const Symbol *, TNodeInfo>& existedIds
                 , const TVector& nodes) {
             for (const auto &node: nodes) {
-                //const Symbol *varId = interner->GetIntern(node->id);
-                //CheckIdentifier((info->*getMapFunction)(), varId, node->location);
-                CheckIdentifier((info->*getMapFunction)(), node->id, node->location);
+                CheckIdentifier(existedIds, node->id, node->location);
 
                 node->Accept(this);
                 assert(returnValue);
@@ -37,7 +35,6 @@ namespace NSymbolTable {
         }
 
         TypeInfo FromType(const NSyntaxTree::Type& type) {
-            //return TypeInfo(type.type, interner->GetIntern(type.id));
             return TypeInfo(type.type, type.id);
         }
 

@@ -93,9 +93,9 @@ namespace NSyntaxTree {
     void PrettyPrinterVisitor::Visit(const MethodDeclaration *node) {
         std::string label;
         if ((node->id) != nullptr) {
-            std::string label = "method" + (node->id)->String();
+            label = "method " + (node->id)->String();
         } else {
-            std::string label = "method";
+            label = "method";
         }
         switch ((node->returnType).type) {
             case CLASS:
@@ -119,30 +119,30 @@ namespace NSyntaxTree {
             switch (arg->type.type) {
                 case CLASS:
                     if ((arg->type.id) != nullptr) {
-                        label = label + " arg: CLASS " + (arg->type.id)->String() + " " + (arg->id)->String();
+                        label += " arg: CLASS " + (arg->type.id)->String() + " " + (arg->id)->String();
                     } else {
-                        label = label + " arg: CLASS ";
+                        label += " arg: CLASS ";
                     }
                     break;
                 case INT:
                     if ((arg->id) != nullptr) {
-                        label = label + " arg: INT " + (arg->id)->String();
+                        label += " arg: INT " + (arg->id)->String();
                     } else {
-                           label = label + " arg: INT ";
+                           label += " arg: INT ";
                     }
                     break;
                 case BOOL:
                     if ((arg->id) != nullptr) {
-                        label = label + " arg: BOOL " + (arg->id)->String();
+                        label += " arg: BOOL " + (arg->id)->String();
                     } else {
-                        label = label + " arg: BOOL ";
+                        label += " arg: BOOL ";
                     }
                     break;
                 case INT_ARRAY:
                     if ((arg->id) != nullptr) {
-                        label = label + " arg INT_ARRAY " + (arg->id)->String();
+                        label += " arg INT_ARRAY " + (arg->id)->String();
                     } else {
-                        label = label + " arg INT_ARRAY ";
+                        label += " arg INT_ARRAY ";
                     }
                     break;
             }
