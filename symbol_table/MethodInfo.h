@@ -32,6 +32,6 @@ namespace NSymbolTable {
         NSyntaxTree::EModifier GetModifier() const { return modifier; }
         const std::vector<VariableInfo> &GetArgsInfo() const { return argsInfo; }
         const std::unordered_map<const Symbol*, VariableInfo> &GetVarsInfo() const { return varsInfo; }
-        const std::unordered_map<const Symbol*, VariableInfo> &GetArgsMap() const { return varsInfo; }
+        const std::unordered_map<const Symbol*, VariableInfo> &GetArgsMap() const { return argsMap; }
     };
 }
