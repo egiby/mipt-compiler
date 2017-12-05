@@ -5,6 +5,12 @@ namespace NSymbolTable {
         InsertAll(&symbolTable, &SymbolTable::InsertClassInfo, symbolTable.GetClasses(), *program->classes);
 
         program->mainClass->Accept(this);
+
+        if (symbolTable.HasClass(program->mainClass->nameId)) {
+            throw RedefinitionException(symbolTable.GetClasses().at(program->mainClass->nameId).GetLocation()
+                    , program->mainClass->nameId
+                    , symbolTable.GetMainClassLocation());
+        }
     }
 
     void SymbolTableCreatorVisitor::Visit(const NSyntaxTree::ClassDeclaration *classDeclaration) {
@@ -20,6 +26,7 @@ namespace NSymbolTable {
 
     void SymbolTableCreatorVisitor::Visit(const NSyntaxTree::MainClass *mainClass) {
         symbolTable.SetMainClass(mainClass->nameId);
+        symbolTable.SetMainClassLocation(mainClass->location);
     }
 
     void SymbolTableCreatorVisitor::Visit(const NSyntaxTree::VarDeclaration *var) {
@@ -31,7 +38,7 @@ namespace NSymbolTable {
     void SymbolTableCreatorVisitor::Visit(const NSyntaxTree::MethodDeclaration *method) {
         auto methodInfo = new MethodInfo(method->id, method->location, FromType(method->returnType), method->modifier);
 
-        InsertAll(methodInfo, &MethodInfo::InsertArgumentInfo, methodInfo->GetArgsInfo(), *method->args);
+        InsertAll(methodInfo, &MethodInfo::InsertArgumentInfo, methodInfo->GetArgsMap(), *method->args);
         InsertAll(methodInfo, &MethodInfo::InsertVariableInfo, methodInfo->GetVarsInfo(), *method->localVars);
 
         returnValue.reset(methodInfo);

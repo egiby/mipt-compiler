@@ -1,48 +1,37 @@
 #pragma once
 
-#include "common.h"
-
-#include "IdentifierInfo.h"
-#include "SymbolTable.h"
-
 #include <ast/tree/visitors/IVisitor.h>
-#include <util/StringInterner.h>
+#include <symbol_table/SymbolTable.h>
 
-#include <cassert>
+#include <memory>
 
-namespace NSymbolTable {
-    class SymbolTableCreatorVisitor : public NSyntaxTree::IVisitor {
-        SymbolTable &symbolTable;
+namespace NTypeChecker {
+    class TypeCheckerVisitor: public NSyntaxTree::IVisitor {
+        const NSymbolTable::SymbolTable &symbolTable;
 
-        std::unique_ptr<IdentifierInfo> returnValue;
+        std::unique_ptr<NSymbolTable::TypeInfo> expressionType;
+        std::unique_ptr<NSymbolTable::ClassInfo> currentClass;
+        std::unique_ptr<NSymbolTable::MethodInfo> currentMethod;
 
-        template<class TNodeInfo, class TIdentifierInfo, class TVector>
-        void InsertAll(TIdentifierInfo *info
-                , void (TIdentifierInfo::* insertFunction)(const TNodeInfo&)
-                , const std::unordered_map<const Symbol *, TNodeInfo>& existedIds
-                , const TVector& nodes) {
-            for (const auto &node: nodes) {
-                CheckIdentifier(existedIds, node->id, node->location);
+        const NSymbolTable::MethodInfo* FindMethod(const NSymbolTable::Symbol*
+                , const NSymbolTable::Symbol*) const;
 
-                node->Accept(this);
-                assert(returnValue);
+        const NSymbolTable::VariableInfo* FindIdentifier(const NSymbolTable::ClassInfo*
+                , const NSymbolTable::Symbol*
+                , const NSymbolTable::MethodInfo* info = nullptr) const;
 
-                auto value = dynamic_cast<TNodeInfo *>(returnValue.get());
-                assert(value);
-                (info->*insertFunction)(*value);
-            }
-        }
+        const NSymbolTable::MethodInfo& FindAndCheckMethod(const NSymbolTable::Symbol*
+                , const NSymbolTable::Symbol*
+                , const NSyntaxTree::Location&) const;
+        const NSymbolTable::VariableInfo& FindAndCheckIdentifier(const NSymbolTable::ClassInfo&
+                , const NSymbolTable::MethodInfo&
+                , const NSymbolTable::Symbol*
+                , const NSyntaxTree::Location&) const;
 
-        TypeInfo FromType(const NSyntaxTree::Type& type) {
-            return TypeInfo(type.type, type.id);
-        }
-
+        void CheckExpressionType(const NSyntaxTree::IExpression*, const NSymbolTable::TypeInfo&);
     public:
-        inline explicit SymbolTableCreatorVisitor(SymbolTable &table)
-                : symbolTable(table) {
+        explicit TypeCheckerVisitor(const NSymbolTable::SymbolTable &symbolTable) : symbolTable(symbolTable) {
         }
-
-        SymbolTableCreatorVisitor() = delete;
 
         void Visit(const NSyntaxTree::Program *) override;
 

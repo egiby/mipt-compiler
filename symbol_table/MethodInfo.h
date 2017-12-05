@@ -15,7 +15,8 @@ namespace NSymbolTable {
     class MethodInfo : public IdentifierInfo {
         TypeInfo returnType;
         NSyntaxTree::EModifier modifier;
-        std::unordered_map<const Symbol*, VariableInfo> argsInfo;
+        std::vector<VariableInfo> argsInfo;
+        std::unordered_map<const Symbol*, VariableInfo> argsMap;
         std::unordered_map<const Symbol*, VariableInfo> varsInfo;
 
     public:
@@ -29,7 +30,8 @@ namespace NSymbolTable {
             
         const TypeInfo& GetReturnType() const { return returnType; }
         NSyntaxTree::EModifier GetModifier() const { return modifier; }
-        const std::unordered_map<const Symbol*, VariableInfo> &GetArgsInfo() const { return argsInfo; }
+        const std::vector<VariableInfo> &GetArgsInfo() const { return argsInfo; }
         const std::unordered_map<const Symbol*, VariableInfo> &GetVarsInfo() const { return varsInfo; }
+        const std::unordered_map<const Symbol*, VariableInfo> &GetArgsMap() const { return varsInfo; }
     };
 }

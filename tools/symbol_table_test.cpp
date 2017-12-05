@@ -1,6 +1,6 @@
 #include <ast/TreeBuilder.h>
 
-#include <symbol_table/SymbolTableCreatorVisitor.h>
+#include <symbol_table/SymbolTableBuilder.h>
 
 #include <fstream>
 #include <iostream>
@@ -14,11 +14,7 @@ int main(int argc, char* argv[]) {
     std::ifstream input(argv[1]);
     auto program = NSyntaxTree::BuildTree(&input);
 
-    NSymbolTable::SymbolTable table;
-    NUtil::StringInterner interner;
-
-    NSymbolTable::SymbolTableCreatorVisitor creator(table, &interner);
-    creator.Visit(&program);
+    NSymbolTable::SymbolTable table = NSymbolTable::BuildSymbolTable(program);
 
     std::cout << table.GetMainClassId()->String() << std::endl;
 }

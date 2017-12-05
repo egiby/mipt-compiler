@@ -8,6 +8,7 @@
 namespace NSyntaxTree {
     enum EBinaryExprType {
         AND,
+        OR,
         LESS,
         PLUS,
         MINUS,
