@@ -30,13 +30,13 @@ namespace NSymbolTable {
     }
 
     void SymbolTableCreatorVisitor::Visit(const NSyntaxTree::VarDeclaration *var) {
-        auto varInfo = new VariableInfo(var->id, var->location, FromType(var->type));
+        auto varInfo = new VariableInfo(var->id, var->location, var->type);
 
         returnValue.reset(varInfo);
     }
 
     void SymbolTableCreatorVisitor::Visit(const NSyntaxTree::MethodDeclaration *method) {
-        auto methodInfo = new MethodInfo(method->id, method->location, FromType(method->returnType), method->modifier);
+        auto methodInfo = new MethodInfo(method->id, method->location, method->returnType, method->modifier);
 
         InsertAll(methodInfo, &MethodInfo::InsertArgumentInfo, methodInfo->GetArgsMap(), *method->args);
         InsertAll(methodInfo, &MethodInfo::InsertVariableInfo, methodInfo->GetVarsInfo(), *method->localVars);

@@ -32,11 +32,6 @@ namespace NSymbolTable {
                 (info->*insertFunction)(*value);
             }
         }
-
-        TypeInfo FromType(const NSyntaxTree::Type& type) {
-            return TypeInfo(type.type, type.id);
-        }
-
     public:
         inline explicit SymbolTableCreatorVisitor(SymbolTable &table)
                 : symbolTable(table) {
