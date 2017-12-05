@@ -28,6 +28,8 @@ namespace NTypeChecker {
                 , const NSymbolTable::Symbol*
                 , const NSyntaxTree::Location&) const;
 
+        bool IsSimilarTypes(const NSymbolTable::TypeInfo&, const NSymbolTable::TypeInfo&) const;
+
         void CheckExpressionType(const NSyntaxTree::IExpression*, const NSymbolTable::TypeInfo&);
     public:
         explicit TypeCheckerVisitor(const NSymbolTable::SymbolTable &symbolTable) : symbolTable(symbolTable) {

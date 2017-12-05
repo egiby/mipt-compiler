@@ -18,7 +18,7 @@ namespace NSymbolTable {
     bool TypeInfo::operator==(const TypeInfo &t) const {
         if (type != CLASS)
             return type == t.type;
-        
+
         return type == t.type && classId == t.classId;
     }
 

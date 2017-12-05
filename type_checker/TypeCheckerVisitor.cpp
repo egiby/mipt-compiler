@@ -168,7 +168,7 @@ namespace NTypeChecker {
 
         for (uint32_t i =  0; i < expression->args->size(); ++i) {
             expression->args->at(i)->Accept(this);
-            if (*expressionType != method.GetArgsInfo().at(i).GetTypeInfo()) {
+            if (!IsSimilarTypes(*expressionType, method.GetArgsInfo().at(i).GetTypeInfo())) {
                 throw IllegalTypeException(expression->args->at(i)->location, *expressionType, method.GetArgsInfo().at(i).GetTypeInfo());
             }
         }
@@ -298,5 +298,17 @@ namespace NTypeChecker {
         const auto &method = classInfo.GetMethodsInfo().at(methodId);
 
         return &method;
+    }
+
+    bool TypeCheckerVisitor::IsSimilarTypes(const TypeInfo &first, const TypeInfo &second) const {
+        if (first.GetType() != CLASS || second.GetType() != CLASS)
+            return first == second;
+
+        auto clazz = symbolTable.GetClassInfo(first.GetClassId());
+        while (clazz.GetId() != second.GetClassId() && clazz.GetSuperClassId()) {
+            clazz = symbolTable.GetClassInfo(clazz.GetSuperClassId());
+        }
+
+        return clazz.GetId() == second.GetClassId();
     }
 }
