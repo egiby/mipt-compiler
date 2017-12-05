@@ -122,7 +122,7 @@ namespace NTypeChecker {
     }
 
     void TypeCheckerVisitor::Visit(const NSyntaxTree::BinaryExpression *expression) {
-        if (expression->type == NSyntaxTree::AND || expression->type == NSyntaxTree::OR || expression->type == NSyntaxTree::LESS) {
+        if (expression->type == NSyntaxTree::AND || expression->type == NSyntaxTree::OR) {
             CheckExpressionType(expression->left.get(), BooleanType);
             CheckExpressionType(expression->right.get(), BooleanType);
             expressionType.reset(new TypeInfo(BOOL));
@@ -130,7 +130,10 @@ namespace NTypeChecker {
         else {
             CheckExpressionType(expression->left.get(), IntType);
             CheckExpressionType(expression->right.get(), IntType);
-            expressionType.reset(new TypeInfo(INT));
+            if (expression->type == NSyntaxTree::LESS)
+                expressionType.reset(new TypeInfo(BOOL));
+            else
+                expressionType.reset(new TypeInfo(INT));
         }
     }
 
