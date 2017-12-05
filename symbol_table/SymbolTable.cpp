@@ -24,4 +24,16 @@ namespace NSymbolTable {
     const Symbol *SymbolTable::GetMainClassId() const {
         return mainClass;
     }
+
+    std::shared_ptr<StringInterner> SymbolTable::GetInterner() {
+        return interner;
+    }
+
+    void SymbolTable::SetMainClassLocation(const Location &location) {
+        mainClassLocation = location;
+    }
+
+    const Location &SymbolTable::GetMainClassLocation() const {
+        return mainClassLocation;
+    }
 }

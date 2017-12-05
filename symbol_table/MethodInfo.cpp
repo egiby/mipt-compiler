@@ -9,7 +9,8 @@ namespace NSymbolTable {
     }
 
     void MethodInfo::InsertArgumentInfo(const VariableInfo& argInfo) {
-        argsInfo.insert({argInfo.GetId(), argInfo});
+        argsInfo.push_back(argInfo);
+        argsMap.insert({argInfo.GetId(), argInfo});
     }
 
     void MethodInfo::InsertVariableInfo(const VariableInfo& varInfo) {
