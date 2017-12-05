@@ -1,9 +1,10 @@
-#include <unitypes.h>
 #include "TypeCheckerVisitor.h"
 
 #include "Exceptions.h"
 
 namespace NTypeChecker {
+    using uint32 = unsigned int;
+
     using namespace NSymbolTable;
 
     void TypeCheckerVisitor::Visit(const NSyntaxTree::Program *program) {
@@ -24,7 +25,7 @@ namespace NTypeChecker {
                         throw RedefinitionException(method->location, method->id, methodInfo->GetLocation());
                     }
 
-                    for (uint32_t i = 0; i < method->args->size(); ++i) {
+                    for (uint32 i = 0; i < method->args->size(); ++i) {
                         if (methodInfo->GetArgsInfo().at(i).GetTypeInfo() != method->args->at(i)->type) {
                             throw RedefinitionException(method->location, method->id, methodInfo->GetLocation());
                         }
@@ -166,7 +167,7 @@ namespace NTypeChecker {
             throw BadArgumentsException(expression->location);
         }
 
-        for (uint32_t i =  0; i < expression->args->size(); ++i) {
+        for (uint32 i =  0; i < expression->args->size(); ++i) {
             expression->args->at(i)->Accept(this);
             if (!IsSimilarTypes(*expressionType, method.GetArgsInfo().at(i).GetTypeInfo())) {
                 throw IllegalTypeException(expression->args->at(i)->location, *expressionType, method.GetArgsInfo().at(i).GetTypeInfo());
