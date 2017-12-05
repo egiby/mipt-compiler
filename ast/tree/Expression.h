@@ -3,10 +3,12 @@
 #include "common.h"
 
 #include "INode.h"
+#include <util/Symbol.h>
 
 namespace NSyntaxTree {
     enum EBinaryExprType {
         AND,
+        OR,
         LESS,
         PLUS,
         MINUS,
@@ -57,12 +59,12 @@ namespace NSyntaxTree {
 
     struct MethodCallExpression : public IExpression {
         unique_ptr<IExpression> object;
-        string nameId;
+        const NUtil::Symbol* nameId;
         unique_ptr<vector<unique_ptr<IExpression>>> args;
 
         inline MethodCallExpression(const Location& location
             , IExpression* objectExpr
-            , const string& name
+            , const NUtil::Symbol* name
             , vector<unique_ptr<IExpression>>* argsVector)
             : IExpression(location), object(objectExpr), nameId(name), args(argsVector) {
         }
@@ -91,9 +93,9 @@ namespace NSyntaxTree {
     };
 
     struct IdentifierExpression : public IExpression {
-        string identifier;
+        const NUtil::Symbol* identifier;
 
-        inline IdentifierExpression(const Location& location, const string& identifier)
+        inline IdentifierExpression(const Location& location, const NUtil::Symbol* identifier)
             : IExpression(location), identifier(identifier) {
         }
 
@@ -118,9 +120,9 @@ namespace NSyntaxTree {
     };
 
     struct NewExpression : public IExpression {
-        string classId;
+        const NUtil::Symbol* classId;
 
-        inline NewExpression(const Location& location, const string& id)
+        inline NewExpression(const Location& location, const NUtil::Symbol* id)
             : IExpression(location), classId(id) {
         }
 

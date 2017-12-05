@@ -31,6 +31,6 @@ namespace NSymbolTable {
 
         const std::unordered_map<const Symbol *, MethodInfo> &GetMethodsInfo() const { return methodsInfo; }
 
-        const Symbol *GetSuperClassId() { return superClassId; }
+        const Symbol *GetSuperClassId() const { return superClassId; }
     };
 }

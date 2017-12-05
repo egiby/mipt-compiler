@@ -6,6 +6,7 @@
 #include "Statement.h"
 #include "Type.h"
 #include "VarDeclaration.h"
+#include <util/Symbol.h>
 
 #include <memory>
 #include <vector>
@@ -21,7 +22,7 @@ namespace NSyntaxTree {
         Type returnType;
         EModifier modifier = PUBLIC;
 
-        string id;
+        const NUtil::Symbol* id;
         unique_ptr<vector<unique_ptr<VarDeclaration>>> args;
 
         unique_ptr<vector<unique_ptr<VarDeclaration>>> localVars;
@@ -31,7 +32,7 @@ namespace NSyntaxTree {
 
         inline MethodDeclaration(const Location& location
             , Type type
-            , const string& name
+            , const NUtil::Symbol* name
             , vector<unique_ptr<VarDeclaration>>* args
             , vector<unique_ptr<VarDeclaration>>* vars
             , vector<unique_ptr<IStatement>>* statements

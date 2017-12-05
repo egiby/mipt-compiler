@@ -23,6 +23,13 @@ namespace NSymbolTable {
 
     class CyclicDependencyException : public SymbolTableException {
     public:
+        CyclicDependencyException(const Location& loc, const Symbol* id)
+            : SymbolTableException("Cyclic dependency: " + id->String() + " on " + loc.ToString()) {}
+    };
 
+    class NonDeclaredSymbolException : public SymbolTableException {
+    public:
+        NonDeclaredSymbolException(const Location& loc, const Symbol* id)
+            : SymbolTableException("Identifier is not declared: " + id->String() + " on " + loc.ToString()) {}
     };
 }

@@ -1,6 +1,7 @@
 #include <ast/TreeBuilder.h>
-
 #include <symbol_table/SymbolTableBuilder.h>
+#include <type_checker/DependencyChecker.h>
+#include <type_checker/TypeCheckerVisitor.h>
 
 #include <fstream>
 #include <iostream>
@@ -16,5 +17,12 @@ int main(int argc, char* argv[]) {
 
     NSymbolTable::SymbolTable table = NSymbolTable::BuildSymbolTable(program);
 
-    std::cout << table.GetMainClassId()->String() << std::endl;
+    NTypeChecker::CheckDependencies(table);
+
+    NTypeChecker::TypeCheckerVisitor checker(table);
+    checker.Visit(&program);
+
+    std::cout << "OK" << std::endl;
+
+    return 0;
 }

@@ -2,39 +2,44 @@
 
 namespace NSymbolTable {
     void SymbolTableCreatorVisitor::Visit(const NSyntaxTree::Program *program) {
-        InsertAll(&symbolTable, &SymbolTable::InsertClassInfo, &SymbolTable::GetClasses, *program->classes);
+        InsertAll(&symbolTable, &SymbolTable::InsertClassInfo, symbolTable.GetClasses(), *program->classes);
 
         program->mainClass->Accept(this);
+
+        if (symbolTable.HasClass(program->mainClass->nameId)) {
+            throw RedefinitionException(symbolTable.GetClasses().at(program->mainClass->nameId).GetLocation()
+                    , program->mainClass->nameId
+                    , symbolTable.GetMainClassLocation());
+        }
     }
 
     void SymbolTableCreatorVisitor::Visit(const NSyntaxTree::ClassDeclaration *classDeclaration) {
-        const Symbol *id = interner->GetIntern(classDeclaration->id);
-        const Symbol *extends = interner->GetIntern(classDeclaration->extendsId);
-        auto classInfo = new ClassInfo(id, classDeclaration->location, extends);
+        auto classInfo = new ClassInfo(classDeclaration->id
+            , classDeclaration->location
+            , classDeclaration->extendsId);
 
-        InsertAll(classInfo, &ClassInfo::InsertVarInfo, &ClassInfo::GetVarsInfo, *classDeclaration->varDeclarations);
-        InsertAll(classInfo, &ClassInfo::InsertMethodInfo, &ClassInfo::GetMethodsInfo, *classDeclaration->methodDeclarations);
+        InsertAll(classInfo, &ClassInfo::InsertVarInfo, classInfo->GetVarsInfo(), *classDeclaration->varDeclarations);
+        InsertAll(classInfo, &ClassInfo::InsertMethodInfo, classInfo->GetMethodsInfo(), *classDeclaration->methodDeclarations);
 
         returnValue.reset(classInfo);
     }
 
     void SymbolTableCreatorVisitor::Visit(const NSyntaxTree::MainClass *mainClass) {
-        symbolTable.SetMainClass(interner->GetIntern(mainClass->nameId));
+        symbolTable.SetMainClass(mainClass->nameId);
+        symbolTable.SetMainClassLocation(mainClass->location);
     }
 
     void SymbolTableCreatorVisitor::Visit(const NSyntaxTree::VarDeclaration *var) {
-        const Symbol *id = interner->GetIntern(var->id);
-        auto varInfo = new VariableInfo(id, var->location, FromType(var->type));
+        auto varInfo = new VariableInfo(var->id, var->location, var->type);
 
         returnValue.reset(varInfo);
     }
 
     void SymbolTableCreatorVisitor::Visit(const NSyntaxTree::MethodDeclaration *method) {
-        const Symbol *id = interner->GetIntern(method->id);
-        auto methodInfo = new MethodInfo(id, method->location, FromType(method->returnType), method->modifier);
+        auto methodInfo = new MethodInfo(method->id, method->location, method->returnType, method->modifier);
 
-        InsertAll(methodInfo, &MethodInfo::InsertArgumentInfo, &MethodInfo::GetArgsInfo, *method->args);
-        InsertAll(methodInfo, &MethodInfo::InsertVariableInfo, &MethodInfo::GetVarsInfo, *method->localVars);
+        InsertAll(methodInfo, &MethodInfo::InsertArgumentInfo, methodInfo->GetArgsMap(), *method->args);
+        InsertAll(methodInfo, &MethodInfo::InsertVariableInfo, methodInfo->GetVarsInfo(), *method->localVars);
 
         returnValue.reset(methodInfo);
     }

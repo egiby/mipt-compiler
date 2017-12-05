@@ -51,16 +51,33 @@ set(TreeBuilder
         ${Util}
         )
 
+set(SymbolTableBuilder
+        symbol_table/SymbolTableBuilder.cpp
+        symbol_table/SymbolTableBuilder.h
+        ${SymbolTable}
+        ${TreeBuilder}
+        )
+
+set(TypeChecker
+        ${SymbolTableBuilder}
+        type_checker/DependencyChecker.cpp
+        type_checker/TypeCheckerVisitor.cpp
+        type_checker/Exceptions.cpp)
+
 add_executable(printer
         tools/dot_printer.cpp
         ${TreeBuilder}
         ${Visitors}
         )
 
-add_executable(symbol_table
+add_executable(symbol_table_test
         tools/symbol_table_test.cpp
-        ${SymbolTable}
-        ${TreeBuilder}
+        ${SymbolTableBuilder}
+        )
+
+add_executable(type_checker
+        tools/type_checker.cpp
+        ${TypeChecker}
         )
 
 include_directories(. ${CMAKE_CURRENT_BINARY_DIR})
