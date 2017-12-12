@@ -61,6 +61,11 @@ namespace NTypeChecker {
             if (auto varInfo = FindIdentifier(currentClass.get(), arg->id)) {
                 throw RedefinitionException(arg->location, arg->id, varInfo->GetLocation());
             }
+
+            TypeInfo type = arg->type;
+            if (type.GetType() == CLASS && !symbolTable.HasClass(type.GetClassId())) {
+                throw NonDeclaredSymbolException(arg->location, type.GetClassId());
+            }
         }
 
         for (const auto &var: *method->localVars) {
