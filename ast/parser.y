@@ -367,6 +367,7 @@ ArgumentExpressions
 
 void yy::parser::error(const yy::parser::location_type& l, const std::string &err_message) {
     cerr << l << ": " << err_message << endl;
+    std::terminate();
 }
 
 
