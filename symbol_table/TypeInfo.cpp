@@ -44,7 +44,8 @@ namespace NSymbolTable {
             {
                 return classId->String();
             }
+            default:
+                assert(false);
         }
-        assert(false);
     }
 }

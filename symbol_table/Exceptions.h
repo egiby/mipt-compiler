@@ -2,13 +2,12 @@
 
 #include "common.h"
 
-#include <stdexcept>
+#include <ast/Exceptions.h>
 
 namespace NSymbolTable {
-    class SymbolTableException : public std::runtime_error {
-        using std::runtime_error::runtime_error;
+    class SymbolTableException : public NSyntaxTree::SyntaxError {
     public:
-        SymbolTableException(const std::string& message) : runtime_error(message) {
+        SymbolTableException(const std::string& message) : NSyntaxTree::SyntaxError(message) {
         }
     };
 

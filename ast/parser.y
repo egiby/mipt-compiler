@@ -17,7 +17,10 @@
 %code requires {
     #include <ast/tree/NodeTypes.h>
     #include <ast/Utils.h>
+    #include <ast/Exceptions.h>
     #include <util/Symbol.h>
+
+    #include <sstream>
     class Scanner;
     using NSyntaxTree::ConvertLocation;
 }
@@ -366,14 +369,7 @@ ArgumentExpressions
 %%
 
 void yy::parser::error(const yy::parser::location_type& l, const std::string &err_message) {
-    cerr << l << ": " << err_message << endl;
-    std::terminate();
+    std::stringstream message;
+    message << l << ": " << err_message;
+    throw NSyntaxTree::SyntaxError(message.str());
 }
-
-
-/*int main() {
-    Scanner scanner(&std::cin);
-    NSyntaxTree::Program program;
-    yy::parser parser(scanner, program);
-    parser.parse();
-}*/
