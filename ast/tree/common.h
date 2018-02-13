@@ -1,6 +1,6 @@
 #pragma once
 
-#define interface struct
+#include <util/CommonDefs.h>
 
 #include <memory>
 #include <string>
