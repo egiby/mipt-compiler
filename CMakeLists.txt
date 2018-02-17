@@ -64,6 +64,10 @@ set(TypeChecker
         type_checker/TypeCheckerVisitor.cpp
         type_checker/Exceptions.cpp)
 
+set(ActivationRecords
+        ${SymbolTable}
+        irt/activation_records/X86MiniJavaFrame.cpp)
+
 add_executable(printer
         tools/dot_printer.cpp
         ${TreeBuilder}
@@ -78,6 +82,7 @@ add_executable(symbol_table_test
 add_executable(type_checker
         tools/type_checker.cpp
         ${TypeChecker}
+        ${ActivationRecords}
         )
 
 include_directories(. ${CMAKE_CURRENT_BINARY_DIR})
