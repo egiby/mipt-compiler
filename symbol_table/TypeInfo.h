@@ -17,6 +17,12 @@ namespace NSymbolTable {
         TypeInfo(const NSyntaxTree::Type &_type) : type(_type.type), classId(_type.id) {
         }
 
+        TypeInfo(const TypeInfo &info) = default;
+        TypeInfo &operator=(const TypeInfo &info) = default;
+
+        TypeInfo(TypeInfo &&info) = default;
+        TypeInfo &operator=(TypeInfo &&info) = default;
+
         const NSyntaxTree::EType& GetType() const { return type; }
         const Symbol* GetClassId() const;
 
