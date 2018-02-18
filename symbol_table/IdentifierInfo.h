@@ -15,6 +15,12 @@ namespace NSymbolTable {
             : id(_id), location(_location) {
         }
 
+        inline IdentifierInfo(const IdentifierInfo &info) = default;
+        inline IdentifierInfo &operator=(const IdentifierInfo &info) = default;
+
+        inline IdentifierInfo(IdentifierInfo &&info) = default;
+        inline IdentifierInfo &operator=(IdentifierInfo &&info) = default;
+
         inline const Symbol* GetId() const {
             return id;
         }
