@@ -23,8 +23,7 @@ namespace NSymbolTable {
             return location;
         }
 
-        virtual ~IdentifierInfo() {
-        }
+        virtual ~IdentifierInfo() = default;
     };
 
     template<class Map>

@@ -3,13 +3,14 @@
 namespace NIRTree {
 
     void X86MiniJavaFrame::AddLocal(const NSymbolTable::VariableInfo &variable) {
-        idToInfo[variable.GetId()] = variable;
+        idToInfo.insert({variable.GetId(), variable});
         idToAccess[variable.GetId()] = nullptr;
     }
 
     void X86MiniJavaFrame::AddFormal(const NSymbolTable::VariableInfo &variable) {
         formalIds.push_back(variable.GetId());
-        idToInfo[variable.GetId()] = variable;
+
+        idToInfo.insert({variable.GetId(), variable});
         idToAccess[variable.GetId()] = nullptr;
     }
 

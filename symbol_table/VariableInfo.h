@@ -13,6 +13,8 @@ namespace NSymbolTable {
 
     public:
         VariableInfo(const Symbol* _varName, const Location& _location, const TypeInfo& _typeInfo);
+        VariableInfo(const VariableInfo &info);
+
         const TypeInfo& GetTypeInfo() const { return typeInfo; }
     };
 }
