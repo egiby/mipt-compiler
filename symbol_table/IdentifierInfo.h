@@ -11,7 +11,7 @@ namespace NSymbolTable {
         Location location;
 
     public:
-        inline IdentifierInfo(const Symbol* _id, const NSyntaxTree::Location& _location)
+        inline IdentifierInfo(const Symbol* _id, const Location& _location)
             : id(_id), location(_location) {
         }
 
@@ -25,7 +25,7 @@ namespace NSymbolTable {
             return id;
         }
 
-        inline const NSyntaxTree::Location& GetLocation() const {
+        inline const Location& GetLocation() const {
             return location;
         }
 
