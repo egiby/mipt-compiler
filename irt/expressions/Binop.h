@@ -2,24 +2,20 @@
 
 #include "IExp.h"
 
+#include <irt/IIRVisitor.h>
+
 namespace NIRTree {
     enum EBinopType {
-        PLUS,
-        MINUS,
-        MUL,
-        DIV,
         AND,
         OR,
-        LSHIFT,
-        RSHIFT,
-        ARHIFT,
-        XOR
+        PLUS,
+        MINUS,
+        MULTIPLY
     };
 
     class Binop : public IExp {
     public:
         const EBinopType binop;
-        NSyntaxTree::Location location;
         std::unique_ptr<const IExp> leftExp;
         std::unique_ptr<const IExp> rightExp;
 
@@ -30,6 +26,8 @@ namespace NIRTree {
             : binop(_binop), leftExp(_leftExp), rightExp(_rightExp), location(_location) {
         }
             
-        void Accept(IIRVisitor *visitor) const override;
+        void Accept(IIRVisitor *visitor) const override {
+            visitor->Visit(this);
+        }
     };
 }

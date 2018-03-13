@@ -15,14 +15,14 @@ namespace NIRTree {
     }
 
     int X86MiniJavaFrame::GetFormalsCount() const {
-        return formalIds.size();
+        return static_cast<int>(formalIds.size());
     }
 
     std::shared_ptr<const IAccess> X86MiniJavaFrame::GetFormal(int index) {
         return idToAccess[formalIds[index]];
     }
 
-    std::shared_ptr<const IAccess> X86MiniJavaFrame::GetFormalOrLocal(const NSymbolTable::Symbol *id) {
+    std::shared_ptr<const IAccess> X86MiniJavaFrame::GetFormalOrLocal(const NUtil::Symbol *id) {
         return idToAccess[id];
     }
 }

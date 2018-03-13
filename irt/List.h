@@ -19,6 +19,6 @@ namespace NIRTree {
         void Accept(IIRVisitor *visitor) const override;
     };
 
-    typedef List<IExp> ExpList;
-    typedef List<IStm> StmList;
+    using ExpList = List<IExp>;
+    using StmList = List<IStm>;
 }

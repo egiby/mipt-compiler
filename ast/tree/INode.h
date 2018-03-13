@@ -2,8 +2,6 @@
 
 #include "common.h"
 
-#include <sstream>
-
 namespace NSyntaxTree {
     class IVisitor;
 
@@ -16,7 +14,6 @@ namespace NSyntaxTree {
         }
 
         virtual void Accept(IVisitor *visitor) const = 0;
-        virtual ~INode() {
-        }
+        virtual ~INode() = default;
     };
 }

@@ -68,6 +68,17 @@ set(ActivationRecords
         ${SymbolTable}
         irt/activation_records/X86MiniJavaFrame.cpp)
 
+set(IRTree
+        ${ActivationRecords}
+        irt/INode.h
+
+        irt/expressions/Binop.h
+        irt/expressions/Call.h
+        irt/expressions/Const.h
+        irt/expressions/ESeq.h
+        irt/expressions/Mem.h
+        )
+
 add_executable(printer
         tools/dot_printer.cpp
         ${TreeBuilder}
@@ -83,6 +94,7 @@ add_executable(type_checker
         tools/type_checker.cpp
         ${TypeChecker}
         ${ActivationRecords}
+        ${IRTree}
         )
 
 include_directories(. ${CMAKE_CURRENT_BINARY_DIR})
