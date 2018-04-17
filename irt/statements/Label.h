@@ -2,9 +2,18 @@
 
 #include "IStm.h"
 
+#include <irt/Label.h>
+
 namespace NIRTree {
-    class Label : public IStm {
+    class LabelStm : public IStm {
     public:
-        //TODO
+        const Label *label;
+
+        LabelStm(const Label *label, const Location &location) : label(label), location(location) {
+        }
+
+        void Accept(IIRVisitor *visitor) const override {
+            visitor->Visit(this);
+        }
     };
 }

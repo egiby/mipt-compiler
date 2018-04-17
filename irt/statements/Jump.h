@@ -1,14 +1,19 @@
 #pragma once
 
 #include "IStm.h"
-#include <irt/expressions/IExp.h>
+
+#include <irt/Label.h>
 
 namespace NIRTree {
     class Jump : public IStm {
     public:
-        std::unique_ptr<const IExp> exp;
-        //targets
+        const Label *toJump;
 
-        //TODO
+        Jump(const Label *label, const Location &location) : location(location), toJump(toJump) {
+        }
+
+        void Accept(IIRVisitor *visitor) const override {
+            visitor->Visit(this);
+        }
     };
 }

@@ -6,13 +6,14 @@
 namespace NIRTree {
     class Exp : public IStm {
     public:
-        std::unique_ptr<const IExp> exp;
-        NSyntaxTree::Location location;
+        std::unique_ptr<const IExp> expr;
 
-        Exp(const IExp *_exp, const NSyntaxTree::Location &_location) 
-            : exp(_exp), location(_location) {      
+        Exp(const IExp *expr, const NSyntaxTree::Location &location)
+            : expr(expr), location(location) {
         }
-            
-        void Accept(IIRVisitor *visitor) const override;      
+
+        void Accept(IIRVisitor *visitor) const override {
+            visitor->Visit(this);
+        }
     };
 }
