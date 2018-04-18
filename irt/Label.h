@@ -6,6 +6,7 @@ namespace NIRTree {
     using Label = NUtil::Symbol;
 
     class LabelHolder {
+    public:
         static Label * GetLabel(const std::string &name);
         static Label * GetNextLabel();
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "INode.h"
+
 #include <irt/expressions/IExp.h>
 #include <irt/statements/IStm.h>
 
@@ -12,8 +13,8 @@ namespace NIRTree {
         std::unique_ptr<const T> head;
         std::unique_ptr<const T> tail;
 
-        List(const T *_head, const T *_tail, const NSyntaxTree::Location &_location)
-            : head(_head), tail(_tail), location(_location) {
+        List(const T *_head, const T *_tail, const Location &_location)
+            : T(_location), head(_head), tail(_tail) {
         }
             
         void Accept(IIRVisitor *visitor) const override;

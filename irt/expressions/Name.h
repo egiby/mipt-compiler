@@ -9,16 +9,14 @@ namespace NIRTree {
     public:
         const Label *label;
 
-        Name(const Location &location = Location())
-            : label(LabelHolder::GetNextLabel()), location(location) {
+        explicit Name(const Location &location = Location())
+            : IExp(location), label(LabelHolder::GetNextLabel()) {
         }
 
-        Name(const std::string &name)
-            : label(LabelHolder::GetLabel(name), location(location)) {
+        Name(const std::string &name, const Location &location)
+            : IExp(location),  label(LabelHolder::GetLabel(name)) {
         }
 
-        void Accept(IIRVisitor *visitor) const override {
-            visitor->Visit(this);
-        }
+        void Accept(IIRVisitor *visitor) const override;
     };
 }

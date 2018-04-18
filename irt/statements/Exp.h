@@ -1,6 +1,7 @@
 #pragma once
 
 #include "IStm.h"
+
 #include <irt/expressions/IExp.h>
 
 namespace NIRTree {
@@ -8,12 +9,10 @@ namespace NIRTree {
     public:
         std::unique_ptr<const IExp> expr;
 
-        Exp(const IExp *expr, const NSyntaxTree::Location &location)
-            : expr(expr), location(location) {
+        Exp(const IExp *expr, const Location &location)
+            : IStm(location), expr(expr) {
         }
 
-        void Accept(IIRVisitor *visitor) const override {
-            visitor->Visit(this);
-        }
+        void Accept(IIRVisitor *visitor) const override;
     };
 }

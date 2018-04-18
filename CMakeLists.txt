@@ -71,12 +71,16 @@ set(ActivationRecords
 set(IRTree
         ${ActivationRecords}
         irt/INode.h
+        irt/Label.cpp
 
         irt/expressions/Binop.h
         irt/expressions/Call.h
         irt/expressions/Const.h
         irt/expressions/ESeq.h
         irt/expressions/Mem.h
+        irt/expressions/Name.h
+        irt/expressions/Temp.cpp
+        irt/Accept.cpp
         )
 
 add_executable(printer

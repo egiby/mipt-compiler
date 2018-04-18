@@ -7,13 +7,11 @@
 namespace NIRTree {
     class Jump : public IStm {
     public:
-        const Label *toJump;
+        const Label *label;
 
-        Jump(const Label *label, const Location &location) : location(location), toJump(toJump) {
+        Jump(const Label *label, const Location &location) : IStm(location), label(label) {
         }
 
-        void Accept(IIRVisitor *visitor) const override {
-            visitor->Visit(this);
-        }
+        void Accept(IIRVisitor *visitor) const override;
     };
 }

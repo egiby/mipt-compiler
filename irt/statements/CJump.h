@@ -2,6 +2,7 @@
 
 #include "IStm.h"
 #include "Label.h"
+
 #include <irt/expressions/IExp.h>
 
 namespace NIRTree {
@@ -18,15 +19,12 @@ namespace NIRTree {
               const Label *trueLabel,
               const Label *falseLabel,
               const Location &location)
-            : leftExp(leftExpr), rightExpr(rightExpr),
+            : IStm(location), leftExpr(leftExpr), rightExpr(rightExpr),
               trueLabel(trueLabel), falseLabel(falseLabel),
-              jumpType(jumpType),
-              location(location) {
+              jumpType(jumpType) {
         }
 
-        void Accept(IIRVisitor *visitor) const override {
-            visitor->Visit(this);
-        }
+        void Accept(IIRVisitor *visitor) const override;
 
         std::unique_ptr<const IExp> leftExpr;
         std::unique_ptr<const IExp> rightExpr;

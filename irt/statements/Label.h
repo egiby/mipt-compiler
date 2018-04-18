@@ -9,11 +9,9 @@ namespace NIRTree {
     public:
         const Label *label;
 
-        LabelStm(const Label *label, const Location &location) : label(label), location(location) {
+        LabelStm(const Label *label, const Location &location) : IStm(location), label(label) {
         }
 
-        void Accept(IIRVisitor *visitor) const override {
-            visitor->Visit(this);
-        }
+        void Accept(IIRVisitor *visitor) const override;
     };
 }
