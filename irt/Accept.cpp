@@ -13,6 +13,9 @@
 #include <irt/statements/Move.h>
 #include <irt/statements/Seq.h>
 
+#include <irt/translator/ExprWrapper.h>
+#include <irt/translator/StmWrapper.h>
+
 #include <irt/IIRVisitor.h>
 
 namespace NIRTree {
@@ -41,6 +44,38 @@ namespace NIRTree {
     }
 
     void Temp::Accept(IIRVisitor *visitor) const {
+        visitor->Visit(this);
+    }
+
+    void Unop::Accept(IIRVisitor *visitor) const {
+        visitor->Visit(this);
+    }
+
+    void CJump::Accept(IIRVisitor *visitor) const {
+        visitor->Visit(this);
+    }
+
+    void Exp::Accept(IIRVisitor *visitor) const {
+        visitor->Visit(this);
+    }
+
+    void Jump::Accept(IIRVisitor *visitor) const {
+        visitor->Visit(this);
+    }
+
+    void LabelStm::Accept(IIRVisitor *visitor) const {
+        visitor->Visit(this);
+    }
+
+    void Move::Accept(IIRVisitor *visitor) const {
+        visitor->Visit(this);
+    }
+
+    void ExprWrapper::Accept(IIRVisitor *visitor) const {
+        visitor->Visit(this);
+    }
+
+    void StmWrapper::Accept(IIRVisitor *visitor) const {
         visitor->Visit(this);
     }
 }

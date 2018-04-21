@@ -6,6 +6,7 @@
 #include <irt/expressions/ESeq.h>
 #include <irt/expressions/Mem.h>
 #include <irt/expressions/Name.h>
+#include <irt/expressions/Unop.h>
 
 #include <irt/statements/CJump.h>
 #include <irt/statements/Exp.h>
@@ -13,3 +14,6 @@
 #include <irt/statements/Label.h>
 #include <irt/statements/Move.h>
 #include <irt/statements/Seq.h>
+
+#include <irt/translator/ExprWrapper.h>
+#include <irt/translator/StmWrapper.h>

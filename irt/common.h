@@ -5,6 +5,8 @@
 
 #include <memory>
 
+#include <cassert>
+
 namespace NIRTree {
     using NUtil::Location;
 }

@@ -12,7 +12,7 @@ namespace NIRTree {
 
         const int id;
 
-        const int localId;
+        const int localId; // is it really helpful?
         const std::string name;
         TempType type;
 

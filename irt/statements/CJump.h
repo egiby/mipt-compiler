@@ -7,6 +7,7 @@
 
 namespace NIRTree {
     class CJump : public IStm {
+    public:
         enum EJumpType {
             EQ,
             NEQ,
