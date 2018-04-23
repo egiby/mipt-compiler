@@ -21,6 +21,7 @@ namespace NIRTree {
         virtual void Visit(const LabelStm*) = 0;
         virtual void Visit(const Move*) = 0;
         virtual void Visit(const Seq*) = 0;
+        virtual void Visit(const Label*) = 0;
 
         virtual void Visit(const ExprWrapper*) = 0;
         virtual void Visit(const StmWrapper*) = 0;

@@ -1,6 +1,8 @@
 #include <ast/TreeBuilder.h>
 #include <ast/tree/visitors/PrettyPrinterVisitor.h>
 
+#include <irt/translator/IRPrettyPrinter.h>
+
 #include <fstream>
 #include <iostream>
 
@@ -11,14 +13,18 @@ int main(int argc, char* argv[]) {
     }
 
     std::ifstream input(argv[1]);
+
+    // ast
     auto program = NSyntaxTree::BuildTree(&input);
 
-    std::ofstream outPut("./graph.gv");
+    std::ofstream outPut("./graph_ast.gv");
 
     NSyntaxTree::PrettyPrinterVisitor printer(outPut);
     printer.Visit(&program);
 
     outPut.close();
+
+    // irt
 
     return 0;
 }
