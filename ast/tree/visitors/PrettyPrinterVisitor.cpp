@@ -6,20 +6,12 @@ namespace NSyntaxTree {
         outPut << "\tnode" << node << "[label=\"" << label << "\"]\n";
     }
 
-    void PrettyPrinterVisitor::printVertex(const std::string &node, const std::string &label) {
-        outPut << "\tnode" << node << "[label=\"" << label << "\"]\n";
-    }
-
     void PrettyPrinterVisitor::printEdge(const INode *from, const INode *to) {
         outPut << "\tnode" << from << "->" << "node" << to << "\n";
     }
 
     void PrettyPrinterVisitor::printEdge(const INode *from, const INode *to, const std::string &label) {
         outPut << "\tnode" << from << "->" << "node" << to << "[label=\"" << label << "\"]\n";
-    }
-
-    void PrettyPrinterVisitor::printEdge(const std::string &from, const std::string &to) {
-        outPut << "\tnode" << from << "->" << to << "\n";
     }
 
     void PrettyPrinterVisitor::printEdge(const std::string &from, const INode *to) {

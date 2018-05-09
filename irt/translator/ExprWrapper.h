@@ -2,8 +2,6 @@
 
 #include <irt/ISubtreeWrapper.h>
 
-#include <irt/statements/Exp.h>
-
 namespace NIRTree {
     class ExprWrapper: public ISubtreeWrapper {
     public:

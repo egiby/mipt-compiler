@@ -27,6 +27,7 @@ set(SyntaxTreeSrc
 
 set(Visitors
         ast/tree/visitors/PrettyPrinterVisitor.cpp
+        irt/translator/IRPrettyPrinter.cpp
         )
 
 set(SymbolTable
@@ -88,6 +89,7 @@ set(IRTree
 add_executable(printer
         tools/dot_printer.cpp
         ${TreeBuilder}
+	${IRTree}
         ${Visitors}
         )
 
