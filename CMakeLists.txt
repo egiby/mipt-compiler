@@ -1,5 +1,5 @@
 set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-deprecated-register")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-maybe-uninitialized")
 
 cmake_minimum_required(VERSION 3.1)
 
@@ -81,6 +81,8 @@ set(IRTree
         irt/expressions/Name.h
         irt/expressions/Temp.cpp
         irt/Accept.cpp
+
+        irt/translator/IRBuilderVisitor.cpp
         )
 
 add_executable(printer
