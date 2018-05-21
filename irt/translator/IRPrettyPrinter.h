@@ -12,6 +12,9 @@ namespace NIRTree {
         inline explicit IRPrettyPrinter(std::ostream& _outPut = std::cout) : outPut(_outPut) {}
         ~IRPrettyPrinter() = default;
 
+        void printVertex(const INode* node, const std::string& label);
+        void printEdge(const INode* from, const INode * to);
+
         void Visit(const Binop *) override;
         void Visit(const Call *) override;
         void Visit(const Const *) override;
@@ -28,8 +31,8 @@ namespace NIRTree {
         void Visit(const Move *) override;
         void Visit(const Seq *) override;
 
-        void Visit(const ExprWrapper *) override;
-        void Visit(const StmWrapper *) override;
+      /*  void Visit(const ExprWrapper *) override;
+        void Visit(const StmWrapper *) override;*/
 
         //void Visit(const ExpList *) override;
         //void Visit(const StmList *) override;
