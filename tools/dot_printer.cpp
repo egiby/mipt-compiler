@@ -25,6 +25,16 @@ int main(int argc, char* argv[]) {
     outPut.close();
 
     // irt
+    std::ofstream outIrt("./graph_irt.gv");
+
+    NIRTree::IRPrettyPrinter irPrinter(outIrt);
+
+    auto globalRoot = NIRTree::GlobalIRTParent();
+//    irPrinter.Visit(&globalRoot);
+
+    //irPrinter.Visit()
+
+    outIrt.close();
 
     return 0;
 }

@@ -117,12 +117,31 @@ namespace NIRTree {
     void IRPrettyPrinter::Visit(const Seq *node) {
         printVertex(node, std::string("Seq"));
     }
-/*
-    void Visit(const ExprWrapper *node) {
 
+    void IRPrettyPrinter::Visit(const LabelStm*) {
+        // TODO
+    }
+
+    void IRPrettyPrinter::Visit(const ExprWrapper *node) {
+        printVertex(node, std::string("ExprWrapper"));
+        
+        node->GetExpression()->Accept(this);
+        printEdge(node, (node->GetExpression()).get());
     }
         
-    void Visit(const StmWrapper *node) {
+    void IRPrettyPrinter::Visit(const StmWrapper *node) {
+        printVertex(node, std::string("StmWrapper"));
 
-    }*/
+        node->GetStatement()->Accept(this);
+        printEdge(node, (node->GetStatement()).get());
+        
+    }
+
+    void IRPrettyPrinter::Visit(const GlobalIRTParent *node) {
+        outPut <<  "digraph g {\n" << "\n";
+
+        //do smth
+
+        outPut << "}\n";
+    }
 }

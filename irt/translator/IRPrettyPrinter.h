@@ -30,9 +30,12 @@ namespace NIRTree {
         void Visit(const Label *) override;
         void Visit(const Move *) override;
         void Visit(const Seq *) override;
+        void Visit(const LabelStm*) override;
 
-      /*  void Visit(const ExprWrapper *) override;
-        void Visit(const StmWrapper *) override;*/
+        void Visit(const ExprWrapper *) override;
+        void Visit(const StmWrapper *) override;
+
+        void Visit(const GlobalIRTParent *) override;
 
         //void Visit(const ExpList *) override;
         //void Visit(const StmList *) override;
