@@ -25,4 +25,9 @@ namespace NIRTree {
     std::shared_ptr<const IAccess> X86MiniJavaFrame::GetFormalOrLocal(const NUtil::Symbol *id) {
         return idToAccess[id];
     }
+
+    int X86MiniJavaFrame::TypeSize(const NSymbolTable::TypeInfo &type) const {
+        // TODO: change to some valid implementation
+        return 4;
+    }
 }

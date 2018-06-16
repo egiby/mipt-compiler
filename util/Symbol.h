@@ -1,7 +1,5 @@
 #pragma once
 
-#include "StringInterner.h"
-
 #include <iostream>
 #include <memory>
 

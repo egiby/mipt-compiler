@@ -36,6 +36,6 @@ namespace NSymbolTable {
         const Symbol* GetMainClassId() const;
         const Location& GetMainClassLocation() const;
 
-        std::shared_ptr<StringInterner> GetInterner();
+        std::shared_ptr<StringInterner> GetInterner() const;
     };
 }

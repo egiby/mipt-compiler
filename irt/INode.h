@@ -5,7 +5,7 @@
 #include <util/Location.h>
 
 namespace NIRTree {
-    class IIRVisitor;
+    interface IIRVisitor;
 
     interface INode {
         Location location;

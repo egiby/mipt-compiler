@@ -37,7 +37,7 @@ set(SymbolTable
         symbol_table/ClassInfo.cpp
         symbol_table/SymbolTable.cpp
         symbol_table/SymbolTableCreatorVisitor.cpp
-        )
+        symbol_table/ScopeSwitcher.cpp symbol_table/ScopeSwitcher.h)
 
 set(Util
         util/Symbol.cpp
@@ -67,7 +67,10 @@ set(TypeChecker
 
 set(ActivationRecords
         ${SymbolTable}
-        irt/activation_records/X86MiniJavaFrame.cpp)
+        irt/activation_records/X86MiniJavaFrame.cpp
+        irt/activation_records/InRegAccess.cpp
+        irt/activation_records/InFrameAccess.cpp
+        )
 
 set(IRTree
         ${ActivationRecords}
@@ -84,12 +87,12 @@ set(IRTree
         irt/Accept.cpp
 
         irt/translator/IRBuilderVisitor.cpp
+        irt/translator/NameConventions.h
         )
 
 add_executable(printer
         tools/dot_printer.cpp
         ${TreeBuilder}
-	${IRTree}
         ${Visitors}
         )
 
@@ -101,8 +104,8 @@ add_executable(symbol_table_test
 add_executable(type_checker
         tools/type_checker.cpp
         ${TypeChecker}
-        ${ActivationRecords}
-        ${IRTree}
+#        ${ActivationRecords}
+#        ${IRTree}
         )
 
 include_directories(. ${CMAKE_CURRENT_BINARY_DIR})

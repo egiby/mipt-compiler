@@ -15,5 +15,6 @@ namespace NIRTree {
         int GetFormalsCount() const override;
         std::shared_ptr<const IAccess> GetFormal(int index) override;
         std::shared_ptr<const IAccess> GetFormalOrLocal(const NUtil::Symbol *id) override;
+        int TypeSize(const NSymbolTable::TypeInfo&) const override;
     };
 }

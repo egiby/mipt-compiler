@@ -3,7 +3,7 @@
 #include "common.h"
 
 namespace NSyntaxTree {
-    class IVisitor;
+    interface IVisitor;
 
     interface INode {
         Location location;

@@ -2,6 +2,7 @@
 
 #include <ast/tree/visitors/IVisitor.h>
 #include <symbol_table/SymbolTable.h>
+#include <symbol_table/ScopeSwitcher.h>
 
 #include <memory>
 
@@ -9,9 +10,10 @@ namespace NTypeChecker {
     class TypeCheckerVisitor: public NSyntaxTree::IVisitor {
         const NSymbolTable::SymbolTable &symbolTable;
 
-        std::unique_ptr<NSymbolTable::TypeInfo> expressionType;
-        std::unique_ptr<NSymbolTable::ClassInfo> currentClass;
-        std::unique_ptr<NSymbolTable::MethodInfo> currentMethod;
+//        std::unique_ptr<NSymbolTable::TypeInfo> expressionType;
+//        std::unique_ptr<NSymbolTable::ClassInfo> currentClass;
+//        std::unique_ptr<NSymbolTable::MethodInfo> currentMethod;
+        NSymbolTable::ScopeSwitcher switcher;
 
         const NSymbolTable::MethodInfo* FindMethod(const NSymbolTable::Symbol*
                 , const NSymbolTable::Symbol*) const;

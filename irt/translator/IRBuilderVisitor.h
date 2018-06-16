@@ -2,6 +2,13 @@
 
 #include <ast/tree/visitors/IVisitor.h>
 
+#include <irt/common.h>
+#include <irt/ISubtreeWrapper.h>
+#include <irt/activation_records/IFrame.h>
+
+#include <util/StringInterner.h>
+#include <symbol_table/SymbolTable.h>
+
 namespace NIRTree {
     class IRBuilderVisitor: public NSyntaxTree::IVisitor {
     public:
@@ -48,5 +55,13 @@ namespace NIRTree {
         void Visit(const NSyntaxTree::NewExpression *) override;
 
         void Visit(const NSyntaxTree::NegateExpression *) override;
+
+    private:
+        using SubtreePtr = std::unique_ptr<ISubtreeWrapper>;
+        std::unordered_map<const Symbol*, SubtreePtr> forest;
+        const NSymbolTable::SymbolTable &symbolTable;
+        std::unique_ptr<ISubtreeWrapper> mainSubtree;
+
+        const IFrame* frame;
     };
 }

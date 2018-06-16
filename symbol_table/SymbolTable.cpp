@@ -25,7 +25,7 @@ namespace NSymbolTable {
         return mainClass;
     }
 
-    std::shared_ptr<StringInterner> SymbolTable::GetInterner() {
+    std::shared_ptr<StringInterner> SymbolTable::GetInterner() const {
         return interner;
     }
 
