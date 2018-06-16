@@ -90,12 +90,15 @@ set(IRTree
 set(IRTranslate
         irt/translator/IRBuilderVisitor.cpp
         irt/translator/NameConventions.h
+
+	irt/GlobalIRTParent.cpp
         )
 
 add_executable(printer
         tools/dot_printer.cpp
         ${TreeBuilder}
         ${Visitors}
+#	${IRTree}
         )
 
 add_executable(symbol_table_test

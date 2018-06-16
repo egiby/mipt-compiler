@@ -9,6 +9,10 @@ namespace NIRTree {
             location = statement->location;
         }
 
+        const std::unique_ptr<IStm>& GetStatement() const {
+            return statement;
+        }
+
         IExp * ToExp() override {
             assert(false);
         }

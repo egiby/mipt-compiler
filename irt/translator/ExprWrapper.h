@@ -9,6 +9,10 @@ namespace NIRTree {
             location = expression->location;
         }
 
+        const std::unique_ptr<IExp>& GetExpression() const {
+            return expression;
+        }
+
         IExp * ToExp() override {
             return expression.release();
         }
