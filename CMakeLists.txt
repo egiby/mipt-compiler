@@ -85,7 +85,9 @@ set(IRTree
         irt/expressions/Name.h
         irt/expressions/Temp.cpp
         irt/Accept.cpp
+        )
 
+set(IRTranslate
         irt/translator/IRBuilderVisitor.cpp
         irt/translator/NameConventions.h
         )
@@ -104,8 +106,7 @@ add_executable(symbol_table_test
 add_executable(type_checker
         tools/type_checker.cpp
         ${TypeChecker}
-#        ${ActivationRecords}
-#        ${IRTree}
+        ${IRTree}
         )
 
 include_directories(. ${CMAKE_CURRENT_BINARY_DIR})
