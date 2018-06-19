@@ -2,10 +2,13 @@
 
 #include "INode.h"
 
+#include <vector>
+
 namespace NIRTree {
-    class GlobalIRTParent : public NIRTree::INode {
+    class GlobalIRTParent : public INode {
     public:
-        //std::unique_ptr<const IExp> exp;
+        std::vector<const INode*> roots;
+
         void Accept(NIRTree::IIRVisitor *visitor) const override;
     };
 }

@@ -9,9 +9,9 @@ namespace NIRTree {
     class CJump : public IStm {
     public:
         enum EJumpType {
-            EQ,
-            NEQ,
-            LT
+            EQ = 0,
+            NEQ = 1,
+            LT = 2
         };
 
         CJump(const EJumpType jumpType,

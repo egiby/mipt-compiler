@@ -85,20 +85,20 @@ set(IRTree
         irt/expressions/Name.h
         irt/expressions/Temp.cpp
         irt/Accept.cpp
+
+	irt/GlobalIRTParent.cpp
         )
 
 set(IRTranslate
         irt/translator/IRBuilderVisitor.cpp
         irt/translator/NameConventions.h
-
-	irt/GlobalIRTParent.cpp
         )
 
 add_executable(printer
         tools/dot_printer.cpp
         ${TreeBuilder}
         ${Visitors}
-#	${IRTree}
+	${IRTree}
         )
 
 add_executable(symbol_table_test
@@ -111,5 +111,13 @@ add_executable(type_checker
         ${TypeChecker}
         ${IRTree}
         )
+
+add_executable(demo_irt_printer
+        tools/demo_irt_printer.cpp
+        ${TreeBuilder}
+        ${Visitors}
+	${IRTree}
+        )
+
 
 include_directories(. ${CMAKE_CURRENT_BINARY_DIR})

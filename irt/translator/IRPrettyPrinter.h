@@ -14,6 +14,7 @@ namespace NIRTree {
 
         void printVertex(const INode* node, const std::string& label);
         void printEdge(const INode* from, const INode * to);
+        void printEdge(const INode* from, const INode * to, const std::string& label);
 
         void Visit(const Binop *) override;
         void Visit(const Call *) override;
@@ -27,17 +28,15 @@ namespace NIRTree {
         void Visit(const CJump *) override;
         void Visit(const Exp *) override;
         void Visit(const Jump *) override;
-        void Visit(const Label *) override;
         void Visit(const Move *) override;
-        void Visit(const Seq *) override;
         void Visit(const LabelStm*) override;
 
         void Visit(const ExprWrapper *) override;
         void Visit(const StmWrapper *) override;
 
-        void Visit(const GlobalIRTParent *) override;
+        void Visit(const ExpList *) override;
+        void Visit(const StmList *) override;
 
-        //void Visit(const ExpList *) override;
-        //void Visit(const StmList *) override;
+        void Visit(const GlobalIRTParent *) override;
     };
 }

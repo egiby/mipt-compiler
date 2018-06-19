@@ -4,11 +4,11 @@
 
 namespace NIRTree {
     enum EBinopType {
-        AND,
-        OR,
-        PLUS,
-        MINUS,
-        MULTIPLY
+        AND = 0,
+        OR = 1,
+        PLUS = 2,
+        MINUS = 3,
+        MULTIPLY = 4
     };
 
     class Binop : public IExp {
