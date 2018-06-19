@@ -71,6 +71,16 @@ namespace NIRTree {
         visitor->Visit(this);
     }
 
+    template<>
+    void List<IStm>::Accept(IIRVisitor *visitor) const {
+        visitor->Visit(this);
+    }
+
+    template<>
+    void List<IExp>::Accept(IIRVisitor *visitor) const {
+        visitor->Visit(this);
+    }
+
     void ExprWrapper::Accept(IIRVisitor *visitor) const {
         visitor->Visit(this);
     }

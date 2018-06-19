@@ -6,7 +6,7 @@ namespace NIRTree {
     class Unop : public IExp {
     public:
         enum EUnopType {
-            NOT,
+            NOT = 0,
         };
 
         Unop(EUnopType type, IExp *expression, const Location &location)

@@ -30,9 +30,8 @@ int main(int argc, char* argv[]) {
     NIRTree::IRPrettyPrinter irPrinter(outIrt);
 
     auto globalRoot = NIRTree::GlobalIRTParent();
-//    irPrinter.Visit(&globalRoot);
 
-    //irPrinter.Visit()
+    irPrinter.Visit(&globalRoot);
 
     outIrt.close();
 
