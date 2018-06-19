@@ -1,0 +1,41 @@
+#pragma once
+
+#include "ClassStruct.h"
+
+#include <irt/NodeTypes.h>
+
+#include <symbol_table/MethodInfo.h>
+#include <symbol_table/ClassInfo.h>
+#include <symbol_table/SymbolTable.h>
+
+#include <vector>
+#include <unordered_map>
+#include <bits/unordered_map.h>
+
+namespace NIRTree {
+    class X86MiniJavaClassStruct : public IClassStruct {
+    public:
+        explicit X86MiniJavaClassStruct(const NSymbolTable::ClassInfo&, const NSymbolTable::SymbolTable& symbolTable);
+        const std::string& GetTableName() const override;
+
+        IExp* GetFieldFrom(const Symbol* fieldName, IExp* base, const Location& location) const override;
+        IExp* GetVirtualMethodAddress(const Symbol* methodName,
+                                              IExp* base, const Location& location) const override;
+        IExp* AllocateNew(const Location& location) const override;
+
+    private:
+        // Vtable
+        const std::vector<const NSymbolTable::MethodInfo*> vtableEntries;
+        // Method name -> vtableEntries[id]
+        const std::unordered_map<const Symbol*, int> vTableIndices;
+        // Field name -> fields[id]
+        const std::unordered_map<const Symbol*, int> fieldsOffsets;
+        const Symbol* className;
+    };
+
+    class X86MiniJavaClassStructBuilder : public IClassStructBuilder {
+    public:
+        IClassStruct* GetClassStruct(const NSymbolTable::ClassInfo& info,
+                                     const NSymbolTable::SymbolTable& symbolTable) const override;
+    };
+}

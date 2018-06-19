@@ -20,7 +20,7 @@ namespace NTypeChecker {
 
         if (switcher.CurrentClass()->GetSuperClassId() != nullptr) {
             for (const auto &method: *clazz->methodDeclarations) {
-                if (auto methodInfo = FindMethod(method->id, clazz->extendsId)) {
+                if (auto methodInfo = symbolTable.FindMethod(method->id, clazz->extendsId)) {
                     if (methodInfo->GetArgsInfo().size() != method->args->size()) {
                         throw RedefinitionException(method->location, method->id, methodInfo->GetLocation());
                     }
@@ -34,7 +34,7 @@ namespace NTypeChecker {
             }
 
             for (const auto &var: *clazz->varDeclarations) {
-                if (auto varInfo = FindIdentifier(&symbolTable.GetClassInfo(clazz->extendsId), var->id)) {
+                if (auto varInfo = symbolTable.FindIdentifier(&symbolTable.GetClassInfo(clazz->extendsId), var->id)) {
                     throw RedefinitionException(var->location, var->id, varInfo->GetLocation());
                 }
             }
@@ -58,7 +58,7 @@ namespace NTypeChecker {
         CheckExpressionType(method->returnExpression.get(), method->returnType);
 
         for (const auto &arg: *method->args) {
-            if (auto varInfo = FindIdentifier(switcher.CurrentClass(), arg->id)) {
+            if (auto varInfo = symbolTable.FindIdentifier(switcher.CurrentClass(), arg->id)) {
                 throw RedefinitionException(arg->location, arg->id, varInfo->GetLocation());
             }
 
@@ -69,7 +69,7 @@ namespace NTypeChecker {
         }
 
         for (const auto &var: *method->localVars) {
-            if (auto varInfo = FindIdentifier(switcher.CurrentClass(), var->id)) {
+            if (auto varInfo = symbolTable.FindIdentifier(switcher.CurrentClass(), var->id)) {
                 throw RedefinitionException(var->location, var->id, varInfo->GetLocation());
             }
 
@@ -230,7 +230,7 @@ namespace NTypeChecker {
             classInfo = symbolTable.GetClassInfo(classInfo.GetSuperClassId());
         }
 
-        auto method = FindMethod(methodId, classId);
+        auto method = symbolTable.FindMethod(methodId, classId);
 
         if (!method) {
             throw NonDeclaredSymbolException(location, methodId);
@@ -254,54 +254,13 @@ namespace NTypeChecker {
             , const MethodInfo &methodInfo
             , const NSymbolTable::Symbol *id
             , const Location &location) const {
-        auto idInfo = FindIdentifier(&clazzInfo, id, &methodInfo);
+        auto idInfo = symbolTable.FindIdentifier(&clazzInfo, id, &methodInfo);
 
         if (idInfo != nullptr) {
             return *idInfo;
         }
 
         throw NonDeclaredSymbolException(location, id);
-    }
-
-    const VariableInfo* TypeCheckerVisitor::FindIdentifier(const ClassInfo *clazzInfo
-            , const NSymbolTable::Symbol *id
-            , const MethodInfo *methodInfo) const {
-
-        if (methodInfo) {
-            if (methodInfo->GetArgsMap().find(id) != methodInfo->GetArgsMap().end()) {
-                return &methodInfo->GetArgsMap().at(id);
-            }
-
-            if (methodInfo->GetVarsInfo().find(id) != methodInfo->GetVarsInfo().end()) {
-                return &methodInfo->GetVarsInfo().at(id);
-            }
-        }
-
-        auto clazz = *clazzInfo;
-        while (!clazz.HasMember(id) && clazz.GetSuperClassId() != nullptr) {
-            clazz = symbolTable.GetClassInfo(clazz.GetSuperClassId());
-        }
-
-        if (!clazz.HasMember(id)) {
-            return nullptr;
-        }
-
-        return &clazz.GetVarsInfo().at(id);
-    }
-
-    const MethodInfo* TypeCheckerVisitor::FindMethod(const Symbol *methodId
-            , const Symbol *classId) const {
-        auto classInfo = symbolTable.GetClassInfo(classId);
-
-        while (!classInfo.HasMethod(methodId) && classInfo.GetSuperClassId() != nullptr) {
-            classInfo = symbolTable.GetClassInfo(classInfo.GetSuperClassId());
-        }
-
-        if (!classInfo.HasMethod(methodId)) {
-            return nullptr;
-        }
-
-        return &classInfo.GetMethodsInfo().at(methodId);
     }
 
     bool TypeCheckerVisitor::IsSimilarTypes(const TypeInfo &first, const TypeInfo &second) const {

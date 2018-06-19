@@ -36,4 +36,43 @@ namespace NSymbolTable {
     const Location &SymbolTable::GetMainClassLocation() const {
         return mainClassLocation;
     }
+
+    const VariableInfo *SymbolTable::FindIdentifier(const ClassInfo *clazzInfo,
+                                                    const NSymbolTable::Symbol *id,
+                                                    const MethodInfo *methodInfo) const {
+        if (methodInfo) {
+            if (methodInfo->GetArgsMap().find(id) != methodInfo->GetArgsMap().end()) {
+                return &methodInfo->GetArgsMap().at(id);
+            }
+
+            if (methodInfo->GetVarsInfo().find(id) != methodInfo->GetVarsInfo().end()) {
+                return &methodInfo->GetVarsInfo().at(id);
+            }
+        }
+
+        auto clazz = *clazzInfo;
+        while (!clazz.HasMember(id) && clazz.GetSuperClassId() != nullptr) {
+            clazz = GetClassInfo(clazz.GetSuperClassId());
+        }
+
+        if (!clazz.HasMember(id)) {
+            return nullptr;
+        }
+
+        return &clazz.GetVarsInfo().at(id);
+    }
+
+    const MethodInfo *SymbolTable::FindMethod(const NUtil::Symbol *methodId, const NUtil::Symbol *classId) const {
+        auto classInfo = GetClassInfo(classId);
+
+        while (!classInfo.HasMethod(methodId) && classInfo.GetSuperClassId() != nullptr) {
+            classInfo = GetClassInfo(classInfo.GetSuperClassId());
+        }
+
+        if (!classInfo.HasMethod(methodId)) {
+            return nullptr;
+        }
+
+        return &classInfo.GetMethodsInfo().at(methodId);
+    }
 }

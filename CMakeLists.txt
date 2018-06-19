@@ -1,5 +1,9 @@
 set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-maybe-uninitialized")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-maybe-uninitialized")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-uninitialized")
+
+set(CMAKE_C_COMPILER /usr/bin/clang)
+set(CMAKE_CXX_COMPILER /usr/bin/clang++)
 
 cmake_minimum_required(VERSION 3.1)
 
@@ -37,7 +41,7 @@ set(SymbolTable
         symbol_table/ClassInfo.cpp
         symbol_table/SymbolTable.cpp
         symbol_table/SymbolTableCreatorVisitor.cpp
-        symbol_table/ScopeSwitcher.cpp symbol_table/ScopeSwitcher.h)
+        symbol_table/ScopeSwitcher.cpp)
 
 set(Util
         util/Symbol.cpp
@@ -70,6 +74,7 @@ set(ActivationRecords
         irt/activation_records/X86MiniJavaFrame.cpp
         irt/activation_records/InRegAccess.cpp
         irt/activation_records/InFrameAccess.cpp
+		irt/activation_records/X86MiniJavaClassStruct.cpp
         )
 
 set(IRTree
@@ -91,14 +96,13 @@ set(IRTranslate
         irt/translator/IRBuilderVisitor.cpp
         irt/translator/NameConventions.h
 
-	irt/GlobalIRTParent.cpp
+		irt/GlobalIRTParent.cpp
         )
 
 add_executable(printer
         tools/dot_printer.cpp
         ${TreeBuilder}
         ${Visitors}
-#	${IRTree}
         )
 
 add_executable(symbol_table_test
@@ -109,7 +113,8 @@ add_executable(symbol_table_test
 add_executable(type_checker
         tools/type_checker.cpp
         ${TypeChecker}
-        ${IRTree}
+#        ${IRTree}
+#		${IRTranslate}
         )
 
 include_directories(. ${CMAKE_CURRENT_BINARY_DIR})

@@ -26,6 +26,7 @@ namespace NIRTree {
     }
 
     void IRBuilderVisitor::Visit(const NSyntaxTree::ClassDeclaration *clazz) {
+        switcher.SwitchClass(new NSymbolTable::ClassInfo(symbolTable.GetClassInfo(clazz->id)));
         for (const auto &method: *clazz->methodDeclarations) {
             method->Accept(this);
             assert(mainSubtree != nullptr);
@@ -38,11 +39,13 @@ namespace NIRTree {
     }
 
     void IRBuilderVisitor::Visit(const NSyntaxTree::IntegerLiteralExpression *expr) {
+        switcher.SwitchExprType(new NSymbolTable::TypeInfo(NSymbolTable::INT));
         mainSubtree.reset(new ExprWrapper(new Const(expr->value, expr->location)));
     }
 
     void IRBuilderVisitor::Visit(const NSyntaxTree::BoolLiteralExpression *expr) {
         // TODO: Here we loose information about type. Maybe, it is bad
+        switcher.SwitchExprType(new NSymbolTable::TypeInfo(NSymbolTable::BOOL));
         mainSubtree.reset(new ExprWrapper(new Const(expr->value, expr->location)));
     }
 
@@ -55,21 +58,23 @@ namespace NIRTree {
                 new Binop(MULTIPLY, size,
                           new Const(frame->TypeSize(NSymbolTable::IntType), expr->location), expr->location),
                 nullptr, expr->location);
+
         mainSubtree.reset(new ExprWrapper(
                 new Call(new Name(NNameConventions::MallocName, expr->location), args, expr->location)));
+        switcher.SwitchExprType(new NSymbolTable::TypeInfo(NSymbolTable::INT_ARRAY));
     }
 
     void IRBuilderVisitor::Visit(const NSyntaxTree::NewExpression *expr) {
         const auto& classInfo = symbolTable.GetClassInfo(expr->classId);
-        // some problems here
+        std::unique_ptr<IClassStruct> classStruct = classStructBuilder->GetClassStruct(classInfo, symbolTable);
+        IExp* allocActions = classStruct->AllocateNew(expr->location);
+        mainSubtree.reset(new ExprWrapper(allocActions));
+        switcher.SwitchExprType(new NSymbolTable::TypeInfo(NSymbolTable::CLASS, expr->classId));
     }
 
     void IRBuilderVisitor::Visit(const NSyntaxTree::NegateExpression *expr) {
         expr->expression->Accept(this);
         mainSubtree.reset(new ExprWrapper(new Unop(Unop::NOT, mainSubtree->ToExp(), expr->location)));
-    }
-
-    void IRBuilderVisitor::Visit(const NSyntaxTree::ThisExpression *expr) {
-
+        switcher.SwitchExprType(new NSymbolTable::TypeInfo(NSymbolTable::BOOL));
     }
 }

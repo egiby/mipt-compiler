@@ -10,17 +10,7 @@ namespace NTypeChecker {
     class TypeCheckerVisitor: public NSyntaxTree::IVisitor {
         const NSymbolTable::SymbolTable &symbolTable;
 
-//        std::unique_ptr<NSymbolTable::TypeInfo> expressionType;
-//        std::unique_ptr<NSymbolTable::ClassInfo> currentClass;
-//        std::unique_ptr<NSymbolTable::MethodInfo> currentMethod;
         NSymbolTable::ScopeSwitcher switcher;
-
-        const NSymbolTable::MethodInfo* FindMethod(const NSymbolTable::Symbol*
-                , const NSymbolTable::Symbol*) const;
-
-        const NSymbolTable::VariableInfo* FindIdentifier(const NSymbolTable::ClassInfo*
-                , const NSymbolTable::Symbol*
-                , const NSymbolTable::MethodInfo* info = nullptr) const;
 
         const NSymbolTable::MethodInfo& FindAndCheckMethod(const NSymbolTable::Symbol*
                 , const NSymbolTable::Symbol*

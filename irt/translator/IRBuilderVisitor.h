@@ -5,9 +5,11 @@
 #include <irt/common.h>
 #include <irt/ISubtreeWrapper.h>
 #include <irt/activation_records/IFrame.h>
+#include <irt/activation_records/ClassStruct.h>
 
 #include <util/StringInterner.h>
 #include <symbol_table/SymbolTable.h>
+#include <symbol_table/ScopeSwitcher.h>
 
 namespace NIRTree {
     class IRBuilderVisitor: public NSyntaxTree::IVisitor {
@@ -18,7 +20,7 @@ namespace NIRTree {
 
         void Visit(const NSyntaxTree::MainClass *) override;
 
-        void Visit(const NSyntaxTree::VarDeclaration *) override;
+        void Visit(const NSyntaxTree::VarDeclaration *) override {}
 
         void Visit(const NSyntaxTree::MethodDeclaration *) override;
 
@@ -62,6 +64,9 @@ namespace NIRTree {
         const NSymbolTable::SymbolTable &symbolTable;
         std::unique_ptr<ISubtreeWrapper> mainSubtree;
 
+        NSymbolTable::ScopeSwitcher switcher;
+
         const IFrame* frame;
+        const IClassStructBuilder* classStructBuilder;
     };
 }
