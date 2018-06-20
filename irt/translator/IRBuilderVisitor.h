@@ -11,6 +11,8 @@
 #include <symbol_table/SymbolTable.h>
 #include <symbol_table/ScopeSwitcher.h>
 
+#include <unordered_map>
+
 namespace NIRTree {
     class IRBuilderVisitor: public NSyntaxTree::IVisitor {
     public:

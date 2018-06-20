@@ -3,7 +3,7 @@
 #include <vector>
 
 namespace NIRTree {
-    const std::string& X86MiniJavaClassStruct::GetTableName() const {
+    std::string X86MiniJavaClassStruct::GetTableName() const {
         return "_vTable::" + className->String();
     }
 
@@ -11,7 +11,7 @@ namespace NIRTree {
         assert(fieldsOffsets.find(fieldName) != fieldsOffsets.end());
         // TODO: use typeSpec
         int wordSize = 4;
-        return new Mem(new Binop(PLUS, base,
+        return new Mem(new Binop(Binop::PLUS, base,
                                          new Const(wordSize * (1) + fieldsOffsets.at(fieldName), location),
                                          location), location);
     }
@@ -21,7 +21,7 @@ namespace NIRTree {
         assert(vTableIndices.find(methodName) != vTableIndices.end());
         // TODO: use typeSpec
         int wordSize = 4;
-        return new Mem(new Binop(PLUS, new Mem(base, location),
+        return new Mem(new Binop(Binop::PLUS, new Mem(base, location),
                                          new Const(wordSize * (1 + vTableIndices.at(methodName)), location),
                                          location), location);
     }
@@ -42,7 +42,7 @@ namespace NIRTree {
                 new Name(GetTableName(), location), location), location);
         for (auto fieldsOffset: fieldsOffsets) {
             prepareActions = new StmList(prepareActions, new Move(
-                    new Binop(PLUS, new Mem(new Temp(*baseAddress), location),
+                    new Binop(Binop::PLUS, new Mem(new Temp(*baseAddress), location),
                               new Const(fieldsOffset.second + wordSize * (1), location), location),
                     new Const(0, location), location), location);
         }
@@ -51,23 +51,23 @@ namespace NIRTree {
 
     X86MiniJavaClassStruct::X86MiniJavaClassStruct(const NSymbolTable::ClassInfo &info,
                                                    const NSymbolTable::SymbolTable& symbolTable) {
-        std::vector<const NSymbolTable::ClassInfo&> classesStack;
+        std::vector<const NSymbolTable::ClassInfo*> classesStack;
         for (auto classId = info.GetId();
                 classId != nullptr; classId = symbolTable.GetClassInfo(classId).GetSuperClassId()) {
-            classesStack.push_back(symbolTable.GetClassInfo(classId));
+            classesStack.push_back(&symbolTable.GetClassInfo(classId));
         }
 
-        for (const auto &classInfo : classesStack) {
-            for (auto var: classInfo.GetVarsInfo()) {
+        for (const auto classInfo : classesStack) {
+            for (auto var: classInfo->GetVarsInfo()) {
                 const NSymbolTable::VariableInfo &varInfo = var.second;
                 int curSize = fieldsOffsets.size();
                 fieldsOffsets.insert({varInfo.GetId(), curSize});
             }
 
-            for (auto &method: classInfo.GetMethodsInfo()) {
+            for (auto &method: classInfo->GetMethodsInfo()) {
                 const NSymbolTable::MethodInfo &methodInfo = method.second;
                 vTableIndices.insert({ methodInfo.GetId(), vtableEntries.size() });
-                vtableEntries.push_back(info);
+                vtableEntries.push_back(&methodInfo);
             }
         }
     }

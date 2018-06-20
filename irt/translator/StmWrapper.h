@@ -21,7 +21,7 @@ namespace NIRTree {
             return statement.release();
         }
 
-        IStm * ToConditional(CJump::EJumpType, const Label *, const Label *) override {
+        IStm * ToConditional(CJump::EJumpType, const Label *) override {
             assert(false);
         };
 

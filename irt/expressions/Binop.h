@@ -3,16 +3,16 @@
 #include "IExp.h"
 
 namespace NIRTree {
-    enum EBinopType {
-        AND = 0,
-        OR = 1,
-        PLUS = 2,
-        MINUS = 3,
-        MULTIPLY = 4
-    };
-
     class Binop : public IExp {
     public:
+        enum EBinopType {
+            AND = 0,
+            OR = 1,
+            PLUS = 2,
+            MINUS = 3,
+            MULTIPLY = 4
+        };
+
         const EBinopType binop;
         std::unique_ptr<const IExp> leftExp;
         std::unique_ptr<const IExp> rightExp;

@@ -10,13 +10,12 @@
 
 #include <vector>
 #include <unordered_map>
-#include <bits/unordered_map.h>
 
 namespace NIRTree {
     class X86MiniJavaClassStruct : public IClassStruct {
     public:
         explicit X86MiniJavaClassStruct(const NSymbolTable::ClassInfo&, const NSymbolTable::SymbolTable& symbolTable);
-        const std::string& GetTableName() const override;
+        std::string GetTableName() const override;
 
         IExp* GetFieldFrom(const Symbol* fieldName, IExp* base, const Location& location) const override;
         IExp* GetVirtualMethodAddress(const Symbol* methodName,
@@ -25,11 +24,11 @@ namespace NIRTree {
 
     private:
         // Vtable
-        const std::vector<const NSymbolTable::MethodInfo*> vtableEntries;
+        std::vector<const NSymbolTable::MethodInfo*> vtableEntries;
         // Method name -> vtableEntries[id]
-        const std::unordered_map<const Symbol*, int> vTableIndices;
+        std::unordered_map<const Symbol*, int> vTableIndices;
         // Field name -> fields[id]
-        const std::unordered_map<const Symbol*, int> fieldsOffsets;
+        std::unordered_map<const Symbol*, int> fieldsOffsets;
         const Symbol* className;
     };
 

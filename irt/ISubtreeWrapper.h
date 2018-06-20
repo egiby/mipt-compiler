@@ -16,6 +16,6 @@ namespace NIRTree {
 
         virtual IExp* ToExp() = 0;
         virtual IStm* ToStm() = 0;
-        virtual IStm* ToConditional(CJump::EJumpType type, const Label *trueLabel, const Label *falseLabel) = 0;
+        virtual IStm* ToConditional(CJump::EJumpType type, const Label *trueLabel) = 0;
     };
 }

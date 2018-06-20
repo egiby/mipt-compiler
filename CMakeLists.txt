@@ -2,9 +2,6 @@ set(CMAKE_CXX_STANDARD 14)
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-maybe-uninitialized")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-uninitialized")
 
-set(CMAKE_C_COMPILER /usr/bin/clang)
-set(CMAKE_CXX_COMPILER /usr/bin/clang++)
-
 cmake_minimum_required(VERSION 3.1)
 
 find_package(FLEX REQUIRED)
@@ -75,6 +72,7 @@ set(ActivationRecords
         irt/activation_records/InRegAccess.cpp
         irt/activation_records/InFrameAccess.cpp
 		irt/activation_records/X86MiniJavaClassStruct.cpp
+		irt/activation_records/ArrayStruct.cpp
         )
 
 set(IRTree
@@ -113,8 +111,8 @@ add_executable(symbol_table_test
 add_executable(type_checker
         tools/type_checker.cpp
         ${TypeChecker}
-#        ${IRTree}
-#		${IRTranslate}
+        ${IRTree}
+		${IRTranslate}
         )
 
 add_executable(demo_irt_printer

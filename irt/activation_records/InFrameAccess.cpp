@@ -4,11 +4,11 @@
 namespace NIRTree {
 
     IExp *InFrameAccess::GetExp(Temp *fp, const Location &location) const {
-        return new Mem(new Binop(PLUS, fp, new Const(offset, location), location), location);
+        return new Mem(new Binop(Binop::PLUS, fp, new Const(offset, location), location), location);
     }
 
     InFrameAccess::InFrameAccess(IAccess::ERecordsType type, int size, int offset)
-            : recordType(recordType), size(size), offset(offset) {
+            : recordType(type), size(size), offset(offset) {
     }
 
 

@@ -21,8 +21,8 @@ namespace NIRTree {
             return new Exp(expression.release(), location);
         }
 
-        IStm * ToConditional(CJump::EJumpType type, const Label *trueLabel, const Label *falseLabel) override {
-            return new CJump(type, expression.release(), new Temp(std::string("true"), Location()), trueLabel, falseLabel, location);
+        IStm * ToConditional(CJump::EJumpType type, const Label *trueLabel) override {
+            return new CJump(type, expression.release(), new Temp(std::string("true"), Location()), trueLabel, location);
         };
 
         void Accept(IIRVisitor *visitor) const override;

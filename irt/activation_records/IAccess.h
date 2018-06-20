@@ -15,8 +15,8 @@ namespace NIRTree {
             ADDRESS_RETURN_VALUE
         };
 
-        virtual const ERecordsType GetRecordType() = 0;
-        virtual const int GetSize() const = 0;
+        virtual ERecordsType GetRecordType() = 0;
+        virtual int GetSize() const = 0;
         virtual IExp* GetExp(Temp* fp, const Location& location) const = 0;
 
         virtual ~IAccess() = default;

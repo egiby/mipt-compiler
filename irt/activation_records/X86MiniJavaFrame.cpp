@@ -18,15 +18,15 @@ namespace NIRTree {
         return static_cast<int>(formalIds.size());
     }
 
-    std::shared_ptr<const IAccess> X86MiniJavaFrame::GetFormal(int index) {
-        return idToAccess[formalIds[index]];
+    std::shared_ptr<const IAccess> X86MiniJavaFrame::GetFormal(int index) const {
+        return idToAccess.at(formalIds[index]);
     }
 
-    std::shared_ptr<const IAccess> X86MiniJavaFrame::GetFormalOrLocal(const NUtil::Symbol *id) {
-        return idToAccess[id];
+    std::shared_ptr<const IAccess> X86MiniJavaFrame::GetFormalOrLocal(const NUtil::Symbol *id) const {
+        return idToAccess.at(id);
     }
 
-    int X86MiniJavaFrame::TypeSize(const NSymbolTable::TypeInfo &type) const {
+    int X86MiniJavaFrame::TypeSize(const NSymbolTable::TypeInfo &/*type*/) const {
         // TODO: change to some valid implementation
         return 4;
     }

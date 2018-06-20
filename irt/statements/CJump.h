@@ -18,10 +18,9 @@ namespace NIRTree {
               const IExp *leftExpr,
               const IExp *rightExpr,
               const Label *trueLabel,
-              const Label *falseLabel,
               const Location &location)
             : IStm(location), leftExpr(leftExpr), rightExpr(rightExpr),
-              trueLabel(trueLabel), falseLabel(falseLabel),
+              trueLabel(trueLabel),
               jumpType(jumpType) {
         }
 
@@ -31,7 +30,6 @@ namespace NIRTree {
         std::unique_ptr<const IExp> rightExpr;
 
         const Label *trueLabel;
-        const Label *falseLabel;
 
         const EJumpType jumpType;
     };

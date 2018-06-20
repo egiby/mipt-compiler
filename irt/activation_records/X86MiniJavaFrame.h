@@ -13,8 +13,8 @@ namespace NIRTree {
         void AddLocal(const NSymbolTable::VariableInfo &variable) override;
         void AddFormal(const NSymbolTable::VariableInfo &variable) override;
         int GetFormalsCount() const override;
-        std::shared_ptr<const IAccess> GetFormal(int index) override;
-        std::shared_ptr<const IAccess> GetFormalOrLocal(const NUtil::Symbol *id) override;
+        std::shared_ptr<const IAccess> GetFormal(int index) const override;
+        std::shared_ptr<const IAccess> GetFormalOrLocal(const NUtil::Symbol *id) const override;
         int TypeSize(const NSymbolTable::TypeInfo&) const override;
     };
 }

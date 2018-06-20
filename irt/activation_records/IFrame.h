@@ -11,8 +11,8 @@ namespace NIRTree {
         virtual void AddLocal(const NSymbolTable::VariableInfo&) = 0;
         virtual void AddFormal(const NSymbolTable::VariableInfo&) = 0;
         virtual int GetFormalsCount() const = 0;
-        virtual std::shared_ptr<const IAccess> GetFormal(int index) = 0;
-        virtual std::shared_ptr<const IAccess> GetFormalOrLocal(const NUtil::Symbol *name) = 0;
+        virtual std::shared_ptr<const IAccess> GetFormal(int index) const = 0;
+        virtual std::shared_ptr<const IAccess> GetFormalOrLocal(const NUtil::Symbol *name) const = 0;
         virtual int TypeSize(const NSymbolTable::TypeInfo&) const = 0;
 
         virtual ~IFrame() = default;

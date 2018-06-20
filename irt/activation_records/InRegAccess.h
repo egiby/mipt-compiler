@@ -5,11 +5,11 @@
 namespace NIRTree {
     class InRegAccess: public IAccess {
     public:
-        const ERecordsType GetRecordType() override {
+        ERecordsType GetRecordType() override {
             return recordType;
         }
 
-        const int GetSize() const override {
+        int GetSize() const override {
             return size;
         }
 

@@ -4,6 +4,7 @@
 
 #include <symbol_table/MethodInfo.h>
 #include <symbol_table/ClassInfo.h>
+#include <symbol_table/SymbolTable.h>
 
 #include <vector>
 
@@ -11,7 +12,7 @@ namespace NIRTree {
     interface IClassStruct {
         virtual ~IClassStruct() = default;
 
-        virtual const std::string& GetTableName() const = 0;
+        virtual std::string GetTableName() const = 0;
 
         virtual IExp* GetFieldFrom(const Symbol* fieldName, IExp* base, const Location& location) const = 0;
         virtual IExp* GetVirtualMethodAddress(const Symbol* methodName,
