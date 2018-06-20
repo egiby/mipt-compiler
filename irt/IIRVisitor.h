@@ -28,6 +28,6 @@ namespace NIRTree {
         virtual void Visit(const ExprWrapper*) = 0;
         virtual void Visit(const StmWrapper*) = 0;
 
-        virtual void Visit(const GlobalIRTParent*) = 0;
+        virtual void Visit(const GlobalIRTParent*) {}
     };
 }

@@ -2,6 +2,8 @@
 #include <ast/tree/visitors/PrettyPrinterVisitor.h>
 
 #include <irt/translator/IRPrettyPrinter.h>
+#include <irt/translator/Canoniser.h>
+
 
 #include <fstream>
 #include <iostream>
@@ -38,24 +40,58 @@ int main(int argc, char* argv[]) {
     auto seq = NIRTree::Seq(new NIRTree::Jump(helperLabel, {}),
         new NIRTree::Jump(helperLabel, {}), {});
 
-    NIRTree::StmWrapper stmWrapper(new NIRTree::LabelStm(helperLabel, {}));
-    NIRTree::ExprWrapper expWrapper(new NIRTree::Call(new NIRTree::Const(43, {}),
-        new NIRTree::ExpList(new NIRTree::Const(43, {}), new NIRTree::Const(43, {}), {}), {}));
-
-    NIRTree::StmWrapper stmWrapperDeep(
-        new NIRTree::Seq(new NIRTree::Move(new NIRTree::Binop(NIRTree::OR, new NIRTree::Const(43, {}), 
-                new NIRTree::Const(44, {}), {}), new NIRTree::Const(42, {}), {}),
-            new NIRTree::Jump(helperLabel, {}), {})
+    std::unique_ptr<NIRTree::StmWrapper> stmWrapper(
+        new NIRTree::StmWrapper(
+            //new NIRTree::LabelStm(helperLabel, {})
+            new NIRTree::Exp(new NIRTree::Binop(NIRTree::AND, new NIRTree::Const(43, {}), new NIRTree::Const(44, {}), {}), {})
+        )
     );
-    
+    std::unique_ptr<NIRTree::ExprWrapper> expWrapper(
+        new NIRTree::ExprWrapper (
+            new NIRTree::Call (
+                new NIRTree::Const(43, {}),
+                new NIRTree::ExpList(new NIRTree::Const(43, {}), new NIRTree::Const(43, {}), {}),
+                {}
+            )
+        )
+    );
 
-    globalRoot.roots = {&node1, &node2, &binop, &eseq, &call, &mem, &unop, &temp1, &temp2,
+    std::unique_ptr<NIRTree::ExprWrapper> expWrapper2(
+        new NIRTree::ExprWrapper(
+            new NIRTree::Binop(NIRTree::AND, new NIRTree::Const(43, {}), new NIRTree::Const(44, {}), {})
+        )
+    );
+
+    std::unique_ptr<NIRTree::StmWrapper> stmWrapperDeep(
+        new NIRTree::StmWrapper(
+            new NIRTree::Seq(new NIRTree::Move(new NIRTree::Binop(NIRTree::OR, new NIRTree::Const(43, {}), 
+                    new NIRTree::Const(44, {}), {}), new NIRTree::Const(42, {}), {}),
+                new NIRTree::Jump(helperLabel, {}), {}
+            )
+        )
+    );
+
+    /*globalRoot.roots = {&node1, &node2, &binop, &eseq, &call, &mem, &unop, &temp1, &temp2,
         &name, &jump, &move, &cjump, &labelStm, &seq,
-        &stmWrapper, &expWrapper, &stmWrapperDeep};
+        &stmWrapper, &expWrapper, stmWrapperDeep.get()};*/
+
+    globalRoot.roots = {stmWrapperDeep.get()};
 
     irPrinter.Visit(&globalRoot);
 
     outIrt.close();
 
+    {
+        std::unique_ptr<NIRTree::StmWrapper> wrapper =
+        NIRTree::Canoniser::RemoveEseqsFromSubtree(std::move(stmWrapperDeep));
+    
+        std::ofstream outIrt("./graph_irt_canonise.gv");
+        NIRTree::IRPrettyPrinter irPrinter(outIrt);
+        auto globalRoot = NIRTree::GlobalIRTParent();
+
+        globalRoot.roots = {wrapper.get()};
+        irPrinter.Visit(&globalRoot);
+        outIrt.close();
+    }
     return 0;
 }

@@ -15,8 +15,8 @@ namespace NIRTree {
         };
 
         CJump(const EJumpType jumpType,
-              const IExp *leftExpr,
-              const IExp *rightExpr,
+              IExp *leftExpr,
+              IExp *rightExpr,
               const Label *trueLabel,
               const Label *falseLabel,
               const Location &location)
@@ -26,9 +26,10 @@ namespace NIRTree {
         }
 
         void Accept(IIRVisitor *visitor) const override;
+        void Accept(IIRMutableVisitor *visitor) override;
 
-        std::unique_ptr<const IExp> leftExpr;
-        std::unique_ptr<const IExp> rightExpr;
+        std::unique_ptr<IExp> leftExpr;
+        std::unique_ptr<IExp> rightExpr;
 
         const Label *trueLabel;
         const Label *falseLabel;

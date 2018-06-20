@@ -14,16 +14,17 @@ namespace NIRTree {
     class Binop : public IExp {
     public:
         const EBinopType binop;
-        std::unique_ptr<const IExp> leftExp;
-        std::unique_ptr<const IExp> rightExp;
+        std::unique_ptr<IExp> leftExp;
+        std::unique_ptr<IExp> rightExp;
 
         Binop(EBinopType _binop,
-              const IExp *_leftExp, 
-              const IExp *_rightExp, 
+              IExp *_leftExp, 
+              IExp *_rightExp, 
               const Location &_location)
             : IExp(_location), binop(_binop), leftExp(_leftExp), rightExp(_rightExp) {
         }
             
         void Accept(IIRVisitor *visitor) const override;
+        void Accept(IIRMutableVisitor *visitor) override;
     };
 }
