@@ -27,6 +27,8 @@ namespace NSymbolTable {
         bool HasMember(const Symbol *id) const;
         bool HasMethod(const Symbol *id) const;
 
+        TypeInfo GetType() const;
+
         const std::unordered_map<const Symbol *, VariableInfo> &GetVarsInfo() const { return membersInfo; }
 
         const std::unordered_map<const Symbol *, MethodInfo> &GetMethodsInfo() const { return methodsInfo; }

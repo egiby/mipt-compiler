@@ -10,6 +10,6 @@ namespace NIRTree {
         std::vector<const INode*> roots;
 
         void Accept(NIRTree::IIRVisitor *visitor) const override;
-        void Accept(NIRTree::IIRMutableVisitor *visitor) override {}
+        void Accept(NIRTree::IIRMutableVisitor* /*visitor*/) override {}
     };
 }

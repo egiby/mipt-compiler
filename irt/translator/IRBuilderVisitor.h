@@ -68,7 +68,8 @@ namespace NIRTree {
 
         NSymbolTable::ScopeSwitcher switcher;
 
-        const IFrame* frame;
+        std::unique_ptr<IFrame> frame;
         const IClassStructBuilder* classStructBuilder;
+        const IFrameBuilder* frameBuilder;
     };
 }

@@ -16,8 +16,8 @@ namespace NIRTree {
         const std::string name;
         TempType type;
 
-        Temp(int localId=12345, const Location &location={});
-        Temp(const std::string &name, const Location &location);
+        explicit Temp(int localId = 12345, const Location &location = {});
+        explicit Temp(const std::string &name, const Location &location = {});
 
         void Accept(IIRVisitor *visitor) const override;
         void Accept(IIRMutableVisitor *visitor) override;

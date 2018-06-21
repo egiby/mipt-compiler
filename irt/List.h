@@ -13,7 +13,7 @@ namespace NIRTree {
         std::unique_ptr<T> head;
         std::unique_ptr<T> tail;
 
-        List(T *_head, T *_tail, const Location &_location)
+        List(T *_head, T *_tail, const Location &_location = {})
             : T(_location), head(_head), tail(_tail) {
         }
             

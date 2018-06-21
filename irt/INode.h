@@ -11,7 +11,7 @@ namespace NIRTree {
     interface INode {
         Location location;
 
-        INode() = default;
+//        INode() = default;
 
         inline explicit INode(const Location& location) : location(location) {
         }

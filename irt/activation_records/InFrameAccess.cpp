@@ -8,7 +8,7 @@ namespace NIRTree {
     }
 
     InFrameAccess::InFrameAccess(IAccess::ERecordsType type, int size, int offset)
-            : recordType(type), size(size), offset(offset) {
+            : size(size), recordType(type), offset(offset) {
     }
 
 

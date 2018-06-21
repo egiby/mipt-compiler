@@ -267,4 +267,163 @@ namespace NIRTree {
                                                  stm->location)));
     }
 
+    void IRBuilderVisitor::Visit(const NSyntaxTree::MethodDeclaration *node) {
+        const auto &methodInfo = switcher.CurrentClass()->GetMethodsInfo().at(node->id);
+        switcher.SwitchMethod(new NSymbolTable::MethodInfo(methodInfo));
+
+        frame.reset(frameBuilder->GetFrame(*switcher.CurrentClass(), methodInfo, symbolTable));
+        IStm* stm = nullptr;
+        if( !node->statements->empty() ) {
+            for (const auto &statement: *node->statements) {
+                statement->Accept(this);
+            }
+            stm = new StmList(mainSubtree->ToStm(), nullptr, node->location);
+        }
+        node->returnExpression->Accept(this);
+        if(stm != nullptr) {
+            stm = new StmList(stm, mainSubtree->ToStm(), node->location);
+        } else {
+            stm = mainSubtree->ToStm();
+        }
+        auto name = switcher.CurrentClass()->GetId()->String() + "@" + methodInfo.GetId()->String();
+        forest.insert(std::make_pair(symbolTable.GetInterner()->GetIntern(name), std::unique_ptr<ISubtreeWrapper>(new StmWrapper(stm))));
+    }
+
+    void IRBuilderVisitor::Visit(const NSyntaxTree::BinaryExpression *expr) {
+        // for "less" case
+        Label* trueLabel;
+        Label* falseLabel;
+        Label* returnLabel;
+        IStm* condition;
+        Temp* expValue;
+        IStm* trueBranch;
+        IStm* falseBranch;
+        // for all cases
+        IExp* result;
+        expr->left->Accept(this);
+        IExp* left = mainSubtree->ToExp();
+        expr->right->Accept(this);
+        IExp* right = mainSubtree->ToExp();
+
+        switch (expr->type) {
+            case NSyntaxTree::MINUS:
+                result = new Binop(Binop::MINUS, left, right, expr->location);
+                break;
+            case NSyntaxTree::MULTIPLY:
+                result = new Binop(Binop::MULTIPLY, left, right, expr->location);
+                break;
+            case NSyntaxTree::PLUS:
+                result = new Binop(Binop::PLUS, left, right, expr->location);
+                break;
+            case NSyntaxTree::LESS:
+                trueLabel = LabelHolder::GetNextLabel();
+                falseLabel = LabelHolder::GetNextLabel();
+                returnLabel = LabelHolder::GetNextLabel();
+                condition = new CJump(CJump::LT, left, right, trueLabel,
+                                      expr->location);
+                expValue = new Temp("expValue", expr->location);
+                trueBranch = new Seq(new Seq(new LabelStm(trueLabel, expr->location),
+                                             new Move(expValue, new Const(1, expr->location), expr->location),
+                                             expr->location),
+                                     new Jump(returnLabel, expr->location), expr->location);
+                falseBranch = new Seq(new Seq(new LabelStm(falseLabel, expr->location),
+                                              new Move(new Temp(*expValue),
+                                                       new Const(0, expr->location),
+                                                       expr->location), expr->location),
+                                      new Jump(returnLabel, expr->location),
+                                      expr->location);
+                result = new ESeq(new Seq(new Seq(new Seq(condition, falseBranch, expr->location),
+                                                  trueBranch, expr->location),
+                                          new LabelStm(returnLabel, expr->location), expr->location),
+                                  new Mem(new Temp(*expValue), expr->location), expr->location);
+                break;
+            case NSyntaxTree::AND:
+                falseLabel = LabelHolder::GetNextLabel();
+                returnLabel = LabelHolder::GetNextLabel();
+                expValue = new Temp("expValue", expr->location);
+                condition = new CJump(CJump::NEQ, left, new Const(1, expr->location), falseLabel, expr->location);
+                trueBranch = new Seq(new CJump(CJump::NEQ, right, new Const(1, expr->location), falseLabel, expr->location),
+                                     new Seq(
+                                             new Move(expValue, new Const(1, expr->location), expr->location),
+                                             new Jump(returnLabel, expr->location),
+                                             expr->location
+                                     ),
+                                     expr->location
+                );
+                falseBranch = new Seq(
+                        new LabelStm(falseLabel, expr->location),
+                        new Seq(
+                                new Move(new Temp(*expValue), new Const(0, expr->location), expr->location),
+                                new Jump(returnLabel, expr->location),
+                                expr->location
+                        ),
+                        expr->location
+                );
+                result = new ESeq(
+                        new Seq(
+                                new Seq(
+                                        new Seq(
+                                                condition,
+                                                trueBranch,
+                                                expr->location
+                                        ),
+                                        falseBranch,
+                                        expr->location
+                                ),
+                                new LabelStm(returnLabel, expr->location)),
+                        new Mem(new Temp(*expValue), expr->location),
+                        expr->location
+                );
+                break;
+            case NSyntaxTree::OR:
+                trueLabel = LabelHolder::GetNextLabel();
+                falseLabel = LabelHolder::GetNextLabel();
+                returnLabel = LabelHolder::GetNextLabel();
+                expValue = new Temp("expValue", expr->location);
+                condition = new CJump(CJump::EQ, left, new Const(1, expr->location), trueLabel, expr->location);
+                trueBranch = new Seq(new CJump(CJump::NEQ, right, new Const(1, expr->location), falseLabel, expr->location),
+                                     new Seq(
+                                             new LabelStm(trueLabel, expr->location),
+                                             new Seq(
+                                                     new Move(expValue, new Const(1, expr->location), expr->location),
+                                                     new Jump(returnLabel, expr->location),
+                                                     expr->location
+                                             ),
+                                             expr->location
+                                     ),
+                                     expr->location
+                );
+                falseBranch = new Seq(
+                        new LabelStm(falseLabel, expr->location),
+                        new Seq(
+                                new Move(new Temp(*expValue), new Const(0, expr->location), expr->location),
+                                new Jump(returnLabel, expr->location),
+                                expr->location
+                        ),
+                        expr->location
+                );
+                result = new ESeq(
+                        new Seq(
+                                new Seq(
+                                        new Seq(
+                                                condition,
+                                                trueBranch,
+                                                expr->location
+                                        ),
+                                        falseBranch,
+                                        expr->location
+                                ),
+                                new LabelStm(returnLabel, expr->location),
+                                expr->location
+                        ),
+                        new Mem(new Temp(*expValue), expr->location),
+                        expr->location
+                );
+                break;
+            default:
+                assert(0);
+        }
+        mainSubtree.reset(new ExprWrapper(result));
+
+    }
 }
