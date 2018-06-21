@@ -33,10 +33,10 @@ namespace NIRTree {
         printVertex(node, std::string("Call"));
 
         node->funcExp->Accept(this);
-        printEdge(node, (node->funcExp).get());
+        printEdge(node, (node->funcExp).get(), "funcExp");
 
         node->args->Accept(this);
-        printEdge(node, (node->args).get());
+        printEdge(node, (node->args).get(), "args");
     }
     
     void IRPrettyPrinter::Visit(const Const *node) {
@@ -67,16 +67,8 @@ namespace NIRTree {
     void IRPrettyPrinter::Visit(const Temp *node) {
         static const std::vector<std::string> types = {"ID", "NAME"};
 
-        /*if (node->name != "") {
-            printVertex(node, std::string("Temp ") + types.at(node->type) + " " + node->name);
-        }
-        else if (node->localId != -1) {
-            printVertex(node, std::string("Temp ") + types.at(node->type) + " " + std::to_string(node->localId));         
-        }
-        else */{
-            printVertex(node, std::string("Temp ") 
+        printVertex(node, std::string("Temp ") 
                 + types.at(node->type) + " " + node->name + " " + std::to_string(node->id));    
-        }
     }
         
     void IRPrettyPrinter::Visit(const Unop *node) {

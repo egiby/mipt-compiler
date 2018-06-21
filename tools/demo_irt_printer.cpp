@@ -237,6 +237,24 @@ int main(int argc, char* argv[]) {
         )
     );
 
+    std::unique_ptr<NIRTree::ExprWrapper> expWrapper13(
+        new NIRTree::ExprWrapper(
+            new NIRTree::Call(
+                //new NIRTree::Const(41, {}),
+                new NIRTree::ESeq(
+                    new NIRTree::LabelStm(NIRTree::LabelHolder::GetLabel("s"), {}),
+                    new NIRTree::Name("e2", {}),
+                    {}
+                ),
+                new NIRTree::ExpList(
+                    new NIRTree::Unop(NIRTree::Unop::NOT, new NIRTree::Name("e1", {}), {}),
+                    new NIRTree::Const(43, {}),
+                    {}),
+                {}
+            )
+        )
+    );
+
     /*globalRoot.roots = {&node1, &node2, &binop, &eseq, &call, &mem, &unop, &temp1, &temp2,
         &name, &jump, &move, &cjump, &labelStm, &seq,
         &stmWrapper, &expWrapper, stmWrapperDeep.get()};*/
@@ -244,7 +262,18 @@ int main(int argc, char* argv[]) {
     //auto &wrapperO = expWrapper12;
     //auto &wrapperO = stmWrapperDeep;
     //auto &wrapperO = expWrapper11;
-    auto &wrapperO = stmWrapper8;
+    //auto &wrapperO = stmWrapper8;
+    //auto &wrapperO = expWrapper13;
+    //auto &wrapperO = stmWrapper;
+    //auto &wrapperO = expWrapper;
+    //auto &wrapperO = expWrapper2;
+    //auto &wrapperO = expWrapper3;
+    //auto &wrapperO = expWrapper4;
+    //auto &wrapperO = expWrapper5;
+    //auto &wrapperO = stmWrapper6;
+    //auto &wrapperO = expWrapper7;
+    //auto &wrapperO = expWrapper9;
+    auto &wrapperO = stmWrapper10;
 
     globalRoot.roots = {wrapperO.get()};
 
@@ -253,16 +282,41 @@ int main(int argc, char* argv[]) {
     outIrt.close();
 
     {
-        std::unique_ptr<NIRTree::StmWrapper> wrapper =
-        NIRTree::Canoniser::RemoveEseqsFromSubtree(std::move(wrapperO));
-    
-        std::ofstream outIrt("./graph_irt_canonise.gv");
+        /*std::unique_ptr<NIRTree::StmWrapper> wrapper = 
+            NIRTree::Canoniser::RemoveEseqsFromSubtree(std::move(wrapperO));    
+        {
+            std::ofstream outIrt("./graph_irt_canonise.gv");
+            NIRTree::IRPrettyPrinter irPrinter(outIrt);
+            auto globalRoot = NIRTree::GlobalIRTParent();
+
+            globalRoot.roots = {wrapper.get()};
+            irPrinter.Visit(&globalRoot);
+            outIrt.close();
+        }
+        auto vec = NIRTree::Canoniser::Linearise(std::move(wrapper));
+        {
+            std::ofstream outIrt("./graph_irt_linearise.gv");
+            NIRTree::IRPrettyPrinter irPrinter(outIrt);
+            auto globalRoot = NIRTree::GlobalIRTParent();
+
+            for (auto& elem : vec) {
+                globalRoot.roots.push_back(elem.get());
+            }
+            irPrinter.Visit(&globalRoot);
+            outIrt.close();
+        }*/
+
+        auto vec = NIRTree::Canoniser::Canonise(std::move(wrapperO));
+        std::ofstream outIrt("./graph_irt_canon.gv");
         NIRTree::IRPrettyPrinter irPrinter(outIrt);
         auto globalRoot = NIRTree::GlobalIRTParent();
 
-        globalRoot.roots = {wrapper.get()};
+        for (auto& elem : vec) {
+            globalRoot.roots.push_back(elem.get());
+        }
         irPrinter.Visit(&globalRoot);
         outIrt.close();
     }
+    
     return 0;
 }

@@ -16,6 +16,12 @@ namespace NIRTree {
         static bool isNop(const IStm* stm);
 
         static void liftEseq(CanonisationVisitor &cv);
+
+        static std::vector<std::unique_ptr<IStm>> Linearise(std::unique_ptr<StmWrapper> wrapper);
+        static void Linear(std::unique_ptr<IStm> node, std::vector<std::unique_ptr<IStm>> &stms);
+
+        // main method
+        static std::vector<std::unique_ptr<IStm>> Canonise(std::unique_ptr<ISubtreeWrapper> subtreeWrapper);
     };
 
     class CanonisationVisitor : public IIRMutableVisitor {
