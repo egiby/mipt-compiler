@@ -71,11 +71,140 @@ int main(int argc, char* argv[]) {
         )
     );
 
+    // book (1)
+    std::unique_ptr<NIRTree::ExprWrapper> expWrapper3(
+        new NIRTree::ExprWrapper(
+            new NIRTree::ESeq(
+                new NIRTree::LabelStm(NIRTree::LabelHolder::GetLabel("s1"), {}),
+                new NIRTree::ESeq(
+                    new NIRTree::LabelStm(NIRTree::LabelHolder::GetLabel("s2"), {}),
+                    new NIRTree::Name("e", {}),
+                    {}
+                ),
+                {}
+            )
+        )
+    );
+
+    // book (2)
+    std::unique_ptr<NIRTree::ExprWrapper> expWrapper4(
+        new NIRTree::ExprWrapper(
+            new NIRTree::Binop(
+                NIRTree::AND,
+                new NIRTree::ESeq(
+                    new NIRTree::LabelStm(NIRTree::LabelHolder::GetLabel("s"), {}),
+                    new NIRTree::Name("e1", {}),
+                    {}
+                ),
+                new NIRTree::Name("e2", {}),
+                {}
+            )
+        )
+    );
+
+    std::unique_ptr<NIRTree::ExprWrapper> expWrapper5(
+        new NIRTree::ExprWrapper(
+            new NIRTree::Mem(
+                new NIRTree::ESeq(
+                    new NIRTree::LabelStm(NIRTree::LabelHolder::GetLabel("s"), {}),
+                    new NIRTree::Name("e1", {}),
+                    {}
+                ),
+                {}
+            )
+        )
+    );
+
+    std::unique_ptr<NIRTree::StmWrapper> stmWrapper6(
+        new NIRTree::StmWrapper(
+            new NIRTree::CJump(
+                NIRTree::CJump::EQ, 
+                new NIRTree::ESeq(
+                    new NIRTree::LabelStm(NIRTree::LabelHolder::GetLabel("s"), {}),
+                    new NIRTree::Name("e1", {}),
+                    {}
+                ),
+                new NIRTree::Name("e2", {}),
+                NIRTree::LabelHolder::GetLabel("l1"),
+                NIRTree::LabelHolder::GetLabel("l2"),
+                {}
+            )
+        )
+    );
+
+    // book (4)
+    std::unique_ptr<NIRTree::ExprWrapper> expWrapper7(
+        new NIRTree::ExprWrapper(
+            new NIRTree::Binop(
+                NIRTree::AND,
+                new NIRTree::Name("e1", {}),
+                new NIRTree::ESeq(
+                    new NIRTree::LabelStm(NIRTree::LabelHolder::GetLabel("s"), {}),
+                    new NIRTree::Name("e2", {}),
+                    {}
+                    ),
+                {}
+            )
+        )
+    );
+
+    std::unique_ptr<NIRTree::StmWrapper> stmWrapper8(
+        new NIRTree::StmWrapper(
+            new NIRTree::CJump(
+                NIRTree::CJump::EQ,
+                new NIRTree::Name("e1", {}),
+                new NIRTree::ESeq(
+                    new NIRTree::LabelStm(NIRTree::LabelHolder::GetLabel("s"), {}),
+                    new NIRTree::Name("e2", {}),
+                    {}
+                ),
+                NIRTree::LabelHolder::GetLabel("l1"),
+                NIRTree::LabelHolder::GetLabel("l2"),
+                {}
+            )
+        )
+    );
+
+    // book (3)
+    std::unique_ptr<NIRTree::ExprWrapper> expWrapper9(
+        new NIRTree::ExprWrapper(
+            new NIRTree::Binop(
+                NIRTree::AND,
+                new NIRTree::Unop(NIRTree::Unop::NOT, new NIRTree::Name("e1", {}), {}),
+                new NIRTree::ESeq(
+                    new NIRTree::LabelStm(NIRTree::LabelHolder::GetLabel("s"), {}),
+                    new NIRTree::Name("e2", {}),
+                    {}
+                    ),
+                {}
+            )
+        )
+    );
+
+    std::unique_ptr<NIRTree::StmWrapper> stmWrapper10(
+        new NIRTree::StmWrapper(
+            new NIRTree::CJump(
+                NIRTree::CJump::EQ,
+                new NIRTree::Unop(NIRTree::Unop::NOT, new NIRTree::Name("e1", {}), {}),
+                new NIRTree::ESeq(
+                    new NIRTree::LabelStm(NIRTree::LabelHolder::GetLabel("s"), {}),
+                    new NIRTree::Name("e2", {}),
+                    {}
+                ),
+                NIRTree::LabelHolder::GetLabel("l1"),
+                NIRTree::LabelHolder::GetLabel("l2"),
+                {}
+            )
+        )
+    );
+
     /*globalRoot.roots = {&node1, &node2, &binop, &eseq, &call, &mem, &unop, &temp1, &temp2,
         &name, &jump, &move, &cjump, &labelStm, &seq,
         &stmWrapper, &expWrapper, stmWrapperDeep.get()};*/
 
-    globalRoot.roots = {stmWrapperDeep.get()};
+    auto &wrapperO = expWrapper4;
+
+    globalRoot.roots = {wrapperO.get()};
 
     irPrinter.Visit(&globalRoot);
 
@@ -83,7 +212,7 @@ int main(int argc, char* argv[]) {
 
     {
         std::unique_ptr<NIRTree::StmWrapper> wrapper =
-        NIRTree::Canoniser::RemoveEseqsFromSubtree(std::move(stmWrapperDeep));
+        NIRTree::Canoniser::RemoveEseqsFromSubtree(std::move(wrapperO));
     
         std::ofstream outIrt("./graph_irt_canonise.gv");
         NIRTree::IRPrettyPrinter irPrinter(outIrt);

@@ -11,12 +11,7 @@ namespace NIRTree {
     class Canoniser {
     public:
         static std::unique_ptr<StmWrapper> RemoveEseqsFromSubtree(std::unique_ptr<ISubtreeWrapper> subtreeWrapper);
-
-        static void Reorder(
-            std::unique_ptr<IExp>& exp,
-            CanonisationVisitor &cv
-        );
-    private:
+    
         static bool commute(const IStm* stm, const IExp* exp);
         static bool isNop(const IStm* stm);
 
