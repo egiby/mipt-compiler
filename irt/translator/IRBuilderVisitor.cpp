@@ -267,10 +267,4 @@ namespace NIRTree {
                                                  stm->location)));
     }
 
-    void IRBuilderVisitor::Visit(const NSyntaxTree::MethodDeclaration *method) {
-        auto methodInfo = symbolTable.GetClassInfo(switcher.CurrentClass()->GetId()).GetMethodsInfo().at(method->id);
-
-    }
-
-
 }
