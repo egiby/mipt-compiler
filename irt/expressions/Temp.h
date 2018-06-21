@@ -16,10 +16,11 @@ namespace NIRTree {
         const std::string name;
         TempType type;
 
-        Temp(int localId, const Location &location);
+        Temp(int localId=12345, const Location &location={});
         Temp(const std::string &name, const Location &location);
 
         void Accept(IIRVisitor *visitor) const override;
+        void Accept(IIRMutableVisitor *visitor) override;
     private:
         static int counter;
     };

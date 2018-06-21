@@ -1,6 +1,7 @@
 set(CMAKE_CXX_STANDARD 14)
+
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-maybe-uninitialized")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-uninitialized")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -Wextra -Wno-uninitialized")
 
 cmake_minimum_required(VERSION 3.1)
 
@@ -71,8 +72,8 @@ set(ActivationRecords
         irt/activation_records/X86MiniJavaFrame.cpp
         irt/activation_records/InRegAccess.cpp
         irt/activation_records/InFrameAccess.cpp
-		irt/activation_records/X86MiniJavaClassStruct.cpp
-		irt/activation_records/ArrayStruct.cpp
+	irt/activation_records/X86MiniJavaClassStruct.cpp
+	irt/activation_records/ArrayStruct.cpp
         )
 
 set(IRTree
@@ -89,7 +90,7 @@ set(IRTree
         irt/expressions/Temp.cpp
         irt/Accept.cpp
 
-		irt/GlobalIRTParent.cpp
+	irt/GlobalIRTParent.cpp
         )
 
 set(IRTranslate
@@ -97,10 +98,15 @@ set(IRTranslate
         irt/translator/NameConventions.h
         )
 
+set(IRTCanonise
+	irt/translator/Canoniser.cpp
+	)
+
 add_executable(printer
         tools/dot_printer.cpp
         ${TreeBuilder}
         ${Visitors}
+	${IRTree}
         )
 
 add_executable(symbol_table_test
@@ -112,14 +118,15 @@ add_executable(type_checker
         tools/type_checker.cpp
         ${TypeChecker}
         ${IRTree}
-		${IRTranslate}
+	${IRTranslate}
         )
 
 add_executable(demo_irt_printer
         tools/demo_irt_printer.cpp
         ${TreeBuilder}
         ${Visitors}
-		${IRTree}
+	${IRTree}
+	${IRTCanonise}
         )
 
 

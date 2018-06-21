@@ -17,5 +17,6 @@ namespace NIRTree {
         std::unique_ptr<IExp> expression;
 
         void Accept(IIRVisitor *visitor) const override;
+        void Accept(IIRMutableVisitor *visitor) override;
     };
 }

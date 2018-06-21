@@ -1,6 +1,10 @@
 #include "IRPrettyPrinter.h"
 
 namespace NIRTree {
+    const INode* hashINode(const INode* node) {
+        return (INode*)(void*)(((long long)(const void*)node) * 2);
+    }
+
     void IRPrettyPrinter::printVertex(const INode *node, const std::string &label) {
         outPut << "\tnode" << node << "[label=\"" << label << "\"]\n";
     }
@@ -29,10 +33,10 @@ namespace NIRTree {
         printVertex(node, std::string("Call"));
 
         node->funcExp->Accept(this);
-        printEdge(node, (node->funcExp).get());
+        printEdge(node, (node->funcExp).get(), "funcExp");
 
         node->args->Accept(this);
-        printEdge(node, (node->args).get());
+        printEdge(node, (node->args).get(), "args");
     }
     
     void IRPrettyPrinter::Visit(const Const *node) {
@@ -63,15 +67,8 @@ namespace NIRTree {
     void IRPrettyPrinter::Visit(const Temp *node) {
         static const std::vector<std::string> types = {"ID", "NAME"};
 
-        if (node->name != "") {
-            printVertex(node, std::string("Temp ") + types.at(node->type) + " " + node->name);
-        }
-        else if (node->localId != -1) {
-            printVertex(node, std::string("Temp ") + types.at(node->type) + " " + std::to_string(node->localId));         
-        }
-        else {
-            printVertex(node, std::string("Temp ") + types.at(node->type) + " " + node->name + " " + std::to_string(node->localId));    
-        }
+        printVertex(node, std::string("Temp ") 
+                + types.at(node->type) + " " + node->name + " " + std::to_string(node->id));    
     }
         
     void IRPrettyPrinter::Visit(const Unop *node) {
@@ -87,7 +84,7 @@ namespace NIRTree {
         static const std::vector<std::string> types = {"EQ", "NEQ", "LT"};
 
         printVertex(node, std::string("CJump ") + types.at(node->jumpType) + " trueLabel: " + 
-            node->trueLabel->String() + " falseLabel: " + node->falseLabel->String());
+            node->trueLabel->String());
 
         node->leftExpr->Accept(this);
         printEdge(node, (node->leftExpr).get(), "leftExpr");
@@ -99,8 +96,14 @@ namespace NIRTree {
     void IRPrettyPrinter::Visit(const Exp *node) {
         printVertex(node, std::string("Exp"));
 
-        node->expr->Accept(this);
-        printEdge(node, (node->expr).get());
+        if (!node->expr) {
+            const INode* x = hashINode(node);
+            printVertex(x, "nullptr");
+            printEdge(node, x);
+        } else {
+            node->expr->Accept(this);
+            printEdge(node, (node->expr).get());
+        }
     }
         
     void IRPrettyPrinter::Visit(const Jump *node) {
@@ -139,11 +142,23 @@ namespace NIRTree {
     void IRPrettyPrinter::Visit(const StmList *node) {
         printVertex(node, std::string("StmList"));
 
-        node->head->Accept(this);
-        printEdge(node, (node->head).get(), "StmList head");
+        if (!node->head) {
+            const INode* x = hashINode(node);
+            printVertex(x, "nullptr");
+            printEdge(node, x, "StmList head");
+        } else {
+            node->head->Accept(this);
+            printEdge(node, (node->head).get(), "StmList head");
+        }
 
-        node->tail->Accept(this);
-        printEdge(node, (node->tail).get(), "StmList tail");
+        if (!node->tail) {
+            const INode* x = hashINode(node + 1);
+            printVertex(x, "nullptr");
+            printEdge(node, x, "StmList tail");
+        } else {
+            node->tail->Accept(this);
+            printEdge(node, (node->tail).get(), "StmList tail");
+        }
     }
 
     void IRPrettyPrinter::Visit(const ExpList *node) {
