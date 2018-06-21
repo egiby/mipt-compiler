@@ -198,11 +198,53 @@ int main(int argc, char* argv[]) {
         )
     );
 
+    // call
+    std::unique_ptr<NIRTree::ExprWrapper> expWrapper11(
+        new NIRTree::ExprWrapper(
+            new NIRTree::Call(
+                //new NIRTree::Const(41, {}),
+                new NIRTree::ESeq(
+                    new NIRTree::LabelStm(NIRTree::LabelHolder::GetLabel("s"), {}),
+                    new NIRTree::Name("e2", {}),
+                    {}
+                ),
+                new NIRTree::ExpList(
+                    new NIRTree::Const(42, {}),
+                    new NIRTree::Const(43, {}),
+                    {}),
+                {}
+            )
+        )
+    );
+
+    // binop with call
+    std::unique_ptr<NIRTree::ExprWrapper> expWrapper12(
+        new NIRTree::ExprWrapper(
+            new NIRTree::Binop(
+                NIRTree::AND,
+                new NIRTree::Unop(NIRTree::Unop::NOT, new NIRTree::Name("e1", {}), {}),
+                new NIRTree::Call(
+                    new NIRTree::Const(41, {}),
+                    new NIRTree::ExpList(
+                        new NIRTree::Const(42, {}),
+                        new NIRTree::Const(43, {}),
+                        {}
+                    ),
+                    {}
+                ),
+                {}    
+            )
+        )
+    );
+
     /*globalRoot.roots = {&node1, &node2, &binop, &eseq, &call, &mem, &unop, &temp1, &temp2,
         &name, &jump, &move, &cjump, &labelStm, &seq,
         &stmWrapper, &expWrapper, stmWrapperDeep.get()};*/
 
-    auto &wrapperO = expWrapper4;
+    //auto &wrapperO = expWrapper12;
+    //auto &wrapperO = stmWrapperDeep;
+    //auto &wrapperO = expWrapper11;
+    auto &wrapperO = stmWrapper8;
 
     globalRoot.roots = {wrapperO.get()};
 
