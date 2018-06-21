@@ -72,8 +72,8 @@ set(ActivationRecords
         irt/activation_records/X86MiniJavaFrame.cpp
         irt/activation_records/InRegAccess.cpp
         irt/activation_records/InFrameAccess.cpp
-		irt/activation_records/X86MiniJavaClassStruct.cpp
-		irt/activation_records/ArrayStruct.cpp
+	irt/activation_records/X86MiniJavaClassStruct.cpp
+	irt/activation_records/ArrayStruct.cpp
         )
 
 set(IRTree
@@ -90,7 +90,7 @@ set(IRTree
         irt/expressions/Temp.cpp
         irt/Accept.cpp
 
-		irt/GlobalIRTParent.cpp
+	irt/GlobalIRTParent.cpp
         )
 
 set(IRTranslate
@@ -106,6 +106,7 @@ add_executable(printer
         tools/dot_printer.cpp
         ${TreeBuilder}
         ${Visitors}
+	${IRTree}
         )
 
 add_executable(symbol_table_test
@@ -117,19 +118,15 @@ add_executable(type_checker
         tools/type_checker.cpp
         ${TypeChecker}
         ${IRTree}
-		${IRTranslate}
+	${IRTranslate}
         )
 
 add_executable(demo_irt_printer
         tools/demo_irt_printer.cpp
         ${TreeBuilder}
         ${Visitors}
-<<<<<<< HEAD
-		${IRTree}
-=======
 	${IRTree}
 	${IRTCanonise}
->>>>>>> canonisation
         )
 
 

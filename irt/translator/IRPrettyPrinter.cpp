@@ -84,7 +84,7 @@ namespace NIRTree {
         static const std::vector<std::string> types = {"EQ", "NEQ", "LT"};
 
         printVertex(node, std::string("CJump ") + types.at(node->jumpType) + " trueLabel: " + 
-            node->trueLabel->String() + " falseLabel: " + node->falseLabel->String());
+            node->trueLabel->String());
 
         node->leftExpr->Accept(this);
         printEdge(node, (node->leftExpr).get(), "leftExpr");
