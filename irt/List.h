@@ -10,14 +10,15 @@ namespace NIRTree {
     template <typename T>
     class List : public T {
     public:
-        std::unique_ptr<const T> head;
-        std::unique_ptr<const T> tail;
+        std::unique_ptr<T> head;
+        std::unique_ptr<T> tail;
 
-        List(const T *_head, const T *_tail, const Location &_location)
+        List(T *_head, T *_tail, const Location &_location)
             : T(_location), head(_head), tail(_tail) {
         }
             
         void Accept(IIRVisitor *visitor) const override;
+        void Accept(IIRMutableVisitor *visitor) override;
     };
 
     using ExpList = List<IExp>;

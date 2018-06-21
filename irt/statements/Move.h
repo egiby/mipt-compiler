@@ -7,13 +7,14 @@
 namespace NIRTree {
     class Move : public IStm {
     public:
-        std::unique_ptr<const IExp> dst;
-        std::unique_ptr<const IExp> src;
+        std::unique_ptr<IExp> dst;
+        std::unique_ptr<IExp> src;
 
-        Move(const IExp *dst, const IExp *src, const Location &location)
+        Move(IExp *dst, IExp *src, const Location &location)
             : IStm(location), dst(dst), src(src) {
         }
 
         void Accept(IIRVisitor *visitor) const override;
+        void Accept(IIRMutableVisitor *visitor) override;
     };
 }

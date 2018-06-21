@@ -7,12 +7,13 @@
 namespace NIRTree {
     class Exp : public IStm {
     public:
-        std::unique_ptr<const IExp> expr;
+        std::unique_ptr<IExp> expr;
 
-        Exp(const IExp *expr, const Location &location)
+        Exp(IExp *expr, const Location &location)
             : IStm(location), expr(expr) {
         }
 
         void Accept(IIRVisitor *visitor) const override;
+        void Accept(IIRMutableVisitor *visitor) override;
     };
 }
