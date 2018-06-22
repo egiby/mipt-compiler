@@ -70,7 +70,7 @@ namespace NIRTree {
     }
 
     std::vector<std::unique_ptr<IStm>> Canoniser::Canonise(ISubtreeWrapper *subtreeWrapper) {
-        return Linearise(RemoveEseqsFromSubtree(std::move(subtreeWrapper)));
+        return Linearise(RemoveEseqsFromSubtree(subtreeWrapper));
     }
 
     /*Visitor*/

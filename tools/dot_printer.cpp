@@ -9,6 +9,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <code_generation/X86/CodeGeneration.h>
 
 int main(int argc, char* argv[]) {
     if (argc <= 1) {
@@ -50,6 +51,18 @@ int main(int argc, char* argv[]) {
     }
 
     linearIRPrinter.Visit(linearForest);
+    outLinearIrt.close();
+
+    for (auto &trees: linearForest) {
+        NCodeGeneration::Muncher muncher(trees.second);
+        auto &list = muncher.CreateInstructionsList();
+        std::cout << trees.first->String() << std::endl;
+        std::cout << "-------------------------" << std::endl;
+        for(auto& l: list.instructions) {
+            std::cout  << l->Format() << std::endl;
+        }
+        std::cout << std::endl;
+    }
 
     return 0;
 }

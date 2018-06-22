@@ -101,6 +101,12 @@ set(IRTCanonise
         irt/translator/Canoniser.cpp
         )
 
+set(CodeGeneration
+        code_generation/Instructions.h
+        code_generation/X86/CodeGeneration.cpp
+        code_generation/X86/InstructionSet.cpp
+        )
+
 add_executable(printer
         tools/dot_printer.cpp
         ${TreeBuilder}
@@ -109,6 +115,7 @@ add_executable(printer
         ${IRTree}
         ${IRTranslate}
         ${IRTCanonise}
+        ${CodeGeneration}
         irt/translator/X86IRBuilder.cpp
         )
 

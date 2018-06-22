@@ -132,7 +132,7 @@ namespace NIRTree {
 
     void IRBuilderVisitor::Visit(const NSyntaxTree::MethodCallExpression *expr) {
         expr->object->Accept(this);
-        auto baseAddress = new Temp(0, expr->location);
+        Temp* baseAddress = new Temp(0, expr->location);
         IExp *baseExp = new ESeq(new Move(baseAddress, mainSubtree->ToExp(), expr->location),
                                  new Mem(new Temp(*baseAddress), expr->location), expr->location);
 
