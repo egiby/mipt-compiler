@@ -10,11 +10,11 @@ namespace NIRTree {
         };
 
         Unop(EUnopType type, IExp *expression, const Location &location)
-            : IExp(location), type(type), expression(expression) {
+            : IExp(location), type(type), exp(expression) {
         }
 
         EUnopType type;
-        std::unique_ptr<IExp> expression;
+        std::unique_ptr<IExp> exp;
 
         void Accept(IIRVisitor *visitor) const override;
         void Accept(IIRMutableVisitor *visitor) override;

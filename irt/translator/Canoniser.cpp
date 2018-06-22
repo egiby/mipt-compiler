@@ -81,7 +81,7 @@ namespace NIRTree {
     }
 
     void CanonisationVisitor::Visit(Unop *node) {
-        highestEseq->stm.reset(reorder(node->expression));
+        highestEseq->stm.reset(reorder(node->exp));
         highestEseq->exp.reset(node);
     }
 
@@ -98,7 +98,7 @@ namespace NIRTree {
     }
 
     void CanonisationVisitor::Visit(Exp *node) {
-        IStm *stm = reorder(node->expr);
+        IStm *stm = reorder(node->exp);
         if (stm != nullptr) {
             highestEseq->stm.reset(addIfRequired(stm));
         }

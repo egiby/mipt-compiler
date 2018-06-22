@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ClassStruct.h"
+#include "irt/activation_records/ClassStruct.h"
 
 #include <irt/NodeTypes.h>
 

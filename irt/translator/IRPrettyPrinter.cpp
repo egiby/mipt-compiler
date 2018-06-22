@@ -78,8 +78,8 @@ namespace NIRTree {
 
         printVertex(node, std::string("Unop ") + types.at(node->type));
 
-        node->expression->Accept(this);
-        printEdge(node, (node->expression).get());
+        node->exp->Accept(this);
+        printEdge(node, (node->exp).get());
     }
 
     void IRPrettyPrinter::Visit(const CJump *node) {
@@ -98,13 +98,13 @@ namespace NIRTree {
     void IRPrettyPrinter::Visit(const Exp *node) {
         printVertex(node, std::string("Exp"));
 
-        if (!node->expr) {
+        if (!node->exp) {
             const INode* x = hashINode(node);
             printVertex(x, "nullptr");
             printEdge(node, x);
         } else {
-            node->expr->Accept(this);
-            printEdge(node, (node->expr).get());
+            node->exp->Accept(this);
+            printEdge(node, (node->exp).get());
         }
     }
         

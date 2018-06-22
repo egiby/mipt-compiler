@@ -9,7 +9,7 @@
 
 #include <fstream>
 #include <iostream>
-#include <code_generation/X86/CodeGeneration.h>
+#include <code_generation/X86/X86CodeGeneration.h>
 
 int main(int argc, char* argv[]) {
     if (argc <= 1) {

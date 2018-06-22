@@ -69,10 +69,10 @@ set(TypeChecker
 
 set(ActivationRecords
         ${SymbolTable}
-        irt/activation_records/X86MiniJavaFrame.cpp
+        irt/activation_records/X86/X86MiniJavaFrame.cpp
         irt/activation_records/InRegAccess.cpp
         irt/activation_records/InFrameAccess.cpp
-        irt/activation_records/X86MiniJavaClassStruct.cpp
+        irt/activation_records/X86/X86MiniJavaClassStruct.cpp
         irt/activation_records/ArrayStruct.cpp
         )
 
@@ -81,15 +81,8 @@ set(IRTree
         irt/INode.h
         irt/Label.cpp
 
-        irt/expressions/Binop.h
-        irt/expressions/Call.h
-        irt/expressions/Const.h
-        irt/expressions/ESeq.h
-        irt/expressions/Mem.h
-        irt/expressions/Name.h
         irt/expressions/Temp.cpp
         irt/Accept.cpp
-
         )
 
 set(IRTranslate
@@ -103,7 +96,7 @@ set(IRTCanonise
 
 set(CodeGeneration
         code_generation/Instructions.h
-        code_generation/X86/CodeGeneration.cpp
+        code_generation/X86/X86CodeGeneration.cpp
         code_generation/X86/InstructionSet.cpp
         )
 
@@ -130,15 +123,6 @@ add_executable(type_checker
         ${IRTree}
         ${IRTranslate}
         )
-
-add_executable(demo_irt_printer
-        tools/demo_irt_printer.cpp
-        ${TreeBuilder}
-        ${Visitors}
-        ${IRTree}
-        ${IRTranslate}
-        ${IRTCanonise}
-        irt/translator/X86IRBuilder.cpp)
 
 
 include_directories(. ${CMAKE_CURRENT_BINARY_DIR})

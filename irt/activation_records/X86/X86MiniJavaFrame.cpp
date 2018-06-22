@@ -1,7 +1,7 @@
 #include "X86MiniJavaFrame.h"
 
-#include "InRegAccess.h"
-#include "InFrameAccess.h"
+#include "irt/activation_records/InRegAccess.h"
+#include "irt/activation_records/InFrameAccess.h"
 
 namespace NIRTree {
     const int X86MiniJavaFrame::MaxInReg = 4;

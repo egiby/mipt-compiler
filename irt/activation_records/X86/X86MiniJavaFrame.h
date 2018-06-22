@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IFrame.h"
+#include <irt/activation_records/IFrame.h>
 
 #include <vector>
 #include <unordered_map>

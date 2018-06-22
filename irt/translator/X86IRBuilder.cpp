@@ -1,7 +1,7 @@
 #include "X86IRBuilder.h"
 
-#include <irt/activation_records/X86MiniJavaClassStruct.h>
-#include <irt/activation_records/X86MiniJavaFrame.h>
+#include <irt/activation_records/X86/X86MiniJavaClassStruct.h>
+#include <irt/activation_records/X86/X86MiniJavaFrame.h>
 
 #include <irt/translator/IRBuilderVisitor.h>
 
