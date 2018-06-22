@@ -2,30 +2,8 @@
 
 #include "common.h"
 
-#include <sstream>
-
 namespace NSyntaxTree {
-    class IVisitor;
-
-    struct Position {
-        uint32_t line;
-        uint32_t column;
-
-        string ToString() const {
-            std::stringstream buf;
-            buf << "("  << line << ", " << column << ")";
-            return buf.str();
-        }
-    };
-
-    struct Location {
-        Position begin;
-        Position end;
-
-        string ToString() const {
-            return begin.ToString() + " - " + end.ToString();
-        }
-    };
+    interface IVisitor;
 
     interface INode {
         Location location;
@@ -36,7 +14,6 @@ namespace NSyntaxTree {
         }
 
         virtual void Accept(IVisitor *visitor) const = 0;
-        virtual ~INode() {
-        }
+        virtual ~INode() = default;
     };
 }

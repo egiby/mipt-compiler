@@ -16,11 +16,11 @@ namespace NTypeChecker {
     }
 
     void TypeCheckerVisitor::Visit(const NSyntaxTree::ClassDeclaration *clazz) {
-        currentClass.reset(new ClassInfo(symbolTable.GetClassInfo(clazz->id)));
+        switcher.SwitchClass(new ClassInfo(symbolTable.GetClassInfo(clazz->id)));
 
-        if (currentClass->GetSuperClassId() != nullptr) {
+        if (switcher.CurrentClass()->GetSuperClassId() != nullptr) {
             for (const auto &method: *clazz->methodDeclarations) {
-                if (auto methodInfo = FindMethod(method->id, clazz->extendsId)) {
+                if (auto methodInfo = symbolTable.FindMethod(method->id, clazz->extendsId)) {
                     if (methodInfo->GetArgsInfo().size() != method->args->size()) {
                         throw RedefinitionException(method->location, method->id, methodInfo->GetLocation());
                     }
@@ -34,7 +34,7 @@ namespace NTypeChecker {
             }
 
             for (const auto &var: *clazz->varDeclarations) {
-                if (auto varInfo = FindIdentifier(&symbolTable.GetClassInfo(clazz->extendsId), var->id)) {
+                if (auto varInfo = symbolTable.FindIdentifier(&symbolTable.GetClassInfo(clazz->extendsId), var->id)) {
                     throw RedefinitionException(var->location, var->id, varInfo->GetLocation());
                 }
             }
@@ -53,12 +53,12 @@ namespace NTypeChecker {
     }
 
     void TypeCheckerVisitor::Visit(const NSyntaxTree::MethodDeclaration *method) {
-        currentMethod.reset(new MethodInfo(currentClass->GetMethodsInfo().at(method->id)));
+        switcher.SwitchMethod(new MethodInfo(switcher.CurrentClass()->GetMethodsInfo().at(method->id)));
 
         CheckExpressionType(method->returnExpression.get(), method->returnType);
 
         for (const auto &arg: *method->args) {
-            if (auto varInfo = FindIdentifier(currentClass.get(), arg->id)) {
+            if (auto varInfo = symbolTable.FindIdentifier(switcher.CurrentClass(), arg->id)) {
                 throw RedefinitionException(arg->location, arg->id, varInfo->GetLocation());
             }
 
@@ -69,12 +69,12 @@ namespace NTypeChecker {
         }
 
         for (const auto &var: *method->localVars) {
-            if (auto varInfo = FindIdentifier(currentClass.get(), var->id)) {
+            if (auto varInfo = symbolTable.FindIdentifier(switcher.CurrentClass(), var->id)) {
                 throw RedefinitionException(var->location, var->id, varInfo->GetLocation());
             }
 
-            if (currentMethod->GetArgsMap().find(var->id) != currentMethod->GetArgsMap().end()) {
-                throw RedefinitionException(var->location, var->id, currentMethod->GetArgsMap().at(var->id).GetLocation());
+            if (switcher.CurrentMethod()->GetArgsMap().find(var->id) != switcher.CurrentMethod()->GetArgsMap().end()) {
+                throw RedefinitionException(var->location, var->id, switcher.CurrentMethod()->GetArgsMap().at(var->id).GetLocation());
             }
         }
 
@@ -109,10 +109,10 @@ namespace NTypeChecker {
     void TypeCheckerVisitor::Visit(const NSyntaxTree::AssignStatement *statement) {
         statement->rvalue->Accept(this);
 
-        const auto &variable = FindAndCheckIdentifier(*currentClass, *currentMethod, statement->lvalue, statement->location);
+        const auto &variable = FindAndCheckIdentifier(*switcher.CurrentClass(), *switcher.CurrentMethod(), statement->lvalue, statement->location);
 
-        if (*expressionType != variable.GetTypeInfo()) {
-            throw IllegalTypeException(statement->rvalue->location, *expressionType, variable.GetTypeInfo());
+        if (*switcher.CurrentExprType() != variable.GetTypeInfo()) {
+            throw IllegalTypeException(statement->rvalue->location, *switcher.CurrentExprType(), variable.GetTypeInfo());
         }
     }
 
@@ -120,7 +120,7 @@ namespace NTypeChecker {
         CheckExpressionType(statement->index.get(), IntType);
         CheckExpressionType(statement->rvalue.get(), IntType);
 
-        const auto &variable = FindAndCheckIdentifier(*currentClass, *currentMethod, statement->arrayId, statement->location);
+        const auto &variable = FindAndCheckIdentifier(*switcher.CurrentClass(), *switcher.CurrentMethod(), statement->arrayId, statement->location);
 
         if (variable.GetTypeInfo() != IntArrayType) {
             throw IllegalTypeException(statement->location, variable.GetTypeInfo(), IntArrayType);
@@ -131,15 +131,15 @@ namespace NTypeChecker {
         if (expression->type == NSyntaxTree::AND || expression->type == NSyntaxTree::OR) {
             CheckExpressionType(expression->left.get(), BooleanType);
             CheckExpressionType(expression->right.get(), BooleanType);
-            expressionType.reset(new TypeInfo(BOOL));
+            switcher.SwitchExprType(new TypeInfo(BOOL));
         }
         else {
             CheckExpressionType(expression->left.get(), IntType);
             CheckExpressionType(expression->right.get(), IntType);
             if (expression->type == NSyntaxTree::LESS)
-                expressionType.reset(new TypeInfo(BOOL));
+                switcher.SwitchExprType(new TypeInfo(BOOL));
             else
-                expressionType.reset(new TypeInfo(INT));
+                switcher.SwitchExprType(new TypeInfo(INT));
         }
     }
 
@@ -147,19 +147,19 @@ namespace NTypeChecker {
         CheckExpressionType(expression->array.get(), IntArrayType);
         CheckExpressionType(expression->index.get(), IntType);
 
-        expressionType.reset(new TypeInfo(INT));
+        switcher.SwitchExprType(new TypeInfo(INT));
     }
 
     void TypeCheckerVisitor::Visit(const NSyntaxTree::ArrayLengthExpression *expression) {
         CheckExpressionType(expression->array.get(), IntArrayType);
 
-        expressionType.reset(new TypeInfo(INT));
+        switcher.SwitchExprType(new TypeInfo(INT));
     }
 
     void TypeCheckerVisitor::Visit(const NSyntaxTree::MethodCallExpression *expression) {
         // check object type
         expression->object->Accept(this);
-        TypeInfo objectType = *expressionType;
+        TypeInfo objectType = *switcher.CurrentExprType();
 
         if (objectType.GetType() != NSymbolTable::CLASS) {
             throw IllegalTypeException(expression->object->location, objectType);
@@ -172,37 +172,37 @@ namespace NTypeChecker {
             throw BadArgumentsException(expression->location);
         }
 
-        for (uint32 i =  0; i < expression->args->size(); ++i) {
+        for (uint32 i = 0; i < expression->args->size(); ++i) {
             expression->args->at(i)->Accept(this);
-            if (!IsSimilarTypes(*expressionType, method.GetArgsInfo().at(i).GetTypeInfo())) {
-                throw IllegalTypeException(expression->args->at(i)->location, *expressionType, method.GetArgsInfo().at(i).GetTypeInfo());
+            if (!IsSimilarTypes(*switcher.CurrentExprType(), method.GetArgsInfo().at(i).GetTypeInfo())) {
+                throw IllegalTypeException(expression->args->at(i)->location, *switcher.CurrentExprType(), method.GetArgsInfo().at(i).GetTypeInfo());
             }
         }
 
-        expressionType.reset(new TypeInfo(method.GetReturnType()));
+        switcher.SwitchExprType(new TypeInfo(method.GetReturnType()));
     }
 
     void TypeCheckerVisitor::Visit(const NSyntaxTree::IntegerLiteralExpression *) {
-        expressionType.reset(new TypeInfo(INT));
+        switcher.SwitchExprType(new TypeInfo(INT));
     }
 
     void TypeCheckerVisitor::Visit(const NSyntaxTree::BoolLiteralExpression *) {
-        expressionType.reset(new TypeInfo(BOOL));
+        switcher.SwitchExprType(new TypeInfo(BOOL));
     }
 
     void TypeCheckerVisitor::Visit(const NSyntaxTree::IdentifierExpression *expression) {
-        const auto &type = FindAndCheckIdentifier(*currentClass, *currentMethod, expression->identifier, expression->location);
-        expressionType.reset(new TypeInfo(type.GetTypeInfo()));
+        const auto &type = FindAndCheckIdentifier(*switcher.CurrentClass(), *switcher.CurrentMethod(), expression->identifier, expression->location);
+        switcher.SwitchExprType(new TypeInfo(type.GetTypeInfo()));
     }
 
     void TypeCheckerVisitor::Visit(const NSyntaxTree::ThisExpression *) {
-        expressionType.reset(new TypeInfo(CLASS, currentClass->GetId()));
+        switcher.SwitchExprType(new TypeInfo(CLASS, switcher.CurrentClass()->GetId()));
     }
 
     void TypeCheckerVisitor::Visit(const NSyntaxTree::NewIntArrayExpression *expression) {
         CheckExpressionType(expression->size.get(), IntType);
 
-        expressionType.reset(new TypeInfo(INT_ARRAY));
+        switcher.SwitchExprType(new TypeInfo(INT_ARRAY));
     }
 
     void TypeCheckerVisitor::Visit(const NSyntaxTree::NewExpression *expression) {
@@ -210,13 +210,13 @@ namespace NTypeChecker {
             throw NSymbolTable::NonDeclaredSymbolException(expression->location, expression->classId);
         }
 
-        expressionType.reset(new TypeInfo(CLASS, expression->classId));
+        switcher.SwitchExprType(new TypeInfo(CLASS, expression->classId));
     }
 
     void TypeCheckerVisitor::Visit(const NSyntaxTree::NegateExpression *expression) {
         CheckExpressionType(expression->expression.get(), BooleanType);
 
-        expressionType.reset(new NSymbolTable::TypeInfo(NSymbolTable::BOOL));
+        switcher.SwitchExprType(new NSymbolTable::TypeInfo(NSymbolTable::BOOL));
     }
 
 
@@ -230,13 +230,13 @@ namespace NTypeChecker {
             classInfo = symbolTable.GetClassInfo(classInfo.GetSuperClassId());
         }
 
-        auto method = FindMethod(methodId, classId);
+        auto method = symbolTable.FindMethod(methodId, classId);
 
         if (!method) {
             throw NonDeclaredSymbolException(location, methodId);
         }
 
-        if (method->GetModifier() == NSyntaxTree::PRIVATE && classInfo.GetId() != currentClass->GetId()) {
+        if (method->GetModifier() == NSyntaxTree::PRIVATE && classInfo.GetId() != switcher.CurrentClass()->GetId()) {
             throw PrivateAccessException(location, methodId, classInfo.GetId());
         }
 
@@ -245,8 +245,8 @@ namespace NTypeChecker {
 
     void TypeCheckerVisitor::CheckExpressionType(const NSyntaxTree::IExpression *expression, const TypeInfo &expected) {
         expression->Accept(this);
-        if (*expressionType != expected) {
-            throw IllegalTypeException(expression->location, *expressionType, expected);
+        if (*switcher.CurrentExprType() != expected) {
+            throw IllegalTypeException(expression->location, *switcher.CurrentExprType(), expected);
         }
     }
 
@@ -254,56 +254,13 @@ namespace NTypeChecker {
             , const MethodInfo &methodInfo
             , const NSymbolTable::Symbol *id
             , const Location &location) const {
-        auto idInfo = FindIdentifier(&clazzInfo, id, &methodInfo);
+        auto idInfo = symbolTable.FindIdentifier(&clazzInfo, id, &methodInfo);
 
         if (idInfo != nullptr) {
             return *idInfo;
         }
 
         throw NonDeclaredSymbolException(location, id);
-    }
-
-    const VariableInfo* TypeCheckerVisitor::FindIdentifier(const ClassInfo *clazzInfo
-            , const NSymbolTable::Symbol *id
-            , const MethodInfo *methodInfo) const {
-
-        if (methodInfo) {
-            if (methodInfo->GetArgsMap().find(id) != methodInfo->GetArgsMap().end()) {
-                return &methodInfo->GetArgsMap().at(id);
-            }
-
-            if (methodInfo->GetVarsInfo().find(id) != methodInfo->GetVarsInfo().end()) {
-                return &methodInfo->GetVarsInfo().at(id);
-            }
-        }
-
-        auto clazz = *clazzInfo;
-        while (!clazz.HasMember(id) && clazz.GetSuperClassId() != nullptr) {
-            clazz = symbolTable.GetClassInfo(clazz.GetSuperClassId());
-        }
-
-        if (!clazz.HasMember(id)) {
-            return nullptr;
-        }
-
-        return &clazz.GetVarsInfo().at(id);
-    }
-
-    const MethodInfo* TypeCheckerVisitor::FindMethod(const Symbol *methodId
-            , const Symbol *classId) const {
-        auto classInfo = symbolTable.GetClassInfo(classId);
-
-        while (!classInfo.HasMethod(methodId) && classInfo.GetSuperClassId() != nullptr) {
-            classInfo = symbolTable.GetClassInfo(classInfo.GetSuperClassId());
-        }
-
-        if (!classInfo.HasMethod(methodId)) {
-            return nullptr;
-        }
-
-        const auto &method = classInfo.GetMethodsInfo().at(methodId);
-
-        return &method;
     }
 
     bool TypeCheckerVisitor::IsSimilarTypes(const TypeInfo &first, const TypeInfo &second) const {

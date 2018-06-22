@@ -9,6 +9,6 @@ namespace NSymbolTable {
         SymbolTableCreatorVisitor visitor(table);
         visitor.Visit(&program);
 
-        return std::move(table);
+        return table;
     }
 }

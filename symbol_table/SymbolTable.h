@@ -36,6 +36,12 @@ namespace NSymbolTable {
         const Symbol* GetMainClassId() const;
         const Location& GetMainClassLocation() const;
 
-        std::shared_ptr<StringInterner> GetInterner();
+        std::shared_ptr<StringInterner> GetInterner() const;
+
+        const VariableInfo* FindIdentifier(const ClassInfo *clazzInfo
+                , const NSymbolTable::Symbol *id
+                , const MethodInfo *methodInfo = nullptr) const;
+        const MethodInfo* FindMethod(const Symbol *methodId
+                , const Symbol *classId) const;
     };
 }

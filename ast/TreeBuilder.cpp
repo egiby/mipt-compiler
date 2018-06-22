@@ -16,5 +16,5 @@ NSyntaxTree::Program NSyntaxTree::BuildTree(std::istream *input) {
     yy::parser parser(scanner, program);
     parser.parse();
 
-    return std::move(program);
+    return program;
 }

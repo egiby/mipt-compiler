@@ -11,20 +11,25 @@ namespace NSymbolTable {
         Location location;
 
     public:
-        inline IdentifierInfo(const Symbol* _id, const NSyntaxTree::Location& _location)
+        inline IdentifierInfo(const Symbol* _id, const Location& _location)
             : id(_id), location(_location) {
         }
+
+        inline IdentifierInfo(const IdentifierInfo &info) = default;
+        inline IdentifierInfo &operator=(const IdentifierInfo &info) = default;
+
+        inline IdentifierInfo(IdentifierInfo &&info) = default;
+        inline IdentifierInfo &operator=(IdentifierInfo &&info) = default;
 
         inline const Symbol* GetId() const {
             return id;
         }
 
-        inline const NSyntaxTree::Location& GetLocation() const {
+        inline const Location& GetLocation() const {
             return location;
         }
 
-        virtual ~IdentifierInfo() {
-        }
+        virtual ~IdentifierInfo() = default;
     };
 
     template<class Map>

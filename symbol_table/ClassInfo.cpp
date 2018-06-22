@@ -20,4 +20,8 @@ namespace NSymbolTable {
     bool ClassInfo::HasMethod(const Symbol *id) const {
         return methodsInfo.find(id) != methodsInfo.end();
     }
+
+    TypeInfo ClassInfo::GetType() const {
+        return TypeInfo(CLASS, id);
+    }
 }

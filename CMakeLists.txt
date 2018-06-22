@@ -1,5 +1,7 @@
 set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-deprecated-register")
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -Wextra -Wno-maybe-uninitialized -Wno-reorder")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -Wextra -Wno-uninitialized")
 
 cmake_minimum_required(VERSION 3.1)
 
@@ -27,6 +29,7 @@ set(SyntaxTreeSrc
 
 set(Visitors
         ast/tree/visitors/PrettyPrinterVisitor.cpp
+        irt/translator/IRPrettyPrinter.cpp
         )
 
 set(SymbolTable
@@ -36,7 +39,7 @@ set(SymbolTable
         symbol_table/ClassInfo.cpp
         symbol_table/SymbolTable.cpp
         symbol_table/SymbolTableCreatorVisitor.cpp
-        )
+        symbol_table/ScopeSwitcher.cpp)
 
 set(Util
         util/Symbol.cpp
@@ -64,10 +67,49 @@ set(TypeChecker
         type_checker/TypeCheckerVisitor.cpp
         type_checker/Exceptions.cpp)
 
+set(ActivationRecords
+        ${SymbolTable}
+        irt/activation_records/X86/X86MiniJavaFrame.cpp
+        irt/activation_records/InRegAccess.cpp
+        irt/activation_records/InFrameAccess.cpp
+        irt/activation_records/X86/X86MiniJavaClassStruct.cpp
+        irt/activation_records/ArrayStruct.cpp
+        )
+
+set(IRTree
+        ${ActivationRecords}
+        irt/INode.h
+        irt/Label.cpp
+
+        irt/expressions/Temp.cpp
+        irt/Accept.cpp
+        )
+
+set(IRTranslate
+        irt/translator/IRBuilderVisitor.cpp
+        irt/translator/NameConventions.h
+        )
+
+set(IRTCanonise
+        irt/translator/Canoniser.cpp
+        )
+
+set(CodeGeneration
+        code_generation/Instructions.h
+        code_generation/X86/X86CodeGeneration.cpp
+        code_generation/X86/InstructionSet.cpp
+        )
+
 add_executable(printer
         tools/dot_printer.cpp
         ${TreeBuilder}
+        ${SymbolTableBuilder}
         ${Visitors}
+        ${IRTree}
+        ${IRTranslate}
+        ${IRTCanonise}
+        ${CodeGeneration}
+        irt/translator/X86IRBuilder.cpp
         )
 
 add_executable(symbol_table_test
@@ -78,6 +120,9 @@ add_executable(symbol_table_test
 add_executable(type_checker
         tools/type_checker.cpp
         ${TypeChecker}
+        ${IRTree}
+        ${IRTranslate}
         )
+
 
 include_directories(. ${CMAKE_CURRENT_BINARY_DIR})
