@@ -18,3 +18,7 @@
 
 #include <irt/translator/ExprWrapper.h>
 #include <irt/translator/StmWrapper.h>
+
+namespace NIRTree {
+    using IRForest = std::unordered_map<const Symbol*, std::unique_ptr<ISubtreeWrapper>>;
+}

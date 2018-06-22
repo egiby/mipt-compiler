@@ -16,13 +16,17 @@
 namespace NIRTree {
     class IRBuilderVisitor: public NSyntaxTree::IVisitor {
     public:
+        IRBuilderVisitor(const IClassStructBuilder*, const IFrameBuilder*, const NSymbolTable::SymbolTable &);
+
+        IRForest CreateForest(const NSyntaxTree::Program &program);
+
         void Visit(const NSyntaxTree::Program *) override;
 
         void Visit(const NSyntaxTree::ClassDeclaration *) override;
 
         void Visit(const NSyntaxTree::MainClass *) override;
 
-        void Visit(const NSyntaxTree::VarDeclaration *) override {}
+        void Visit(const NSyntaxTree::VarDeclaration *) override;
 
         void Visit(const NSyntaxTree::MethodDeclaration *) override;
 
@@ -62,14 +66,15 @@ namespace NIRTree {
 
     private:
         using SubtreePtr = std::unique_ptr<ISubtreeWrapper>;
-        std::unordered_map<const Symbol*, SubtreePtr> forest;
-        const NSymbolTable::SymbolTable &symbolTable;
         std::unique_ptr<ISubtreeWrapper> mainSubtree;
+        std::unique_ptr<IFrame> frame;
 
         NSymbolTable::ScopeSwitcher switcher;
 
-        std::unique_ptr<IFrame> frame;
         const IClassStructBuilder* classStructBuilder;
         const IFrameBuilder* frameBuilder;
+        const NSymbolTable::SymbolTable &symbolTable;
+
+        std::unordered_map<const Symbol*, SubtreePtr> forest;
     };
 }

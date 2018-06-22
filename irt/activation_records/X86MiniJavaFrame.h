@@ -14,6 +14,7 @@ namespace NIRTree {
 
         int addressExitIndex = -1;
         int formalTopPointer = 0;
+        int localTopPointer = 0;
 
         IAccess* createFormal(IAccess::ERecordsType type, int size);
     public:

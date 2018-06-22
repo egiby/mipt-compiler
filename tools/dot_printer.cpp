@@ -1,7 +1,10 @@
 #include <ast/TreeBuilder.h>
 #include <ast/tree/visitors/PrettyPrinterVisitor.h>
 
+#include <symbol_table/SymbolTableBuilder.h>
+
 #include <irt/translator/IRPrettyPrinter.h>
+#include <irt/translator/X86IRBuilder.h>
 
 #include <fstream>
 #include <iostream>
@@ -27,11 +30,12 @@ int main(int argc, char* argv[]) {
     // irt
     std::ofstream outIrt("./graph_irt.gv");
 
+    NSymbolTable::SymbolTable symbolTable = NSymbolTable::BuildSymbolTable(program);
+
     NIRTree::IRPrettyPrinter irPrinter(outIrt);
+    NIRTree::IRForest forest = NIRTree::BuildTree(program, symbolTable);
 
-    auto globalRoot = NIRTree::GlobalIRTParent();
-
-    irPrinter.Visit(&globalRoot);
+    irPrinter.Visit(forest);
 
     outIrt.close();
 

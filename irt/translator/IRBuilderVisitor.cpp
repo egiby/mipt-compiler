@@ -6,6 +6,7 @@
 
 #include <irt/NodeTypes.h>
 #include <irt/activation_records/ArrayStruct.h>
+
 #include <vector>
 
 namespace NIRTree {
@@ -90,10 +91,11 @@ namespace NIRTree {
             assert(switcher.CurrentClass() != nullptr);
             std::unique_ptr<IClassStruct> scopedClassStruct(
                     classStructBuilder->GetClassStruct(*switcher.CurrentClass(), symbolTable));
+            auto access = frame->GetFormalOrLocal(
+                    symbolTable.GetInterner()->GetIntern("this"));
             varExp = scopedClassStruct->GetFieldFrom(
                     expr->identifier,
-                    frame->GetFormalOrLocal(
-                            symbolTable.GetInterner()->GetIntern("this"))->GetExp(
+                    access->GetExp(
                             new Temp("fp", expr->location), expr->location),
                     expr->location);
         }
@@ -425,5 +427,19 @@ namespace NIRTree {
         }
         mainSubtree.reset(new ExprWrapper(result));
 
+    }
+
+    IRBuilderVisitor::IRBuilderVisitor(const IClassStructBuilder *classStructBuilder, const IFrameBuilder *frameBuilder,
+                                       const NSymbolTable::SymbolTable &symbolTable)
+            : classStructBuilder(classStructBuilder), frameBuilder(frameBuilder), symbolTable(symbolTable) {
+
+    }
+
+    IRForest IRBuilderVisitor::CreateForest(const NSyntaxTree::Program &program) {
+        Visit(&program);
+        return std::move(forest);
+    }
+
+    void IRBuilderVisitor::Visit(const NSyntaxTree::VarDeclaration *) {
     }
 }

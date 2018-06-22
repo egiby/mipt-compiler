@@ -1,5 +1,7 @@
 #include "IRPrettyPrinter.h"
 
+#include <vector>
+
 namespace NIRTree {
     const INode* hashINode(const INode* node) {
         return (INode*)(void*)(((long long)(const void*)node) * 2);
@@ -164,18 +166,30 @@ namespace NIRTree {
     void IRPrettyPrinter::Visit(const ExpList *node) {
         printVertex(node, std::string("ExpList"));
 
-        node->head->Accept(this);
-        printEdge(node, (node->head).get(), "ExpList head");
+        if (!node->head) {
+            const INode* x = hashINode(node);
+            printVertex(x, "nullptr");
+            printEdge(node, x, "ExpList head");
+        } else {
+            node->head->Accept(this);
+            printEdge(node, (node->head).get(), "ExpList head");
+        }
 
-        node->tail->Accept(this);
-        printEdge(node, (node->tail).get(), "ExpList tail");
+        if (!node->tail) {
+            const INode* x = hashINode(node + 1);
+            printVertex(x, "nullptr");
+            printEdge(node, x, "ExpList tail");
+        } else {
+            node->tail->Accept(this);
+            printEdge(node, (node->tail).get(), "ExpList tail");
+        }
     }
 
-    void IRPrettyPrinter::Visit(const GlobalIRTParent *node) {
+    void IRPrettyPrinter::Visit(const IRForest &forest) {
         outPut <<  "digraph g {\n" << "\n";
 
-        for (auto root : node->roots) {
-            root->Accept(this);
+        for (const auto &root: forest) {
+            root.second->Accept(this);
         }
 
         outPut << "}\n";

@@ -8,16 +8,16 @@
 #include <fstream>
 #include <iostream>
 
-int main(int argc, char* argv[]) {
+int main(int /*argc*/, char** /*argv[]*/) {
 
     std::ofstream outIrt("./graph_irt.gv");
 
     NIRTree::IRPrettyPrinter irPrinter(outIrt);
 
-    auto globalRoot = NIRTree::GlobalIRTParent();
+//    auto globalRoot = NIRTree::GlobalIRTParent();
 
     auto node1 = NIRTree::Const(12, {});
-    auto binop = NIRTree::Binop(NIRTree::AND, new NIRTree::Const(43, {}), new NIRTree::Const(44, {}), {});
+    auto binop = NIRTree::Binop(NIRTree::Binop::AND, new NIRTree::Const(43, {}), new NIRTree::Const(44, {}), {});
     auto eseq = NIRTree::ESeq(new NIRTree::Exp(new NIRTree::Const(42, {}), {}),
         new NIRTree::Const(43, {}), {});
     auto call = NIRTree::Call(new NIRTree::Const(43, {}),
@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
     auto cjump = NIRTree::CJump(NIRTree::CJump::EQ, 
         new NIRTree::Const(42, {}),
         new NIRTree::Const(42, {}),
-        helperLabel, helperLabel, {});
+        helperLabel, {});
     auto labelStm = NIRTree::LabelStm(helperLabel, {});
     auto seq = NIRTree::Seq(new NIRTree::Jump(helperLabel, {}),
         new NIRTree::Jump(helperLabel, {}), {});
@@ -43,7 +43,7 @@ int main(int argc, char* argv[]) {
     std::unique_ptr<NIRTree::StmWrapper> stmWrapper(
         new NIRTree::StmWrapper(
             //new NIRTree::LabelStm(helperLabel, {})
-            new NIRTree::Exp(new NIRTree::Binop(NIRTree::AND, new NIRTree::Const(43, {}), new NIRTree::Const(44, {}), {}), {})
+            new NIRTree::Exp(new NIRTree::Binop(NIRTree::Binop::AND, new NIRTree::Const(43, {}), new NIRTree::Const(44, {}), {}), {})
         )
     );
     std::unique_ptr<NIRTree::ExprWrapper> expWrapper(
@@ -58,13 +58,13 @@ int main(int argc, char* argv[]) {
 
     std::unique_ptr<NIRTree::ExprWrapper> expWrapper2(
         new NIRTree::ExprWrapper(
-            new NIRTree::Binop(NIRTree::AND, new NIRTree::Const(43, {}), new NIRTree::Const(44, {}), {})
+            new NIRTree::Binop(NIRTree::Binop::AND, new NIRTree::Const(43, {}), new NIRTree::Const(44, {}), {})
         )
     );
 
     std::unique_ptr<NIRTree::StmWrapper> stmWrapperDeep(
         new NIRTree::StmWrapper(
-            new NIRTree::Seq(new NIRTree::Move(new NIRTree::Binop(NIRTree::OR, new NIRTree::Const(43, {}), 
+            new NIRTree::Seq(new NIRTree::Move(new NIRTree::Binop(NIRTree::Binop::OR, new NIRTree::Const(43, {}),
                     new NIRTree::Const(44, {}), {}), new NIRTree::Const(42, {}), {}),
                 new NIRTree::Jump(helperLabel, {}), {}
             )
@@ -90,7 +90,7 @@ int main(int argc, char* argv[]) {
     std::unique_ptr<NIRTree::ExprWrapper> expWrapper4(
         new NIRTree::ExprWrapper(
             new NIRTree::Binop(
-                NIRTree::AND,
+                NIRTree::Binop::AND,
                 new NIRTree::ESeq(
                     new NIRTree::LabelStm(NIRTree::LabelHolder::GetLabel("s"), {}),
                     new NIRTree::Name("e1", {}),
@@ -126,7 +126,6 @@ int main(int argc, char* argv[]) {
                 ),
                 new NIRTree::Name("e2", {}),
                 NIRTree::LabelHolder::GetLabel("l1"),
-                NIRTree::LabelHolder::GetLabel("l2"),
                 {}
             )
         )
@@ -136,7 +135,7 @@ int main(int argc, char* argv[]) {
     std::unique_ptr<NIRTree::ExprWrapper> expWrapper7(
         new NIRTree::ExprWrapper(
             new NIRTree::Binop(
-                NIRTree::AND,
+                NIRTree::Binop::AND,
                 new NIRTree::Name("e1", {}),
                 new NIRTree::ESeq(
                     new NIRTree::LabelStm(NIRTree::LabelHolder::GetLabel("s"), {}),
@@ -159,7 +158,6 @@ int main(int argc, char* argv[]) {
                     {}
                 ),
                 NIRTree::LabelHolder::GetLabel("l1"),
-                NIRTree::LabelHolder::GetLabel("l2"),
                 {}
             )
         )
@@ -169,7 +167,7 @@ int main(int argc, char* argv[]) {
     std::unique_ptr<NIRTree::ExprWrapper> expWrapper9(
         new NIRTree::ExprWrapper(
             new NIRTree::Binop(
-                NIRTree::AND,
+                NIRTree::Binop::AND,
                 new NIRTree::Unop(NIRTree::Unop::NOT, new NIRTree::Name("e1", {}), {}),
                 new NIRTree::ESeq(
                     new NIRTree::LabelStm(NIRTree::LabelHolder::GetLabel("s"), {}),
@@ -192,7 +190,6 @@ int main(int argc, char* argv[]) {
                     {}
                 ),
                 NIRTree::LabelHolder::GetLabel("l1"),
-                NIRTree::LabelHolder::GetLabel("l2"),
                 {}
             )
         )
@@ -221,7 +218,7 @@ int main(int argc, char* argv[]) {
     std::unique_ptr<NIRTree::ExprWrapper> expWrapper12(
         new NIRTree::ExprWrapper(
             new NIRTree::Binop(
-                NIRTree::AND,
+                NIRTree::Binop::AND,
                 new NIRTree::Unop(NIRTree::Unop::NOT, new NIRTree::Name("e1", {}), {}),
                 new NIRTree::Call(
                     new NIRTree::Const(41, {}),
@@ -275,9 +272,9 @@ int main(int argc, char* argv[]) {
     //auto &wrapperO = expWrapper9;
     auto &wrapperO = stmWrapper10;
 
-    globalRoot.roots = {wrapperO.get()};
+//    globalRoot.forest = NIRTree::IRForest{std::make_pair(nullptr, std::move(wrapperO))};
 
-    irPrinter.Visit(&globalRoot);
+//    irPrinter.Visit(&globalRoot);
 
     outIrt.close();
 
@@ -306,16 +303,16 @@ int main(int argc, char* argv[]) {
             outIrt.close();
         }*/
 
-        auto vec = NIRTree::Canoniser::Canonise(std::move(wrapperO));
-        std::ofstream outIrt("./graph_irt_canon.gv");
-        NIRTree::IRPrettyPrinter irPrinter(outIrt);
-        auto globalRoot = NIRTree::GlobalIRTParent();
-
-        for (auto& elem : vec) {
-            globalRoot.roots.push_back(elem.get());
-        }
-        irPrinter.Visit(&globalRoot);
-        outIrt.close();
+//        auto vec = NIRTree::Canoniser::Canonise(std::move(globalRoot.forest.at(nullptr)));
+//        std::ofstream outIrt("./graph_irt_canon.gv");
+//        NIRTree::IRPrettyPrinter irPrinter(outIrt);
+//        auto globalRoot = NIRTree::GlobalIRTParent();
+//
+//        for (auto& elem : vec) {
+//            globalRoot.forest.insert(std::make_pair(std::move(elem)));
+//        }
+//        irPrinter.Visit(&globalRoot);
+//        outIrt.close();
     }
     
     return 0;

@@ -8,14 +8,20 @@ namespace NIRTree {
 
     void X86MiniJavaFrame::AddLocal(const NSymbolTable::VariableInfo &variable) {
         idToInfo.insert({variable.GetId(), variable});
-        idToAccess[variable.GetId()] = nullptr;
+
+        // TODO: 4 is typeSize
+        IAccess* var = new InFrameAccess(IAccess::FORMAL, 4, localTopPointer );
+        idToAccess.insert(std::make_pair(variable.GetId(), std::unique_ptr<IAccess>(var)));
+        localTopPointer += 4;
     }
 
     void X86MiniJavaFrame::AddFormal(const NSymbolTable::VariableInfo &variable) {
         formalIds.push_back(variable.GetId());
 
+        // TODO: 4 is typeSize
         idToInfo.insert({variable.GetId(), variable});
-        idToAccess[variable.GetId()] = nullptr;
+        IAccess* var = createFormal(IAccess::FORMAL, 4);
+        idToAccess.insert(std::make_pair(variable.GetId(), std::unique_ptr<IAccess>(var)));
     }
 
     int X86MiniJavaFrame::GetFormalsCount() const {

@@ -90,7 +90,6 @@ set(IRTree
         irt/expressions/Temp.cpp
         irt/Accept.cpp
 
-        irt/GlobalIRTParent.cpp
         )
 
 set(IRTranslate
@@ -105,8 +104,12 @@ set(IRTCanonise
 add_executable(printer
         tools/dot_printer.cpp
         ${TreeBuilder}
+        ${SymbolTableBuilder}
         ${Visitors}
         ${IRTree}
+        ${IRTranslate}
+        ${IRTCanonise}
+        irt/translator/X86IRBuilder.cpp
         )
 
 add_executable(symbol_table_test
@@ -126,8 +129,9 @@ add_executable(demo_irt_printer
         ${TreeBuilder}
         ${Visitors}
         ${IRTree}
+        ${IRTranslate}
         ${IRTCanonise}
-        )
+        irt/translator/X86IRBuilder.cpp)
 
 
 include_directories(. ${CMAKE_CURRENT_BINARY_DIR})

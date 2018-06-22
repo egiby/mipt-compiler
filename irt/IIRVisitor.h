@@ -1,7 +1,6 @@
 #pragma once
 
 #include "NodeTypes.h"
-#include "GlobalIRTParent.h"
 
 #include <util/CommonDefs.h>
 
@@ -27,7 +26,5 @@ namespace NIRTree {
 
         virtual void Visit(const ExprWrapper*) = 0;
         virtual void Visit(const StmWrapper*) = 0;
-
-        virtual void Visit(const GlobalIRTParent*) {}
     };
 }

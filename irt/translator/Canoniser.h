@@ -4,6 +4,8 @@
 #include <irt/expressions/IExp.h>
 #include <irt/statements/IStm.h>
 
+#include <vector>
+
 namespace NIRTree {
 
     class CanonisationVisitor;
