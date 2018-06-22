@@ -12,18 +12,18 @@ namespace NIRTree {
 
     class Canoniser {
     public:
-        static std::unique_ptr<StmWrapper> RemoveEseqsFromSubtree(std::unique_ptr<ISubtreeWrapper> subtreeWrapper);
+        static StmWrapper* RemoveEseqsFromSubtree(ISubtreeWrapper* subtreeWrapper);
     
         static bool commute(const IStm* stm, const IExp* exp);
         static bool isNop(const IStm* stm);
 
         static void liftEseq(CanonisationVisitor &cv);
 
-        static std::vector<std::unique_ptr<IStm>> Linearise(std::unique_ptr<StmWrapper> wrapper);
-        static void Linear(std::unique_ptr<IStm> node, std::vector<std::unique_ptr<IStm>> &stms);
+        static std::vector<std::unique_ptr<IStm>> Linearise(StmWrapper* wrapper);
+        static void Linear(IStm* node, std::vector<std::unique_ptr<IStm>> &stms);
 
         // main method
-        static std::vector<std::unique_ptr<IStm>> Canonise(std::unique_ptr<ISubtreeWrapper> subtreeWrapper);
+        static std::vector<std::unique_ptr<IStm>> Canonise(ISubtreeWrapper* subtreeWrapper);
     };
 
     class CanonisationVisitor : public IIRMutableVisitor {

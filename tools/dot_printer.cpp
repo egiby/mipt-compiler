@@ -5,6 +5,7 @@
 
 #include <irt/translator/IRPrettyPrinter.h>
 #include <irt/translator/X86IRBuilder.h>
+#include <irt/translator/Canoniser.h>
 
 #include <fstream>
 #include <iostream>
@@ -38,6 +39,17 @@ int main(int argc, char* argv[]) {
     irPrinter.Visit(forest);
 
     outIrt.close();
+
+    // linearized irt
+    std::ofstream outLinearIrt("./graph_irt_canon.gv");
+    NIRTree::IRLinearForest linearForest;
+    NIRTree::IRPrettyPrinter linearIRPrinter(outLinearIrt);
+
+    for (auto &tree: forest) {
+        linearForest.insert({tree.first, NIRTree::Canoniser::Canonise(tree.second.release())});
+    }
+
+    linearIRPrinter.Visit(linearForest);
 
     return 0;
 }

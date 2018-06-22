@@ -2,16 +2,16 @@
 #include "IRPrettyPrinter.h"
 
 #include <cassert>
+#include <vector>
 
-//#include <memory>
 
 namespace NIRTree {
 
-    std::unique_ptr<StmWrapper> Canoniser::RemoveEseqsFromSubtree(std::unique_ptr<ISubtreeWrapper> subtreeWrapper) {
+    StmWrapper* Canoniser::RemoveEseqsFromSubtree(ISubtreeWrapper *subtreeWrapper) {
         CanonisationVisitor cv;
         cv.highestEseq = std::unique_ptr<ESeq>(new ESeq(nullptr, nullptr, {}));
-        subtreeWrapper.release()->Accept(&cv);
-        return std::unique_ptr<StmWrapper>(new StmWrapper(cv.highestEseq->stm.release()));
+        subtreeWrapper->Accept(&cv);
+        return new StmWrapper(cv.highestEseq->stm.release());
     }
 
     bool Canoniser::commute(const IStm* stm, const IExp* exp) {
@@ -51,22 +51,26 @@ namespace NIRTree {
         
     }
 
-    std::vector<std::unique_ptr<IStm>> Canoniser::Linearise(std::unique_ptr<StmWrapper> wrapper) {
+    std::vector<std::unique_ptr<IStm>> Canoniser::Linearise(StmWrapper* wrapper) {
         std::vector<std::unique_ptr<IStm>> stms;
-        Linear(std::unique_ptr<IStm>(wrapper->ToStm()), stms);
+        Linear(wrapper->ToStm(), stms);
         return stms;
     }
 
-    void Canoniser::Linear(std::unique_ptr<IStm> node, std::vector<std::unique_ptr<IStm>> &stms) {
-        if (StmList* list = dynamic_cast<StmList*>(node.get())) {
-            Linear(std::move(list->head), stms);
-            Linear(std::move(list->tail), stms);
+    void Canoniser::Linear(IStm* node, std::vector<std::unique_ptr<IStm>> &stms) {
+        if (StmList* list = dynamic_cast<StmList*>(node)) {
+            if (list->head) {
+                Linear(list->head.release(), stms);
+            }
+            if (list->tail) {
+                Linear(list->tail.release(), stms);
+            }
         } else {
-            stms.emplace_back(std::move(node));
+            stms.emplace_back(node);
         }
     }
 
-    std::vector<std::unique_ptr<IStm>> Canoniser::Canonise(std::unique_ptr<ISubtreeWrapper> subtreeWrapper) {
+    std::vector<std::unique_ptr<IStm>> Canoniser::Canonise(ISubtreeWrapper *subtreeWrapper) {
         return Linearise(RemoveEseqsFromSubtree(std::move(subtreeWrapper)));
     }
 
