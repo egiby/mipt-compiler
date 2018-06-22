@@ -24,10 +24,9 @@ namespace NIRTree {
     class CanonisationVisitor : public IIRMutableVisitor {
         std::unique_ptr<ESeq> highestEseq;
 
-        static bool commute(const IStm* stm, const IExp* exp);
-        static bool isNop(const IStm* stm);
-
-        void liftEseq();
+        IStm* reorder(std::unique_ptr<IExp>& exp);
+        void reorderEseq();
+        IStm* addIfRequired(IStm *stm);
 
     public:
         CanonisationVisitor() : highestEseq(new ESeq(nullptr, nullptr, {})) {}
@@ -54,6 +53,6 @@ namespace NIRTree {
         void Visit(StmWrapper *) override;
 
         void Visit(ExpList *) override;
-        void Visit(StmList *) override;
+        void Visit(Seq *) override;
     };
 }

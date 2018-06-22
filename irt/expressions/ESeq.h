@@ -28,5 +28,8 @@ namespace NIRTree {
                 }
             }
         }
+
+        bool IsCommutative() const override { return false; }
+        bool IsAbsolutelyCommutative() const override { return false; }
     };
 }

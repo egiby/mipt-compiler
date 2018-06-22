@@ -12,6 +12,8 @@ namespace NIRTree {
             NAME
         };
 
+        static const int TempHolderLocalId = 9000;
+
         const int id;
 
         const int localId;
@@ -23,6 +25,9 @@ namespace NIRTree {
 
         void Accept(IIRVisitor *visitor) const override;
         void Accept(IIRMutableVisitor *visitor) override;
+
+        bool IsCommutative() const override { return true; }
+        bool IsAbsolutelyCommutative() const override { return localId == TempHolderLocalId; }
     private:
         static int counter;
         bool unique;

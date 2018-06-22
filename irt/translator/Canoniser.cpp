@@ -13,43 +13,6 @@ namespace NIRTree {
         return new StmWrapper(cv.GetStatement());
     }
 
-    bool CanonisationVisitor::commute(const IStm *stm, const IExp *exp) {
-        return isNop(stm)
-               || dynamic_cast<const Name *>(exp) != nullptr
-               || dynamic_cast<const Const *>(exp) != nullptr;
-    }
-
-    bool CanonisationVisitor::isNop(const IStm *stm) {
-        const auto e = dynamic_cast<const Exp *>(stm);
-        return e != nullptr && dynamic_cast<const Const *>(e->expr.get()) != nullptr;
-    }
-
-    void CanonisationVisitor::liftEseq() {
-        Temp *tmp = new Temp();
-        if (highestEseq->stm) {
-            highestEseq = std::unique_ptr<ESeq>(
-                    new ESeq(
-                            new Seq(
-                                    highestEseq->stm.release(),
-                                    new Move(tmp, highestEseq->exp.release(), {}),
-                                    {}
-                            ),
-                            new Mem(new Temp(*tmp), {}),
-                            {}
-                    )
-            );
-        } else {
-            highestEseq = std::unique_ptr<ESeq>(
-                    new ESeq(
-                            new Move(tmp, highestEseq->exp.release(), {}),
-                            new Mem(new Temp(*tmp), {}),
-                            {}
-                    )
-            );
-        }
-
-    }
-
     std::vector<std::unique_ptr<IStm>> Canoniser::Linearise(StmWrapper *wrapper) {
         std::vector<std::unique_ptr<IStm>> stms;
         Linear(wrapper->ToStm(), stms);
@@ -76,46 +39,18 @@ namespace NIRTree {
     /*Visitor*/
 
     void CanonisationVisitor::Visit(Binop *node) {
-        node->leftExp.release()->Accept(this);
-        auto leftStm = std::move(highestEseq->stm);
-        node->leftExp = std::move(highestEseq->exp);
-
-        node->rightExp.release()->Accept(this);
-        auto rightStm = std::move(highestEseq->stm);
-        node->rightExp = std::move(highestEseq->exp);
-
-        if (!CanonisationVisitor::commute(rightStm.get(), node->leftExp.get())) {
-            highestEseq->stm = std::move(leftStm);
-            highestEseq->exp = std::move(node->leftExp);
-            liftEseq();
-            leftStm = std::move(highestEseq->stm);
-            node->leftExp = std::move(highestEseq->exp);
-        }
-
-        if (leftStm && rightStm) {
-            highestEseq->stm = std::unique_ptr<Seq>(new Seq(leftStm.release(), rightStm.release(), {}));
-        } else if (leftStm) {
-            highestEseq->stm = std::move(leftStm);
-        } else if (rightStm) {
-            highestEseq->stm = std::move(rightStm);
-        }
-        highestEseq->exp = std::unique_ptr<Binop>(node);
+        IStm *leftStatements = reorder(node->leftExp);
+        IStm *rightStatements = reorder(node->rightExp);
+        highestEseq->stm.reset(new Seq(leftStatements, rightStatements));
+        highestEseq->exp.reset(node);
     }
 
     void CanonisationVisitor::Visit(Call *node) {
-        node->args.release()->Accept(this);
-
-        IExp *highestEseqExp = highestEseq->exp.release();
-        ExpList *expList = dynamic_cast<ExpList *>(highestEseqExp);
-        assert(highestEseqExp == nullptr || expList != nullptr);
-
-        node->args.reset(expList);
-        node->funcExp.release()->Accept(this);
-        node->funcExp = std::move(highestEseq->exp);
-
+        node->args->Accept(this);
+        node->args.release();
+        node->args.reset(static_cast<ExpList *>(highestEseq->exp.release()));
+        highestEseq->stm.reset(reorder(node->funcExp));
         highestEseq->exp.reset(node);
-
-        liftEseq();
     }
 
     void CanonisationVisitor::Visit(Const *node) {
@@ -123,15 +58,17 @@ namespace NIRTree {
     }
 
     void CanonisationVisitor::Visit(ESeq *node) {
-        std::unique_ptr<ESeq> nodeHolder(node);
-        node->stm.release()->Accept(this);
-
-        node->exp.release()->Accept(this);
+        node->stm->Accept(this);
+        node->stm.release();
+        highestEseq->stm.reset(reorder(node->exp));
+        highestEseq->exp.reset(node->exp.release());
+        delete node;
     }
 
     void CanonisationVisitor::Visit(Mem *node) {
-        node->exp.release()->Accept(this);
-        node->exp = std::move(highestEseq->exp);
+        node->exp->Accept(this);
+        node->exp.release();
+        node->exp.reset(highestEseq->exp.release());
         highestEseq->exp.reset(node);
     }
 
@@ -144,40 +81,28 @@ namespace NIRTree {
     }
 
     void CanonisationVisitor::Visit(Unop *node) {
-        node->expression.release()->Accept(this);
-        node->expression = std::move(highestEseq->exp);
-        highestEseq->exp = std::unique_ptr<Unop>(node);
+        highestEseq->stm.reset(reorder(node->expression));
+        highestEseq->exp.reset(node);
     }
 
     void CanonisationVisitor::Visit(CJump *node) {
-        node->leftExpr.release()->Accept(this);
-        auto leftStm = std::move(highestEseq->stm);
-        node->leftExpr = std::move(highestEseq->exp);
-
-        node->rightExpr.release()->Accept(this);
-        auto rightStm = std::move(highestEseq->stm);
-        node->rightExpr = std::move(highestEseq->exp);
-
-        if (!CanonisationVisitor::commute(rightStm.get(), node->leftExpr.get())) {
-            highestEseq->stm = std::move(leftStm);
-            highestEseq->exp = std::move(node->leftExpr);
-            liftEseq();
-            leftStm = std::move(highestEseq->stm);
-            node->leftExpr = std::move(highestEseq->exp);
+        IStm *leftStatements = reorder(node->leftExpr);
+        IStm *rightStatements = reorder(node->rightExpr);
+        if (leftStatements != nullptr) {
+            highestEseq->stm.reset(addIfRequired(leftStatements));
         }
-
-        highestEseq->AppendStm(std::move(leftStm));
-        highestEseq->AppendStm(std::move(rightStm));
-        highestEseq->AppendStm(std::unique_ptr<CJump>(node));
+        if (rightStatements != nullptr) {
+            highestEseq->stm.reset(addIfRequired(rightStatements));
+        }
+        highestEseq->stm.reset(addIfRequired(node));
     }
 
     void CanonisationVisitor::Visit(Exp *node) {
-        node->expr.release()->Accept(this);
-        auto stm = std::move(highestEseq->stm);
-        node->expr = std::move(highestEseq->exp);
-
-        highestEseq->AppendStm(std::move(stm));
-        highestEseq->AppendStm(std::unique_ptr<Exp>(node));
+        IStm *stm = reorder(node->expr);
+        if (stm != nullptr) {
+            highestEseq->stm.reset(addIfRequired(stm));
+        }
+        highestEseq->stm.reset(addIfRequired(node));
     }
 
     void CanonisationVisitor::Visit(Jump *node) {
@@ -185,29 +110,15 @@ namespace NIRTree {
     }
 
     void CanonisationVisitor::Visit(Move *node) {
-        node->src.release()->Accept(this);
-        auto src = std::move(highestEseq->stm);
-        node->src = std::move(highestEseq->exp);
-
-        node->dst.release()->Accept(this);
-        auto dst = std::move(highestEseq->stm);
-        node->dst = std::move(highestEseq->exp);
-
-        if (!CanonisationVisitor::commute(dst.get(), node->src.get())) {
-            highestEseq->stm = std::move(src);
-            highestEseq->exp = std::move(node->src);
-            liftEseq();
-            src = std::move(highestEseq->stm);
-            node->src = std::move(highestEseq->exp);
+        IStm *src = reorder(node->src);
+        IStm *dst = reorder(node->dst);
+        if (src != nullptr) {
+            highestEseq->stm.reset(addIfRequired(src));
         }
-
-        /*std::cerr << "Before appends in MOVE " << node << std::endl;
-        NIRTree::IRPrettyPrinter irPrinter(std::cerr);
-        node->Accept(&irPrinter);*/
-
-        highestEseq->AppendStm(std::move(src));
-        highestEseq->AppendStm(std::move(dst));
-        highestEseq->AppendStm(std::unique_ptr<Move>(node));
+        if (dst != nullptr) {
+            highestEseq->stm.reset(addIfRequired(dst));
+        }
+        highestEseq->stm.reset(addIfRequired(node));
     }
 
     void CanonisationVisitor::Visit(LabelStm *node) {
@@ -223,56 +134,57 @@ namespace NIRTree {
     }
 
     void CanonisationVisitor::Visit(ExpList *node) {
-        if (node->head) {
-            assert(!dynamic_cast<ExpList *>(node->head.get()));
-            auto highestEseqStm = std::move(highestEseq->stm);
-            node->head.release()->Accept(this);
-            node->head = std::move(highestEseq->exp);
-            auto stm = std::move(highestEseq->stm);
-
-            highestEseq->stm = std::move(highestEseqStm);
-            highestEseq->AppendStm(std::move(stm));
-        }
-        if (node->tail) {
-            if (dynamic_cast<ExpList *>(node->tail.get())) {
-                node->tail.release()->Accept(this);
-                node->tail = std::move(highestEseq->exp);
-            } else {
-                auto highestEseqStm = std::move(highestEseq->stm);
-                node->tail.release()->Accept(this);
-                node->tail = std::move(highestEseq->exp);
-                auto stm = std::move(highestEseq->stm);
-
-                highestEseq->stm = std::move(highestEseqStm);
-                highestEseq->AppendStm(std::move(stm));
+        if (node->head != nullptr) {
+            IStm *stm = reorder(node->head);
+            if (stm != nullptr) {
+                highestEseq->stm.reset(addIfRequired(stm));
             }
+        }
+        if (node->tail != nullptr) {
+            node->tail->Accept(this);
+            node->tail.release();
+            node->tail.reset(highestEseq->exp.release());
         }
         highestEseq->exp.reset(node);
     }
 
-    void CanonisationVisitor::Visit(StmList *node) {
-        // std::cerr << "Before " << node << std::endl;
-        // NIRTree::IRPrettyPrinter irPrinter(std::cerr);
-        // node->Accept(&irPrinter);
-
-        if (node->head) {
-            node->head.release()->Accept(this);
-            node->head = std::move(highestEseq->stm);
-            assert(!highestEseq->exp);
+    void CanonisationVisitor::Visit(Seq *node) {
+        node->head->Accept(this);
+        node->head.release();
+        if (node->tail != nullptr) {
+            node->tail->Accept(this);
         }
+        node->tail.release();
+        delete node;
+    }
 
-        // std::cerr << "After HEAD " << node << std::endl;
-        // node->Accept(&irPrinter);
+    IStm *CanonisationVisitor::reorder(std::unique_ptr<IExp> &exp) {
+        exp->Accept(this);
+        exp.release();
+        reorderEseq();
+        exp.reset(highestEseq->exp.release());
+        return highestEseq->stm.release();
+    }
 
-        if (node->tail) {
-            node->tail.release()->Accept(this);
-            node->tail = std::move(highestEseq->stm);
-            assert(!highestEseq->exp);
+    void CanonisationVisitor::reorderEseq() {
+        if (highestEseq->stm.get() == nullptr || highestEseq->exp.get() == nullptr) {
+            return;
         }
+        if (highestEseq->exp->IsCommutative()) {
+            return;
+        } else {
+            Temp *holder = new Temp(Temp::TempHolderLocalId);
+            highestEseq->stm.reset(new Seq(highestEseq->stm.release(),
+                                           new Move(holder, highestEseq->exp.release(), {})));
+            highestEseq->exp.reset(new Mem(new Temp(*holder), {}));
+        }
+    }
 
-        highestEseq->stm = std::unique_ptr<StmList>(node);
-
-        // std::cerr << "After " << node << std::endl;
-        // node->Accept(&irPrinter);
+    IStm *CanonisationVisitor::addIfRequired(IStm *stm) {
+        assert(stm != nullptr);
+        if (highestEseq->stm == nullptr) {
+            return stm;
+        }
+        return new Seq(highestEseq->stm.release(), stm);
     }
 }
