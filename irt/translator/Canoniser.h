@@ -13,11 +13,6 @@ namespace NIRTree {
     class Canoniser {
     public:
         static StmWrapper* RemoveEseqsFromSubtree(ISubtreeWrapper* subtreeWrapper);
-    
-        static bool commute(const IStm* stm, const IExp* exp);
-        static bool isNop(const IStm* stm);
-
-        static void liftEseq(CanonisationVisitor &cv);
 
         static std::vector<std::unique_ptr<IStm>> Linearise(StmWrapper* wrapper);
         static void Linear(IStm* node, std::vector<std::unique_ptr<IStm>> &stms);
@@ -27,9 +22,18 @@ namespace NIRTree {
     };
 
     class CanonisationVisitor : public IIRMutableVisitor {
-    public:
-
         std::unique_ptr<ESeq> highestEseq;
+
+        static bool commute(const IStm* stm, const IExp* exp);
+        static bool isNop(const IStm* stm);
+
+        void liftEseq();
+
+    public:
+        CanonisationVisitor() : highestEseq(new ESeq(nullptr, nullptr, {})) {}
+        IStm* GetStatement() {
+            return highestEseq->stm.release();
+        }
 
         void Visit(Binop *) override;
         void Visit(Call *) override;
